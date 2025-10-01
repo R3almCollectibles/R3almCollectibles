@@ -1,88 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  ArrowRight, 
-  Shield, 
-  TrendingUp, 
-  Users, 
-  Zap,
-  CheckCircle,
-  Star,
-  Eye,
-  Heart
-} from 'lucide-react';
+import { ArrowRight, Shield, TrendingUp, Users, Zap, CircleCheck as CheckCircle, Star, Eye, Heart } from 'lucide-react';
+import { getCollectibles, type Collectible } from '../lib/collectibles';
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const [featuredCollectibles, setFeaturedCollectibles] = useState<Collectible[]>([]);
 
-  const handleCollectibleClick = (id: number) => {
+  useEffect(() => {
+    loadFeaturedCollectibles();
+  }, []);
+
+  const loadFeaturedCollectibles = async () => {
+    const data = await getCollectibles({ limit: 6 });
+    setFeaturedCollectibles(data);
+  };
+
+  const handleCollectibleClick = (id: string) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     navigate(`/collectible/${id}`);
   };
 
-  const featuredCollectibles = [
-    {
-      id: 1,
-      name: 'Vintage Gibson Les Paul 1959',
-      description: 'Rare sunburst finish, original case included',
-      price: '2.5 ETH',
-      fractionalPrice: '0.025 ETH',
-      image: 'https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: true
-    },
-    {
-      id: 2,
-      name: 'Monet Water Lilies Study',
-      description: 'Authenticated 1919 oil on canvas',
-      price: '5.2 ETH',
-      fractionalPrice: '0.021 ETH',
-      image: 'https://images.pexels.com/photos/1070527/pexels-photo-1070527.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: false
-    },
-    {
-      id: 3,
-      name: 'Jordan Game-Worn Jersey 1996',
-      description: 'NBA Finals worn, certificate included',
-      price: '1.8 ETH',
-      fractionalPrice: '0.036 ETH',
-      image: 'https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: true
-    },
-    {
-      id: 4,
-      name: 'Rolex Submariner 1965',
-      description: 'Vintage diving watch, pristine condition',
-      price: '3.8 ETH',
-      fractionalPrice: '0.038 ETH',
-      image: 'https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: true
-    },
-    {
-      id: 5,
-      name: 'First Edition Charizard PSA 10',
-      description: 'Shadowless Base Set, perfect grade',
-      price: '4.2 ETH',
-      fractionalPrice: '0.042 ETH',
-      image: 'https://images.pexels.com/photos/1040173/pexels-photo-1040173.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: false
-    },
-    {
-      id: 6,
-      name: 'Banksy Street Art Fragment',
-      description: 'Authenticated piece from London wall',
-      price: '6.7 ETH',
-      fractionalPrice: '0.027 ETH',
-      image: 'https://images.pexels.com/photos/1070527/pexels-photo-1070527.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: true
+  const formatViews = (views: number) => {
+    if (views >= 1000) {
+      return `${(views / 1000).toFixed(1)}k`;
     }
-  ];
+    return views.toString();
+  };
+
 
   const stats = [
     { label: 'Total Volume', value: '$2.4M', icon: TrendingUp },
@@ -206,7 +152,7 @@ const HomePage = () => {
                   <div className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 hover:border-blue-500/50 transition-all duration-300 transform hover:scale-[1.02]">
                     <div className="relative aspect-square overflow-hidden">
                       <img
-                        src={item.image}
+                        src={item.image_url}
                         alt={item.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
@@ -227,11 +173,11 @@ const HomePage = () => {
                         <div className="flex justify-between items-center text-sm">
                           <span className="text-gray-300 flex items-center">
                             <Eye className="h-4 w-4 mr-1" />
-                            2.1k
+                            {formatViews(item.views)}
                           </span>
                           <span className="text-gray-300 flex items-center">
                             <Heart className="h-4 w-4 mr-1" />
-                            147
+                            {item.likes}
                           </span>
                         </div>
                       </div>
@@ -242,11 +188,11 @@ const HomePage = () => {
                       <div className="space-y-2">
                         <div className="flex justify-between items-center">
                           <span className="text-gray-400 text-sm">Full Price</span>
-                          <span className="text-white font-semibold">{item.price}</span>
+                          <span className="text-white font-semibold">{item.price_eth} ETH</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-gray-400 text-sm">Fractional Share</span>
-                          <span className="text-blue-400 font-semibold">{item.fractionalPrice}</span>
+                          <span className="text-blue-400 font-semibold">{item.fractional_price_eth} ETH</span>
                         </div>
                       </div>
                     </div>

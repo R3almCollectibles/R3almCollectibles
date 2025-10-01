@@ -1,16 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  Search, 
-  Filter, 
-  Grid3X3, 
-  List, 
-  TrendingUp, 
-  Heart,
-  CheckCircle,
-  Eye
-} from 'lucide-react';
+import { Search, ListFilter as Filter, Grid3x2 as Grid3X3, List, TrendingUp, Heart, CircleCheck as CheckCircle, Eye } from 'lucide-react';
+import { getCollectibles, type Collectible } from '../lib/collectibles';
 
 const Marketplace = () => {
   const navigate = useNavigate();
@@ -18,8 +10,10 @@ const Marketplace = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('trending');
+  const [collectibles, setCollectibles] = useState<Collectible[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleCollectibleClick = (id: number) => {
+  const handleCollectibleClick = (id: string) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     navigate(`/collectible/${id}`);
   };
@@ -28,225 +22,27 @@ const Marketplace = () => {
     'all', 'art', 'music', 'sports', 'gaming', 'photography', 'memorabilia'
   ];
 
-  const collectibles = [
-    {
-      id: 1,
-      name: 'Vintage Gibson Les Paul 1959',
-      description: 'Rare sunburst finish, original case included',
-      price: '2.5 ETH',
-      fractionalPrice: '0.025 ETH',
-      fractional: '1/100',
-      category: 'music',
-      image: 'https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: true,
-      likes: 147,
-      views: '2.1k'
-    },
-    {
-      id: 2,
-      name: 'Monet Water Lilies Study',
-      description: 'Authenticated 1919 oil on canvas, museum quality',
-      price: '5.2 ETH',
-      fractionalPrice: '0.021 ETH',
-      fractional: '1/250',
-      category: 'art',
-      image: 'https://images.pexels.com/photos/1070527/pexels-photo-1070527.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: false,
-      likes: 523,
-      views: '8.7k'
-    },
-    {
-      id: 3,
-      name: 'Jordan Game-Worn Jersey 1996',
-      description: 'NBA Finals worn, certificate of authenticity',
-      price: '1.8 ETH',
-      fractionalPrice: '0.036 ETH',
-      fractional: '1/50',
-      category: 'sports',
-      image: 'https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: true,
-      likes: 891,
-      views: '12.3k'
-    },
-    {
-      id: 4,
-      name: 'Rolex Submariner 1965',
-      description: 'Vintage diving watch, pristine condition',
-      price: '3.8 ETH',
-      fractionalPrice: '0.038 ETH',
-      fractional: '1/100',
-      category: 'memorabilia',
-      image: 'https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: true,
-      likes: 456,
-      views: '5.3k'
-    },
-    {
-      id: 5,
-      name: 'First Edition Charizard PSA 10',
-      description: 'Shadowless Base Set, PSA graded 10',
-      price: '4.2 ETH',
-      fractionalPrice: '0.042 ETH',
-      fractional: '1/100',
-      category: 'gaming',
-      image: 'https://images.pexels.com/photos/1040173/pexels-photo-1040173.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: false,
-      likes: 678,
-      views: '9.2k'
-    },
-    {
-      id: 6,
-      name: 'Banksy Street Art Fragment',
-      description: 'Authenticated piece from London wall',
-      price: '6.7 ETH',
-      fractionalPrice: '0.027 ETH',
-      fractional: '1/250',
-      category: 'art',
-      image: 'https://images.pexels.com/photos/1070527/pexels-photo-1070527.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: true,
-      likes: 1234,
-      views: '15.7k'
-    },
-    {
-      id: 7,
-      name: 'Polaroid Camera Collection',
-      description: 'Vintage SX-70 models in mint condition',
-      price: '0.8 ETH',
-      fractionalPrice: '0.008 ETH',
-      fractional: '1/100',
-      category: 'photography',
-      image: 'https://images.pexels.com/photos/821651/pexels-photo-821651.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: false,
-      likes: 234,
-      views: '1.8k'
-    },
-    {
-      id: 8,
-      name: 'Abstract Digital Art #42',
-      description: 'AI-generated masterpiece, limited edition',
-      price: '1.2 ETH',
-      fractionalPrice: '0.024 ETH',
-      fractional: '1/50',
-      category: 'art',
-      image: 'https://images.pexels.com/photos/1266808/pexels-photo-1266808.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: false,
-      likes: 345,
-      views: '3.4k'
-    },
-    {
-      id: 9,
-      name: 'Vintage Leica M3 Camera',
-      description: '1954 rangefinder, fully functional',
-      price: '2.1 ETH',
-      fractionalPrice: '0.021 ETH',
-      fractional: '1/100',
-      category: 'photography',
-      image: 'https://images.pexels.com/photos/821651/pexels-photo-821651.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: false,
-      likes: 312,
-      views: '2.9k'
-    },
-    {
-      id: 10,
-      name: 'Fender Stratocaster 1964',
-      description: 'Sunburst finish, original electronics',
-      price: '4.5 ETH',
-      fractionalPrice: '0.045 ETH',
-      fractional: '1/100',
-      category: 'music',
-      image: 'https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: false,
-      likes: 567,
-      views: '6.8k'
-    },
-    {
-      id: 11,
-      name: 'Babe Ruth Signed Baseball',
-      description: '1927 World Series, PSA authenticated',
-      price: '8.9 ETH',
-      fractionalPrice: '0.089 ETH',
-      fractional: '1/100',
-      category: 'sports',
-      image: 'https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: true,
-      likes: 2134,
-      views: '28.4k'
-    },
-    {
-      id: 12,
-      name: 'Van Gogh Sketch Study',
-      description: 'Pencil on paper, 1888 provenance',
-      price: '12.3 ETH',
-      fractionalPrice: '0.049 ETH',
-      fractional: '1/250',
-      category: 'art',
-      image: 'https://images.pexels.com/photos/1070527/pexels-photo-1070527.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: true,
-      likes: 3456,
-      views: '45.2k'
-    },
-    {
-      id: 13,
-      name: 'Nintendo Game & Watch 1980',
-      description: 'Ball game, mint in box condition',
-      price: '0.6 ETH',
-      fractionalPrice: '0.012 ETH',
-      fractional: '1/50',
-      category: 'gaming',
-      image: 'https://images.pexels.com/photos/1040173/pexels-photo-1040173.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: false,
-      likes: 189,
-      views: '1.4k'
-    },
-    {
-      id: 14,
-      name: 'Hasselblad 500C/M Kit',
-      description: 'Medium format camera with lenses',
-      price: '1.9 ETH',
-      fractionalPrice: '0.019 ETH',
-      fractional: '1/100',
-      category: 'photography',
-      image: 'https://images.pexels.com/photos/821651/pexels-photo-821651.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: false,
-      likes: 278,
-      views: '2.1k'
-    },
-    {
-      id: 15,
-      name: 'Patek Philippe Calatrava',
-      description: '18k gold, manual wind, 1960s',
-      price: '15.7 ETH',
-      fractionalPrice: '0.157 ETH',
-      fractional: '1/100',
-      category: 'memorabilia',
-      image: 'https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?auto=compress&cs=tinysrgb&w=500',
-      verified: true,
-      trending: true,
-      likes: 4567,
-      views: '67.8k'
-    }
-  ];
+  useEffect(() => {
+    loadCollectibles();
+  }, [selectedCategory, searchQuery]);
 
-  const filteredCollectibles = collectibles.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         item.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const loadCollectibles = async () => {
+    setLoading(true);
+    const data = await getCollectibles({
+      category: selectedCategory,
+      search: searchQuery
+    });
+    setCollectibles(data);
+    setLoading(false);
+  };
+
+  const formatViews = (views: number) => {
+    if (views >= 1000) {
+      return `${(views / 1000).toFixed(1)}k`;
+    }
+    return views.toString();
+  };
+
 
   return (
     <div className="pt-16 min-h-screen">
@@ -341,10 +137,14 @@ const Marketplace = () => {
           transition={{ delay: 0.2 }}
           className="mb-6"
         >
-          <p className="text-gray-400">
-            Showing {filteredCollectibles.length} collectibles
-            {selectedCategory !== 'all' && ` in ${selectedCategory}`}
-          </p>
+          {loading ? (
+            <p className="text-gray-400">Loading collectibles...</p>
+          ) : (
+            <p className="text-gray-400">
+              Showing {collectibles.length} collectibles
+              {selectedCategory !== 'all' && ` in ${selectedCategory}`}
+            </p>
+          )}
         </motion.div>
 
         {/* Collectibles Grid */}
@@ -353,12 +153,12 @@ const Marketplace = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
           className={
-            viewMode === 'grid' 
+            viewMode === 'grid'
               ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
               : 'space-y-4'
           }
         >
-          {filteredCollectibles.map((item, index) => (
+          {collectibles.map((item, index) => (
             <motion.div
               key={item.id}
               initial={{ opacity: 0, y: 20 }}
@@ -371,7 +171,7 @@ const Marketplace = () => {
                   <div className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 hover:border-blue-500/50 transition-all duration-300 transform hover:scale-[1.02]">
                     <div className="relative aspect-square overflow-hidden">
                       <img
-                        src={item.image}
+                        src={item.image_url}
                         alt={item.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
@@ -392,7 +192,7 @@ const Marketplace = () => {
                         <div className="flex justify-between items-center text-sm">
                           <span className="text-gray-300 flex items-center">
                             <Eye className="h-4 w-4 mr-1" />
-                            {item.views}
+                            {formatViews(item.views)}
                           </span>
                           <span className="text-gray-300 flex items-center">
                             <Heart className="h-4 w-4 mr-1" />
@@ -412,13 +212,13 @@ const Marketplace = () => {
                       <div className="space-y-2">
                         <div className="flex justify-between items-center">
                           <span className="text-gray-400 text-sm">Full Price</span>
-                          <span className="text-white font-semibold">{item.price}</span>
+                          <span className="text-white font-semibold">{item.price_eth} ETH</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-gray-400 text-sm">Fractional Share</span>
                           <div className="text-right">
-                            <div className="text-blue-400 font-semibold">{item.fractionalPrice}</div>
-                            <div className="text-purple-300 text-xs">{item.fractional}</div>
+                            <div className="text-blue-400 font-semibold">{item.fractional_price_eth} ETH</div>
+                            <div className="text-purple-300 text-xs">{item.fractional_shares}</div>
                           </div>
                         </div>
                       </div>
@@ -431,7 +231,7 @@ const Marketplace = () => {
                     <div className="flex space-x-4">
                       <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
                         <img
-                          src={item.image}
+                          src={item.image_url}
                           alt={item.name}
                           className="w-full h-full object-cover"
                         />
@@ -449,17 +249,17 @@ const Marketplace = () => {
                           <div className="flex space-x-6">
                             <div>
                               <div className="text-xs text-gray-400 mb-1">Full Price</div>
-                              <div className="text-white font-semibold">{item.price}</div>
+                              <div className="text-white font-semibold">{item.price_eth} ETH</div>
                             </div>
                             <div>
                               <div className="text-xs text-gray-400 mb-1">Fractional</div>
-                              <div className="text-blue-400 font-semibold">{item.fractionalPrice}</div>
+                              <div className="text-blue-400 font-semibold">{item.fractional_price_eth} ETH</div>
                             </div>
                           </div>
                           <div className="flex items-center space-x-4 text-sm text-gray-400">
                             <span className="flex items-center">
                               <Eye className="h-4 w-4 mr-1" />
-                              {item.views}
+                              {formatViews(item.views)}
                             </span>
                             <span className="flex items-center">
                               <Heart className="h-4 w-4 mr-1" />

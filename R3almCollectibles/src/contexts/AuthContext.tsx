@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase } from '../lib/supabase';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface User {
   id: string;
@@ -13,9 +15,10 @@ interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  loading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   signup: (email: string, password: string, name: string) => Promise<boolean>;
-  logout: () => void;
+  logout: () => Promise<void>;
   loginWithDemo: (demoType: 'collector' | 'creator' | 'investor') => void;
 }
 
@@ -54,65 +57,164 @@ const demoAccounts = {
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored user session
-    const storedUser = localStorage.getItem('r3alm_user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    const initAuth = async () => {
+      const storedDemo = localStorage.getItem('r3alm_demo_user');
+      if (storedDemo) {
+        setUser(JSON.parse(storedDemo));
+        setLoading(false);
+        return;
+      }
+
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .maybeSingle();
+
+        if (profile) {
+          setUser({
+            id: profile.id,
+            email: profile.email,
+            name: profile.name,
+            avatar: profile.avatar,
+            walletAddress: profile.wallet_address,
+            joinDate: new Date(profile.created_at).toISOString().split('T')[0],
+            isDemo: false
+          });
+        }
+      }
+
+      setLoading(false);
+    };
+
+    initAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      (async () => {
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .maybeSingle();
+
+          if (profile) {
+            setUser({
+              id: profile.id,
+              email: profile.email,
+              name: profile.name,
+              avatar: profile.avatar,
+              walletAddress: profile.wallet_address,
+              joinDate: new Date(profile.created_at).toISOString().split('T')[0],
+              isDemo: false
+            });
+          }
+        } else if (!localStorage.getItem('r3alm_demo_user')) {
+          setUser(null);
+        }
+      })();
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // For demo purposes, accept any email/password combination
-    const newUser: User = {
-      id: `user-${Date.now()}`,
-      email,
-      name: email.split('@')[0],
-      joinDate: new Date().toISOString().split('T')[0],
-      isDemo: false
-    };
-    
-    setUser(newUser);
-    localStorage.setItem('r3alm_user', JSON.stringify(newUser));
-    return true;
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .maybeSingle();
+
+        if (profile) {
+          setUser({
+            id: profile.id,
+            email: profile.email,
+            name: profile.name,
+            avatar: profile.avatar,
+            walletAddress: profile.wallet_address,
+            joinDate: new Date(profile.created_at).toISOString().split('T')[0],
+            isDemo: false
+          });
+        }
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
+    }
   };
 
   const signup = async (email: string, password: string, name: string): Promise<boolean> => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const newUser: User = {
-      id: `user-${Date.now()}`,
-      email,
-      name,
-      joinDate: new Date().toISOString().split('T')[0],
-      isDemo: false
-    };
-    
-    setUser(newUser);
-    localStorage.setItem('r3alm_user', JSON.stringify(newUser));
-    return true;
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            email,
+            name
+          });
+
+        if (profileError) throw profileError;
+
+        setUser({
+          id: data.user.id,
+          email,
+          name,
+          joinDate: new Date().toISOString().split('T')[0],
+          isDemo: false
+        });
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Signup error:', error);
+      return false;
+    }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    localStorage.removeItem('r3alm_demo_user');
+    await supabase.auth.signOut();
     setUser(null);
-    localStorage.removeItem('r3alm_user');
   };
 
   const loginWithDemo = (demoType: 'collector' | 'creator' | 'investor') => {
     const demoUser = demoAccounts[demoType];
     setUser(demoUser);
-    localStorage.setItem('r3alm_user', JSON.stringify(demoUser));
+    localStorage.setItem('r3alm_demo_user', JSON.stringify(demoUser));
   };
 
   return (
     <AuthContext.Provider value={{
       user,
       isAuthenticated: !!user,
+      loading,
       login,
       signup,
       logout,
