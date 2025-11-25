@@ -1,57 +1,65 @@
-// src/App.tsx
 import React, { useEffect } from 'react';
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { createDemoUsersIfNeeded } from './lib/createDemoUsers';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
+import { createDemoUsersIfNeeded } from './lib/createDemoUsers'; // Adjust path if needed
 
 // Pages
-import {Login} from './pages/Login';
+import { Login } from './pages/Login';
 import { Profile } from './pages/Profile';
 
-// Dashboards
+// Dashboards (role-based)
 import { CollectorDashboard } from './pages/dashboards/CollectorDashboard';
 import { CreatorDashboard } from './pages/dashboards/CreatorDashboard';
 import { InvestorDashboard } from './pages/dashboards/InvestorDashboard';
 import { AdminDashboard } from './pages/dashboards/AdminDashboard';
 
+// R3alm-Specific Pages (add imports as you build)
+import { HomePage } from './pages/HomePage'; // e.g., from previous snippets
+import { Marketplace } from './pages/Marketplace';
+// import { MintNFT } from './pages/MintNFT';
+// import { Portfolio } from './pages/Portfolio';
+// import { Analytics } from './pages/Analytics';
+// import { Settings } from './pages/Settings';
+
 // Components
-import { Navbar } from './components/Navbar';
+import { Navbar } from './components/Navbar'; // Or rename to Header if using my previous
 import { Toaster } from 'react-hot-toast';
 
-// Protected Route
+// Loading Spinner (simple, memoized)
+const LoadingSpinner = React.memo(() => (
+  <div className="flex justify-center items-center min-h-screen" aria-busy="true" aria-label="Loading application">
+    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500" />
+  </div>
+));
+
+// Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
-  return user ? <>{children}</> : <Navigate to="/login" replace />;
+  return user ? <>{children} : <Navigate to="/login" replace />;
 };
 
 // Role-Based Dashboard
 const RoleBasedDashboard = () => {
   const { user } = useAuth();
   const role = user?.user_metadata?.role?.toLowerCase() || 'collector';
-
   switch (role) {
-    case 'admin': return <AdminDashboard />;
-    case 'investor': return <InvestorDashboard />;
-    case 'creator': return <CreatorDashboard />;
+    case 'admin':
+      return <AdminDashboard />;
+    case 'investor':
+      return <InvestorDashboard />;
+    case 'creator':
+      return <CreatorDashboard />;
     case 'collector':
-    default: return <CollectorDashboard />;
+    default:
+      return <CollectorDashboard />;
   }
 };
 
-function AppWithAuth() {
-  const { user } = useAuth();
+function App() {
+  const { user, loading } = useAuth();
 
   // CRITICAL FIX: Only run ONCE per session in preview environments
   useEffect(() => {
@@ -63,58 +71,63 @@ function AppWithAuth() {
     }
   }, []);
 
-  return (
-    <>
-      <Router>
-        {user && <Navbar />}
-        <Routes>
-          <Route
-            path="/login"
-            element={user ? <Navigate to="/" replace /> : <Login />}
-          />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <RoleBasedDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Router>
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Conditional Navbar (Header) for logged-in users */}
+      {user && <Navbar />}
+      {/* Global Toaster */}
       <Toaster
-        position="top-center"
+        position="top-right"
         toastOptions={{
-          duration: 4000,
           style: {
-            background: '#111',
-            color: '#fff',
-            borderRadius: '16px',
-            padding: '16px 24px',
-            fontSize: '16px',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)',
+            fontFamily: 'Inter, sans-serif',
+            background: '#007BFF',
+            color: 'white',
           },
-          success: { style: { background: '#10b981' } },
+          duration: 4000,
         }}
       />
-    </>
+      {/* Routes (no BrowserRouter needed—handled in main.tsx) */}
+      <Routes>
+        {/* Public Routes */}
+        <Route
+          path="/login"
+          element={!user ? <Login /> : <Navigate to="/dashboard" replace />}
+        />
+        {/* Protected Routes */}
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <RoleBasedDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        {/* R3alm-Specific Routes (extend as needed) */}
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/marketplace" element={<Marketplace />} />
+        {/* <Route path="/mint" element={<MintNFT />} /> */}
+        {/* <Route path="/portfolio" element={<Portfolio />} /> */}
+        {/* <Route path="/analytics" element={<Analytics />} /> */}
+        {/* <Route path="/settings" element={<Settings />} /> */}
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </div>
   );
 }
 
-export default function App() {
-  return (
-    <AuthProvider>
-      <AppWithAuth />
-    </AuthProvider>
-  );
-}
+export default App;
