@@ -1,4 +1,4 @@
-// src/components/admin/AdminSidebar.tsx – FULLY UPDATED WITH TEAM PAGE
+// src/components/admin/AdminSidebar.tsx – TEAM MENU REMOVED FROM MAIN NAV
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
@@ -10,7 +10,6 @@ import {
   Settings,
   LogOut,
   Home,
-  UserCog, // New icon for Team
 } from 'lucide-react';
 
 const AdminSidebar: React.FC = () => {
@@ -20,18 +19,16 @@ const AdminSidebar: React.FC = () => {
     { label: 'Dashboard', icon: Home, path: '/admin' },
     { label: 'Collectibles', icon: Package, path: '/admin/collectibles' },
     { label: 'Users', icon: Users, path: '/admin/users' },
-    { label: 'Team', icon: UserCog, path: '/admin/team' }, // NEW: Team Management
     { label: 'Reports', icon: FileText, path: '/admin/reports' },
     { label: 'Analytics', icon: BarChart3, path: '/admin/analytics' },
     { label: 'Settings', icon: Settings, path: '/admin/settings' },
+    // Team Management has been intentionally removed from the main menu
   ];
 
   const isActive = (path: string) => {
-    // Dashboard only active on exact '/admin'
     if (path === '/admin') {
       return location.pathname === '/admin';
     }
-    // All other pages: active if path starts with the route
     return location.pathname.startsWith(path);
   };
 
