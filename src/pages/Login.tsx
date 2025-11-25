@@ -2,7 +2,15 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Mail, Mail, Lock, ArrowRight, Sparkles, Shield, Palette, DollarSign } from 'lucide-react';
+import {
+  Mail,
+  Lock,
+  ArrowRight,
+  Sparkles,
+  Shield,
+  Palette,
+  DollarSign,
+} from 'lucide-react';
 
 const demoAccounts = {
   collector: {
@@ -10,7 +18,6 @@ const demoAccounts = {
     email: 'collector@demo.com',
     name: 'Alex Collector',
     avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=100',
-    walletAddress: '0x742d35Cc6634C0532925a3b8D46DE3C4',
     role: 'Collector',
     icon: Sparkles,
     color: 'from-purple-500 to-pink-500',
@@ -20,7 +27,6 @@ const demoAccounts = {
     email: 'creator@demo.com',
     name: 'Maya Artist',
     avatar: 'https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=100',
-    walletAddress: '0x891a2b3c4d5e6f7g8h9i0j1k2l3m4n5o',
     role: 'Creator',
     icon: Palette,
     color: 'from-blue-500 to-cyan-500',
@@ -30,9 +36,7 @@ const demoAccounts = {
     email: 'investor@demo.com',
     name: 'Jordan Investor',
     avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=100',
-    walletAddress: '0x234b5c6d7e8f9g0h1i2j3k4l5m6n7o8p',
-    role: 'Investor',
-    icon: DollarSign,
+    role: DollarSign,
     color: 'from-green-500 to-emerald-500',
   },
   admin: {
@@ -40,7 +44,6 @@ const demoAccounts = {
     email: 'admin@demo.com',
     name: 'Admin Manager',
     avatar: 'https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=100',
-    walletAddress: '0x567c8d9e0f1g2h3i4j5k6l7m8n9o0p1q',
     role: 'Administrator',
     icon: Shield,
     color: 'from-red-500 to-orange-500',
@@ -59,11 +62,8 @@ export const Login = () => {
     setLoading(true);
     setError('');
     const { error } = await signIn(demoEmail, '123456');
-    if (error) {
-      setError(error.message);
-    } else {
-      navigate('/');
-    }
+    if (error) setError(error.message);
+    else navigate('/');
     setLoading(false);
   };
 
@@ -71,13 +71,9 @@ export const Login = () => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     const { error } = await signIn(email, password);
-    if (error) {
-      setError(error.message);
-    } else {
-      navigate('/');
-    }
+    if (error) setError(error.message);
+    else navigate('/');
     setLoading(false);
   };
 
@@ -87,9 +83,14 @@ export const Login = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
-            Welcome to <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">Collectify</span>
+            Welcome to{' '}
+            <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
+              Collectify
+            </span>
           </h1>
-          <p className="text-xl text-gray-400">Choose a demo account or log in with your credentials</p>
+          <p className="text-xl text-gray-400">
+            Choose a demo account or log in with your credentials
+          </p>
         </div>
 
         {/* Demo Accounts Grid */}
@@ -103,22 +104,30 @@ export const Login = () => {
                 disabled={loading}
                 className="group relative overflow-hidden rounded-3xl border border-gray-800 bg-gray-900 p-6 transition-all hover:scale-105 hover:border-gray-700 hover:shadow-2xl"
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${account.color} opacity-10 group-hover:opacity-20 transition`} />
-                
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${account.color} opacity-10 group-hover:opacity-20 transition`}
+                />
+
                 <div className="relative z-10 text-center">
                   <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden ring-4 ring-gray-800 group-hover:ring-gray-700 transition">
-                    <img src={account.avatar} alt={account.name} className="w-full h-full object-cover" />
+                    <img
+                      src={account.avatar}
+                      alt={account.name}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                  
+
                   <h3 className="text-xl font-bold text-white mb-1">{account.name}</h3>
                   <p className="text-sm text-gray-400 mb-3">{account.role}</p>
-                  
+
                   <div className="flex items-center justify-center gap-2 text-xs text-gray-500 mb-4">
                     <Icon className="h-4 w-4" />
                     <span>{account.email}</span>
                   </div>
-                  
-                  <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-gradient-to-r ${account.color} text-white`}>
+
+                  <div
+                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-gradient-to-r ${account.color} text-white`}
+                  >
                     <Sparkles className="h-4 w-4" />
                     Instant Login
                   </div>
@@ -131,7 +140,7 @@ export const Login = () => {
         {/* Divider */}
         <div className="relative my-12">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-800"></div>
+            <div className="w-full border-t border-gray-800" />
           </div>
           <div className="relative flex justify-center text-sm">
             <span className="px-4 bg-gray-950 text-gray-500">Or log in manually</span>
@@ -184,7 +193,7 @@ export const Login = () => {
                 className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold rounded-xl transition flex items-center justify-center gap-3"
               >
                 {loading ? 'Logging in...' : 'Log In'}
-                <ArrowRight className="h-translate-x-2 group-hover:translate-x-0 transition" />
+                <ArrowRight className="h-5 w-5" />
               </button>
             </form>
 
