@@ -7,10 +7,10 @@ import {
   Navigate,
 } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { createDemoUsersIfNeeded } from './lib/createDemoUsers'; // ← Correct function
+import { createDemoUsersIfNeeded } from './lib/createDemoUsers';
 
 // Pages
-import { Login } from './pages/Login';
+import {Login} from './pages/Login';
 import { Profile } from './pages/Profile';
 
 // Dashboards
@@ -26,7 +26,6 @@ import { Toaster } from 'react-hot-toast';
 // Protected Route
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
@@ -34,49 +33,45 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
       </div>
     );
   }
-
   return user ? <>{children}</> : <Navigate to="/login" replace />;
 };
 
-// Role-Based Dashboard Switcher
+// Role-Based Dashboard
 const RoleBasedDashboard = () => {
   const { user } = useAuth();
   const role = user?.user_metadata?.role?.toLowerCase() || 'collector';
 
   switch (role) {
-    case 'admin':
-      return <AdminDashboard />;
-    case 'investor':
-      return <InvestorDashboard />;
-    case 'creator':
-      return <CreatorDashboard />;
+    case 'admin': return <AdminDashboard />;
+    case 'investor': return <InvestorDashboard />;
+    case 'creator': return <CreatorDashboard />;
     case 'collector':
-    default:
-      return <CollectorDashboard />;
+    default: return <CollectorDashboard />;
   }
 };
 
 function AppWithAuth() {
   const { user } = useAuth();
 
-  // Create demo users (auto-confirmed, no email verification needed)
+  // CRITICAL FIX: Only run ONCE per session in preview environments
   useEffect(() => {
-    createDemoUsersIfNeeded(); // ← This now works perfectly
+    const hasRun = sessionStorage.getItem('demo_users_initialized');
+    if (!hasRun && (import.meta.env.DEV || location.hostname.includes('stackblitz') || location.hostname.includes('bolt.new'))) {
+      createDemoUsersIfNeeded().then(() => {
+        sessionStorage.setItem('demo_users_initialized', 'true');
+      });
+    }
   }, []);
 
   return (
     <>
       <Router>
         {user && <Navbar />}
-
         <Routes>
-          {/* Public */}
           <Route
             path="/login"
             element={user ? <Navigate to="/" replace /> : <Login />}
           />
-
-          {/* Protected */}
           <Route
             path="/"
             element={
@@ -93,8 +88,6 @@ function AppWithAuth() {
               </ProtectedRoute>
             }
           />
-
-          {/* Catch-all */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
@@ -111,9 +104,7 @@ function AppWithAuth() {
             fontSize: '16px',
             boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)',
           },
-          success: {
-            style: { background: '#10b981' },
-          },
+          success: { style: { background: '#10b981' } },
         }}
       />
     </>
