@@ -58,7 +58,6 @@ const CollectibleDetail: React.FC = () => {
   return (
     <div className="pt-16 min-h-screen bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
         {/* Back Button */}
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-8">
           <Link to="/marketplace" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition">
@@ -68,7 +67,6 @@ const CollectibleDetail: React.FC = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-
           {/* LEFT COLUMN */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
             {/* Image */}
@@ -114,8 +112,12 @@ const CollectibleDetail: React.FC = () => {
           </motion.div>
 
           {/* RIGHT COLUMN */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-8">
-
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="space-y-8"
+          >
             {/* Title */}
             <div>
               <div className="flex items-center gap-2 mb-2">
@@ -127,7 +129,7 @@ const CollectibleDetail: React.FC = () => {
             </div>
 
             {/* Pricing placeholder */}
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="bg-gray-800 rounded-xl p-6 bordered border-gray-700">
               {/* Your pricing code */}
             </div>
 
@@ -171,7 +173,7 @@ const CollectibleDetail: React.FC = () => {
               </Link>
             </div>
 
-            {/* INSURANCE COVERAGE – NOW IDENTICAL TO THE OTHERS */}
+            {/* INSURANCE COVERAGE – NOW IDENTICAL TO BLOCKCHAIN DETAILS CARD */}
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-indigo-500/50 transition">
               <div className="flex items-center gap-3 mb-5">
                 <Shield className="h-7 w-7 text-indigo-400" />
@@ -195,17 +197,13 @@ const CollectibleDetail: React.FC = () => {
                   <dd className="text-blue-300 font-mono text-xs">{collectible.insurance.policyNumber}</dd>
                 </div>
               </dl>
-
-              {/* EXACT SAME BUTTON STYLE AS THE OTHER TWO */}
               <button
                 onClick={() => setShowInsuranceModal(true)}
                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
               >
-                View Full Insurance Policy
-                <FileText className="h-4 w-4" />
+                View Full Insurance Policy <FileText className="h-4 w-4" />
               </button>
             </div>
-
           </motion.div>
         </div>
       </div>
