@@ -23,9 +23,6 @@ const CollectibleDetail: React.FC = () => {
   const [shareAmount, setShareAmount] = useState(1);
   const [showInsuranceModal, setShowInsuranceModal] = useState(false);
 
-  // ──────────────────────────────────────────────────────────────
-  // Mock data (unchanged – only first item shown)
-  // ──────────────────────────────────────────────────────────────
   const collectibles = [
     {
       id: 1,
@@ -71,52 +68,35 @@ const CollectibleDetail: React.FC = () => {
 
   const collectible = collectibles.find((c) => c.id === Number(id)) ?? collectibles[0];
 
-  const tabs = [
-    { id: 'details', label: 'Details' },
-    { id: 'provenance', label: 'Provenance' },
-    { id: 'attributes', label: 'Attributes' },
-    { id: 'activity', label: 'Activity' },
-  ];
-
   return (
     <div className="pt-16 min-h-screen bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Button */}
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-8">
-          <Link
-            to="/marketplace"
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition"
-          >
+          <Link to="/marketplace" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition">
             <ArrowLeft className="h-5 w-5" />
             Back to Marketplace
           </Link>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* LEFT COLUMN – IMAGE + STATS */}
+          {/* Left Column */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+            {/* Image & Badges */}
             <div className="relative aspect-square rounded-xl overflow-hidden bg-gray-800">
-              <img
-                src={collectible.image}
-                alt={collectible.name}
-                className="w-full h-full object-cover"
-              />
-              {/* Badges */}
+              <img src={collectible.image} alt={collectible.name} className="w-full h-full object-cover" />
               <div className="absolute top-4 left-4 flex gap-2">
                 {collectible.trending && (
                   <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
-                    <TrendingUp className="h-4 w-4" />
-                    Trending
+                    <TrendingUp className="h-4 w-4" /> Trending
                   </span>
                 )}
                 {collectible.verified && (
                   <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
-                    <Shield className="h-4 w-4" />
-                    Verified
+                    <Shield className="h-4 w-4" /> Verified
                   </span>
                 )}
               </div>
-              {/* Action buttons */}
               <div className="absolute top-4 right-4 flex gap-2">
                 <button className="bg-gray-900/80 hover:bg-red-600 p-2 rounded-full transition">
                   <Heart className="h-5 w-5 text-white" />
@@ -144,9 +124,8 @@ const CollectibleDetail: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* RIGHT COLUMN – DETAILS */}
+          {/* Right Column */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-8">
-            {/* Title & Description */}
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-blue-400 text-sm font-medium">{collectible.category}</span>
@@ -156,9 +135,8 @@ const CollectibleDetail: React.FC = () => {
               <p className="text-gray-300 leading-relaxed">{collectible.description}</p>
             </div>
 
-            {/* Pricing Card – placeholder (your original code goes here) */}
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-              {/* Your pricing / share selector code */}
+              {/* Pricing card placeholder */}
             </div>
 
             {/* Blockchain Details */}
@@ -168,29 +146,13 @@ const CollectibleDetail: React.FC = () => {
                 <h3 className="text-xl font-bold text-white">Blockchain Details</h3>
               </div>
               <dl className="grid grid-cols-2 gap-4 text-sm mb-6">
-                <div>
-                  <dt className="text-gray-400">Blockchain</dt>
-                  <dd className="text-white font-medium">{collectible.blockchain}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-400">Token Standard</dt>
-                  <dd className="text-white font-medium">{collectible.tokenStandard}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-400">Mint Date</dt>
-                  <dd className="text-white">{collectible.mintDate}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-400">Royalties</dt>
-                  <dd className="text-white">{collectible.royalties}</dd>
-                </div>
+                <div><dt className="text-gray-400">Blockchain</dt><dd className="text-white font-medium">{collectible.blockchain}</dd></div>
+                <div><dt className="text-gray-400">Token Standard</dt><dd className="text-white font-medium">{collectible.tokenStandard}</dd></div>
+                <div><dt className="text-gray-400">Mint Date</dt><dd className="text-white">{collectible.mintDate}</dd></div>
+                <div><dt className="text-gray-400">Royalties</dt><dd className="text-white">{collectible.royalties}</dd></div>
               </dl>
-              <Link
-                to="/blockchain-details"
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg"
-              >
-                Show Blockchain Details
-                <ExternalLink className="h-4 w-4" />
+              <Link to="/blockchain-details" className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg">
+                Show Blockchain Details <ExternalLink className="h-4 w-4" />
               </Link>
             </div>
 
@@ -201,57 +163,28 @@ const CollectibleDetail: React.FC = () => {
                 <h3 className="text-xl font-bold text-white">Storage & Security</h3>
               </div>
               <dl className="space-y-3 text-sm mb-6">
-                <div className="flex justify-between">
-                  <dt className="text-gray-400">Storage Type</dt>
-                  <dd className="text-white font-medium">{collectible.storage.location}</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-gray-400">Facility</dt>
-                  <dd className="text-white font-medium">{collectible.storage.facility}</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-gray-400">Location</dt>
-                  <dd className="text-white">{collectible.storage.address}</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-gray-400">Security Level</dt>
-                  <dd className="text-green-400 font-medium">{collectible.storage.securityLevel}</dd>
-                </div>
+                <div className="flex justify-between"><dt className="text-gray-400">Storage Type</dt><dd className="text-white font-medium">{collectible.storage.location}</dd></div>
+                <div className="flex justify-between"><dt className="text-gray-400">Facility</dt><dd className="text-white font-medium">{collectible.storage.facility}</dd></div>
+                <div className="flex justify-between"><dt className="text-gray-400">Location</dt><dd className="text-white">{collectible.storage.address}</dd></div>
+                <div className="flex justify-between"><dt className="text-gray-400">Security Level</dt><dd className="text-green-400 font-medium">{collectible.storage.securityLevel}</dd></div>
               </dl>
-              <Link
-                to="/storage-security"
-                className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg"
-              >
-                Show Storage & Security Details
-                <ExternalLink className="h-4 w-4" />
+              <Link to="/storage-security" className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg">
+                Show Storage & Security Details <ExternalLink className="h-4 w-4" />
               </Link>
             </div>
 
-         {/* INSURANCE COVERAGE – NOW FIXED & VISUALLY PERFECT */}
+            {/* INSURANCE COVERAGE – NOW PERFECT */}
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-blue-500/50 transition">
               <div className="flex items-center gap-3 mb-5">
                 <Shield className="h-7 w-7 text-blue-400" />
                 <h3 className="text-xl font-bold text-white">Insurance Coverage</h3>
               </div>
               <dl className="grid grid-cols-2 gap-4 text-sm mb-6">
-                <div>
-                  <dt className="text-gray-400">Provider</dt>
-                  <dd className="text-white font-medium">{collectible.insurance.provider}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-400">Coverage</dt>
-                  <dd className="text-green-400 font-bold">{collectible.insurance.coverage}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-400">Valid Until</dt>
-                  <dd className="text-white">{collectible.insurance.validUntil}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-400">Policy #</dt>
-                  <dd className="text-blue-300 font-mono text-xs">{collectible.insurance.policyNumber}</dd>
-                </div>
+                <div><dt className="text-gray-400">Provider</dt><dd className="text-white font-medium">{collectible.insurance.provider}</dd></div>
+                <div><dt className="text-gray-400">Coverage</dt><dd className="text-green-400 font-bold">{collectible.insurance.coverage}</dd></div>
+                <div><dt className="text-gray-400">Valid Until</dt><dd className="text-white">{collectible.insurance.validUntil}</dd></div>
+                <div><dt className="text-gray-400">Policy #</dt><dd className="text-blue-300 font-mono text-xs">{collectible.insurance.policyNumber}</dd></div>
               </dl>
-
               <button
                 onClick={() => setShowInsuranceModal(true)}
                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
@@ -262,9 +195,6 @@ const CollectibleDetail: React.FC = () => {
             </div>
           </motion.div>
         </div>
-
-        {/* Rest of your tabs and modal code remains unchanged */}
-        {/* ... */}
       </div>
     </div>
   );
