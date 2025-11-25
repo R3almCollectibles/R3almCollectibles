@@ -1,4 +1,4 @@
-// src/components/admin/AdminSidebar.tsx – TEAM MENU REMOVED FROM MAIN NAV
+// src/components/admin/AdminSidebar.tsx – TEAM MENU RESTORED & PERFECT
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
@@ -10,6 +10,7 @@ import {
   Settings,
   LogOut,
   Home,
+  UserCog, // Beautiful icon for Team
 } from 'lucide-react';
 
 const AdminSidebar: React.FC = () => {
@@ -19,10 +20,10 @@ const AdminSidebar: React.FC = () => {
     { label: 'Dashboard', icon: Home, path: '/admin' },
     { label: 'Collectibles', icon: Package, path: '/admin/collectibles' },
     { label: 'Users', icon: Users, path: '/admin/users' },
+    { label: 'Team', icon: UserCog, path: '/admin/team' }, // BACK & BETTER
     { label: 'Reports', icon: FileText, path: '/admin/reports' },
     { label: 'Analytics', icon: BarChart3, path: '/admin/analytics' },
     { label: 'Settings', icon: Settings, path: '/admin/settings' },
-    // Team Management has been intentionally removed from the main menu
   ];
 
   const isActive = (path: string) => {
