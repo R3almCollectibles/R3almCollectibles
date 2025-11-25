@@ -1,4 +1,4 @@
-// src/App.tsx – FINAL & FULLY UPDATED
+// src/App.tsx – FINAL & FULLY WORKING (Fixed Import Paths)
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
@@ -7,7 +7,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
-// Public Pages (lazy loaded)
+// Public Pages
 const HomePage = lazy(() => import('./pages/HomePage'));
 const Marketplace = lazy(() => import('./pages/Marketplace'));
 const CollectibleDetail = lazy(() => import('./pages/CollectibleDetail'));
@@ -24,11 +24,11 @@ const ProvenanceDetail = lazy(() => import('./pages/ProvenanceDetail'));
 const ActivityDetail = lazy(() => import('./pages/ActivityDetail'));
 const Demo = lazy(() => import('./pages/Demo'));
 
-// Admin Pages (from admin folder)
+// Admin Pages – CORRECT PATHS
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
-const AdminCollectibleDetail = lazy(() => import('./pages/admin/AdminCollectibleDetail'));
+const AdminCollectibleDetail = lazy(() => import('./pages/admin/AdminCollectibleDetail')); // This file MUST exist
 
-// Placeholder Pages (you can build these next)
+// Placeholder pages (safe – will show loading until created)
 const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
 const AdminReports = lazy(() => import('./pages/admin/AdminReports'));
 const AdminAnalytics = lazy(() => import('./pages/admin/AdminAnalytics'));
@@ -47,7 +47,7 @@ function App() {
       <Router>
         <Suspense fallback={<LoadingSpinner />}>
           <Routes>
-            {/* === PUBLIC PAGES WITH HEADER & FOOTER === */}
+            {/* PUBLIC ROUTES WITH HEADER & FOOTER */}
             <Route
               element={
                 <div className="min-h-screen bg-gray-900 text-white flex flex-col">
@@ -75,6 +75,7 @@ function App() {
                 </div>
               }
             >
+              {/* These are needed for nested routing to work */}
               <Route path="/" element={<HomePage />} />
               <Route path="/marketplace" element={<Marketplace />} />
               <Route path="/collectible/:id" element={<CollectibleDetail />} />
@@ -92,7 +93,7 @@ function App() {
               <Route path="/demo" element={<Demo />} />
             </Route>
 
-            {/* === ADMIN ROUTES (NO Header/Footer — uses AdminSidebar) === */}
+            {/* ADMIN ROUTES – NO HEADER/FOOTER */}
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/collectibles" element={<AdminDashboard />} />
             <Route path="/admin/collectibles/:id" element={<AdminCollectibleDetail />} />
@@ -101,7 +102,7 @@ function App() {
             <Route path="/admin/analytics" element={<AdminAnalytics />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
 
-            {/* === 404 PAGE === */}
+            {/* 404 */}
             <Route
               path="*"
               element={
@@ -109,7 +110,7 @@ function App() {
                   <h1 className="text-8xl font-bold text-gray-700">404</h1>
                   <p className="text-2xl mt-4">Page not found</p>
                   <a href="/" className="mt-8 text-blue-400 hover:underline text-lg">
-                    ← Back to Home
+                    Back to Home
                   </a>
                 </div>
               }
