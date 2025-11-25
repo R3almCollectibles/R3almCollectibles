@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  ArrowRight, 
-  Shield, 
-  TrendingUp, 
-  Users, 
+import { useAuth } from '../contexts/AuthContext';
+import {
+  ArrowRight,
+  Shield,
+  TrendingUp,
+  Users,
   Zap,
   CheckCircle,
   Star,
@@ -13,15 +14,34 @@ import {
   Heart
 } from 'lucide-react';
 
-const HomePage = () => {
-  const navigate = useNavigate();
+// TypeScript Interfaces
+interface FeaturedCollectible {
+  id: number;
+  name: string;
+  description: string;
+  price: string;
+  fractionalPrice: string;
+  image: string;
+  verified: boolean;
+  trending: boolean;
+}
 
-  const handleCollectibleClick = (id: number) => {
+interface Stat {
+  label: string;
+  value: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+const HomePage: React.FC = memo(() => {
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
+
+  const handleCollectibleClick = (id: number): void => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     navigate(`/collectible/${id}`);
   };
 
-  const featuredCollectibles = [
+  const featuredCollectibles: FeaturedCollectible[] = [
     {
       id: 1,
       name: 'Vintage Gibson Les Paul 1959',
@@ -84,12 +104,20 @@ const HomePage = () => {
     }
   ];
 
-  const stats = [
+  const stats: Stat[] = [
     { label: 'Total Volume', value: '$2.4M', icon: TrendingUp },
     { label: 'Active Users', value: '12.5K', icon: Users },
     { label: 'Collectibles', value: '8.9K', icon: Star },
     { label: 'Transactions', value: '45.2K', icon: Zap }
   ];
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500" aria-label="Loading home page" />
+      </div>
+    );
+  }
 
   return (
     <div className="pt-16">
@@ -97,7 +125,7 @@ const HomePage = () => {
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-emerald-900/20" />
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20" />
-        
+       
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -111,7 +139,7 @@ const HomePage = () => {
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Trade authenticated collectibles with blockchain-verified provenance. 
+              {user ? `Welcome back, ${user.email}. ` : ''}Trade authenticated collectibles with blockchain-verified provenance.
               From vintage guitars to rare art, own fractions of the world's most valuable items.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -120,6 +148,7 @@ const HomePage = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg hover:shadow-xl flex items-center justify-center"
+                  aria-label="Explore Marketplace"
                 >
                   Explore Marketplace
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -129,7 +158,8 @@ const HomePage = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="bg-gray-800 hover:bg-gray-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all border border-gray-600 hover:border-gray-500 mr-4"
+                  className="bg-gray-800 hover:bg-gray-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all border border-gray-600 hover:border-gray-500"
+                  aria-label="Mint Your NFT"
                 >
                   Mint Your NFT
                 </motion.button>
@@ -139,6 +169,7 @@ const HomePage = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all"
+                  aria-label="Try Demo"
                 >
                   Try Demo
                 </motion.button>
@@ -147,7 +178,6 @@ const HomePage = () => {
           </motion.div>
         </div>
       </section>
-
       {/* Stats Section */}
       <section className="py-20 bg-gray-900/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -176,7 +206,6 @@ const HomePage = () => {
           </motion.div>
         </div>
       </section>
-
       {/* Featured Collectibles */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -188,10 +217,9 @@ const HomePage = () => {
           >
             <h2 className="text-4xl font-bold text-white mb-4">Featured Collectibles</h2>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              Discover trending items with verified authenticity and fractional ownership opportunities
+              {user ? 'Your personalized recommendations: ' : ''}Discover trending items with verified authenticity and fractional ownership opportunities
             </p>
           </motion.div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {featuredCollectibles.map((item, index) => (
               <motion.div
@@ -202,13 +230,21 @@ const HomePage = () => {
                 transition={{ delay: index * 0.1 }}
                 className="group"
               >
-                <div onClick={() => handleCollectibleClick(item.id)} className="cursor-pointer">
+                <div
+                  onClick={() => handleCollectibleClick(item.id)}
+                  className="cursor-pointer"
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => e.key === 'Enter' && handleCollectibleClick(item.id)}
+                  aria-label={`View ${item.name}`}
+                >
                   <div className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 hover:border-blue-500/50 transition-all duration-300 transform hover:scale-[1.02]">
                     <div className="relative aspect-square overflow-hidden">
                       <img
                         src={item.image}
                         alt={item.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        loading="lazy"
                       />
                       <div className="absolute top-3 left-3 flex space-x-2">
                         {item.trending && (
@@ -237,8 +273,8 @@ const HomePage = () => {
                       </div>
                     </div>
                     <div className="p-6">
-                      <h3 className="text-xl font-semibold text-white mb-2">{item.name}</h3>
-                      <p className="text-gray-400 text-sm mb-4">{item.description}</p>
+                      <h3 className="text-xl font-semibold text-white mb-2 line-clamp-2">{item.name}</h3>
+                      <p className="text-gray-400 text-sm mb-4 line-clamp-2">{item.description}</p>
                       <div className="space-y-2">
                         <div className="flex justify-between items-center">
                           <span className="text-gray-400 text-sm">Full Price</span>
@@ -255,7 +291,6 @@ const HomePage = () => {
               </motion.div>
             ))}
           </div>
-
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -263,14 +298,16 @@ const HomePage = () => {
             className="text-center mt-12"
           >
             <Link to="/marketplace">
-              <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-all">
+              <button
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-all"
+                aria-label="View All Collectibles"
+              >
                 View All Collectibles
               </button>
             </Link>
           </motion.div>
         </div>
       </section>
-
       {/* Features Section */}
       <section className="py-20 bg-gray-900/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -285,7 +322,6 @@ const HomePage = () => {
               Advanced blockchain technology meets premium collectibles trading
             </p>
           </motion.div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -297,11 +333,10 @@ const HomePage = () => {
               <Shield className="h-12 w-12 text-blue-400 mb-6" />
               <h3 className="text-2xl font-semibold text-white mb-4">Blockchain Authentication</h3>
               <p className="text-gray-400">
-                Every collectible is verified on-chain with immutable provenance records, 
+                Every collectible is verified on-chain with immutable provenance records,
                 ensuring authenticity and ownership history.
               </p>
             </motion.div>
-
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -312,11 +347,10 @@ const HomePage = () => {
               <Users className="h-12 w-12 text-purple-400 mb-6" />
               <h3 className="text-2xl font-semibold text-white mb-4">Fractional Ownership</h3>
               <p className="text-gray-400">
-                Own shares of high-value collectibles, making premium items accessible 
+                Own shares of high-value collectibles, making premium items accessible
                 to everyone while maintaining liquidity.
               </p>
             </motion.div>
-
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -327,14 +361,13 @@ const HomePage = () => {
               <TrendingUp className="h-12 w-12 text-emerald-400 mb-6" />
               <h3 className="text-2xl font-semibold text-white mb-4">Secondary Markets</h3>
               <p className="text-gray-400">
-                Trade your fractional shares on integrated secondary markets with 
+                Trade your fractional shares on integrated secondary markets with
                 real-time pricing and instant liquidity.
               </p>
             </motion.div>
           </div>
         </div>
       </section>
-
       {/* CTA Section */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -347,7 +380,7 @@ const HomePage = () => {
               Ready to Start Your Collection?
             </h2>
             <p className="text-xl text-gray-400 mb-8">
-              Join thousands of collectors already trading on R3alm Collectibles
+              {user ? `Continue building your portfolio, ${user.email}. ` : ''}Join thousands of collectors already trading on R3alm Collectibles
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/marketplace">
@@ -355,6 +388,7 @@ const HomePage = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg hover:shadow-xl"
+                  aria-label="Start Trading Now"
                 >
                   Start Trading Now
                 </motion.button>
@@ -363,7 +397,8 @@ const HomePage = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="bg-gray-800 hover:bg-gray-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all border border-gray-600 hover:border-gray-500 mr-4"
+                  className="bg-gray-800 hover:bg-gray-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all border border-gray-600 hover:border-gray-500"
+                  aria-label="Mint Your First NFT"
                 >
                   Mint Your First NFT
                 </motion.button>
@@ -373,6 +408,7 @@ const HomePage = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all"
+                  aria-label="Try Demo"
                 >
                   Try Demo
                 </motion.button>
@@ -383,6 +419,8 @@ const HomePage = () => {
       </section>
     </div>
   );
-};
+});
+
+HomePage.displayName = 'HomePage';
 
 export default HomePage;
