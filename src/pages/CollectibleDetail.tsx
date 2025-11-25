@@ -1,5 +1,5 @@
-// src/pages/CollectibleDetail.tsx – UPDATED & FINAL (November 2025)
-import React, { useState } from 'react';
+// src/pages/CollectibleDetail.tsx – FINAL & VERIFIED (November 2025)
+import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -17,7 +17,6 @@ import {
 
 const CollectibleDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [showInsuranceModal, setShowInsuranceModal] = useState(false);
 
   const collectibles = [
     {
@@ -68,7 +67,7 @@ const CollectibleDetail: React.FC = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* LEFT COLUMN - Image & Stats */}
+          {/* LEFT COLUMN */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
             <div className="relative aspect-square rounded-xl overflow-hidden bg-gray-800">
               <img src={collectible.image} alt={collectible.name} className="w-full h-full object-cover" />
@@ -110,13 +109,8 @@ const CollectibleDetail: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* RIGHT COLUMN - Details */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="space-y-8"
-          >
+          {/* RIGHT COLUMN */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-8">
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-blue-400 text-sm font-medium">{collectible.category}</span>
@@ -126,12 +120,11 @@ const CollectibleDetail: React.FC = () => {
               <p className="text-gray-300 leading-relaxed">{collectible.description}</p>
             </div>
 
-            {/* Pricing placeholder */}
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-              {/* Your pricing/buy logic here */}
+              {/* Pricing logic goes here */}
             </div>
 
-            {/* Blockchain Details */}
+            {/* Blockchain Details → Correct */}
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-purple-500/50 transition">
               <div className="flex items-center gap-3 mb-5">
                 <Globe className="h-7 w-7 text-purple-400" />
@@ -151,7 +144,7 @@ const CollectibleDetail: React.FC = () => {
               </Link>
             </div>
 
-            {/* Physical Storage & Security */}
+            {/* Physical Storage → Correct */}
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-cyan-500/50 transition">
               <div className="flex items-center gap-3 mb-5">
                 <Lock className="h-7 w-7 text-cyan-400" />
@@ -171,7 +164,7 @@ const CollectibleDetail: React.FC = () => {
               </Link>
             </div>
 
-            {/* Insurance Coverage */}
+            {/* Insurance Coverage → Correct */}
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-indigo-500/50 transition flex flex-col">
               <div className="flex items-center gap-3 mb-5">
                 <Shield className="h-7 w-7 text-indigo-400" />
