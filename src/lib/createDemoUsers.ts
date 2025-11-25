@@ -2,58 +2,45 @@
 import { supabase } from './supabaseClient'
 
 const DEMO_USERS = [
-  {
-    email: 'collector@demo.com',
-    password: '123456',
-    data: { name: 'Alex Collector', role: 'collector' },
-  },
-  {
-    email: 'creator@demo.com',
-    password: '123456',
-    data: { name: 'Maya Artist', role: 'creator' },
-  },
-  {
-    email: 'investor@demo.com',
-    password: '123456',
-    data: { name: 'Jordan Investor', role: 'investor' },
-  },
-  {
-    email: 'admin@demo.com',
-    password: '123456',
-    data: { name: 'Admin Manager', role: 'admin' },
-  },
+  { email: 'collector@demo.com', password: '123456', role: 'collector', name: 'Alex Collector' },
+  { email: 'creator@demo.com', password: '123456', role: 'creator', name: 'Maya Artist' },
+  { email: 'investor@demo.com', password: '123456', role: 'investor', name: 'Jordan Investor' },
+  { email: 'admin@demo.com', password: '123456', role: 'admin', name: 'Admin User' },
 ]
 
 export async function createDemoUsersIfNeeded() {
-  // Only run in development (remove this line if you want it in production too)
+  // Skip in production
   if (import.meta.env.PROD) return
 
   for (const user of DEMO_USERS) {
-    // Check if user already exists
-    const { data: existingUser } = await supabase.auth.signInWithPassword({
+    // Try to sign in first
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: user.email,
       password: user.password,
     })
 
-    if (existingUser.user) {
-      console.log(`Demo user already exists: ${user.email}`)
+    if (data.user) {
+      console.log(`Demo user ready: ${user.email}`)
       continue
     }
 
-    // If not, create + auto-confirm via admin API trick
-    console.log(`Creating & auto-confirming: ${user.email}`)
+    if (error?.status === 400) {
+      console.log(`Creating demo user: ${user.email}`)
 
-    const { data, error } = await supabase.auth.admin.createUser({
-      email: user.email,
-      password: user.password,
-      user_metadata: user.data,
-      email_confirm: true, // This bypasses confirmation!
-    })
+      // Use normal signup + auto-confirm via Supabase setting
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: user.email,
+        password: user.password,
+        options: {
+          data: { name: user.name, role: user.role },
+        },
+      })
 
-    if (error) {
-      console.warn(`Failed to create ${user.email}:`, error.message)
-    } else {
-      console.log(`Demo user ready: ${user.email}`)
+      if (signUpError) {
+        console.warn(`Failed to create ${user.email}:`, signUpError.message)
+      } else {
+        console.log(`Demo user created: ${user.email}`)
+      }
     }
   }
 }
