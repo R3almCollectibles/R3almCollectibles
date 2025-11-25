@@ -1,79 +1,110 @@
 // src/App.tsx
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { createDemoUsersIfNotExist } from './lib/createDemoUsers';
+
+// Pages
+import { Login } from './pages/Login';
+import { Dashboard } from './pages/Dashboard';
+import { Profile } from './pages/Profile';
 
 // Components
-import Header from './components/Header';
-import Footer from './components/Footer';
+import { Navbar } from './components/Navbar';
+import { Toaster } from 'react-hot-toast';
 
-// Public Pages
-import Home from './pages/Home';
-import Marketplace from './pages/Marketplace';
-import Mint from './pages/Mint';
-import Portfolio from './pages/Portfolio';
-import CollectibleDetail from './pages/CollectibleDetail';
+// Protected Route Component
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, loading } = useAuth();
 
-// Auth Pages
-// src/App.tsx — UPDATE THESE LINES
-import { Login } from './pages/Login';
-import { Signup } from './pages/Signup';
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
-// Admin Pages
-import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminCollectibleDetail from './pages/admin/AdminCollectibleDetail';
-import AdminUsers from './pages/admin/AdminUsers';
-import AdminUserDetail from './pages/admin/AdminUserDetail';
-
-// 404 Page
-const NotFound = () => (
-  <div className="min-h-screen bg-gray-950 flex items-center justify-center text-white">
-    <div className="text-center">
-      <h1 className="text-9xl font-bold text-gray-800">404</h1>
-      <p className="text-3xl mt-8 text-gray-500">Page Not Found</p>
-      <a href="/" className="mt-10 inline-block px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-bold text-lg hover:scale-105 transition">
-        Back to Home
-      </a>
-    </div>
-  </div>
-);
-
-const App = () => {
-  return (
-    <AuthProvider>
-      <Router>
-        <div className="min-h-screen bg-gray-950 text-white flex flex-col">
-          <Header />
-
-          <main className="flex-1">
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/marketplace" element={<Marketplace />} />
-              <Route path="/mint" element={<Mint />} />
-              <Route path="/portfolio" element={<Portfolio />} />
-              <Route path="/collectible/:id" element={<CollectibleDetail />} />
-
-              {/* Auth Routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-
-              {/* Admin Routes */}
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin/collectible/:id" element={<AdminCollectibleDetail />} />
-              <Route path="/admin/users" element={<AdminUsers />} />
-              <Route path="/admin/user/:id" element={<AdminUserDetail />} />
-
-              {/* 404 */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-
-          <Footer />
-        </div>
-      </Router>
-    </AuthProvider>
-  );
+  return user ? <>{children}</> : <Navigate to="/login" replace />;
 };
 
-export default App;
+// Main App with Auth Context
+function AppWithAuth() {
+  const { user, loading } = useAuth();
+
+  // Create demo users on app start (only in development by default)
+  useEffect(() => {
+    createDemoUsersIfNotExist();
+  }, []);
+
+  return (
+    <>
+      <Router>
+        {/* Navbar –– Show Navbar only when logged in –– */}
+        {user && <Navbar />}
+
+        <Routes>
+          {/* Public Routes */}
+          <Route
+            path="/login"
+            element={user ? <Navigate to="/" replace /> : <Login />}
+          />
+
+          {/* Protected Routes */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+
+      {/* Toast Notifications */}
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        gutter={12}
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#1a1a1a',
+            color: '#fff',
+            borderRadius: '12px',
+            padding: '16px',
+            fontSize: '15px',
+          },
+          success: {
+            icon: 'Success',
+            style: { background: '#10b981', color: 'white' },
+          },
+          error: {
+            style: { background: '#ef4444', color: 'white' },
+          },
+        }}
+      />
+    </>
+  );
+}
+
+// Root App
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppWithAuth />
+    </AuthProvider>
+  );
+}
