@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, memo } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { createDemoUsersIfNeeded } from './lib/createDemoUsers'; // Adjust path if needed
@@ -26,7 +26,7 @@ import { Navbar } from './components/Navbar'; // Or rename to Header if using my
 import { Toaster } from 'react-hot-toast';
 
 // Loading Spinner (simple, memoized)
-const LoadingSpinner = React.memo(() => (
+const LoadingSpinner = memo(() => (
   <div className="flex justify-center items-center min-h-screen" aria-busy="true" aria-label="Loading application">
     <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500" />
   </div>
@@ -38,11 +38,11 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   if (loading) {
     return <LoadingSpinner />;
   }
-  return user ? <>{children} : <Navigate to="/login" replace />;
+  return user ? <>{children}</> : <Navigate to="/login" replace />;
 };
 
-// Role-Based Dashboard
-const RoleBasedDashboard = () => {
+// Role-Based Dashboard (memoized for perf)
+const RoleBasedDashboard = memo(() => {
   const { user } = useAuth();
   const role = user?.user_metadata?.role?.toLowerCase() || 'collector';
   switch (role) {
@@ -56,7 +56,9 @@ const RoleBasedDashboard = () => {
     default:
       return <CollectorDashboard />;
   }
-};
+});
+
+RoleBasedDashboard.displayName = 'RoleBasedDashboard';
 
 function App() {
   const { user, loading } = useAuth();
