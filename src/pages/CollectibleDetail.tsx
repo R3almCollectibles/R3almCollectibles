@@ -110,7 +110,12 @@ const CollectibleDetail: React.FC = () => {
           </motion.div>
 
           {/* RIGHT COLUMN */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="space-y-8"
+          >
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-blue-400 text-sm font-medium">{collectible.category}</span>
@@ -120,8 +125,9 @@ const CollectibleDetail: React.FC = () => {
               <p className="text-gray-300 leading-relaxed">{collectible.description}</p>
             </div>
 
+            {/* Pricing placeholder */}
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-              {/* Pricing placeholder */}
+              {/* Your pricing code */}
             </div>
 
             {/* Blockchain Details */}
@@ -144,29 +150,17 @@ const CollectibleDetail: React.FC = () => {
               </Link>
             </div>
 
-            {/* PHYSICAL STORAGE & SECURITY – EXACT MATCH */}
+            {/* Physical Storage & Security – button at bottom */}
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-cyan-500/50 transition">
               <div className="flex items-center gap-3 mb-5">
                 <Lock className="h-7 w-7 text-cyan-400" />
                 <h3 className="text-xl font-bold text-white">Physical Storage & Security</h3>
               </div>
               <dl className="space-y-3 text-sm mb-6">
-                <div className="flex justify-between">
-                  <dt className="text-gray-400">Storage Type</dt>
-                  <dd className="text-white font-medium">{collectible.storage.location}</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-gray-400">Facility</dt>
-                  <dd className="text-white font-medium">{collectible.storage.facility}</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-gray-400">Location</dt>
-                  <dd className="text-white">{collectible.storage.address}</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-gray-400">Security Level</dt>
-                  <dd className="text-green-400 font-medium">{collectible.storage.securityLevel}</dd>
-                </div>
+                <div className="flex justify-between"><dt className="text-gray-400">Storage Type</dt><dd className="text-white font-medium">{collectible.storage.location}</dd></div>
+                <div className="flex justify-between"><dt className="text-gray-400">Facility</dt><dd className="text-white font-medium">{collectible.storage.facility}</dd></div>
+                <div className="flex justify-between"><dt className="text-gray-400">Location</dt><dd className="text-white">{collectible.storage.address}</dd></div>
+                <div className="flex justify-between"><dt className="text-gray-400">Security Level</dt><dd className="text-green-400 font-medium">{collectible.storage.securityLevel}</dd></div>
               </dl>
               <Link
                 to="/physical-storage-details"
@@ -176,38 +170,27 @@ const CollectibleDetail: React.FC = () => {
               </Link>
             </div>
 
-            {/* INSURANCE COVERAGE – EXACT MATCH (button in header) */}
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-white flex items-center gap-3">
-                  <Shield className="h-7 w-7 text-blue-400" />
-                  Insurance Coverage
-                </h3>
-                <button
-                  onClick={() => setShowInsuranceModal(true)}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-all shadow-lg"
-                >
-                  View Policy <FileText className="h-4 w-4" />
-                </button>
+            {/* INSURANCE COVERAGE – BUTTON NOW ANCHORED TO BOTTOM */}
+            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-indigo-500/50 transition flex flex-col">
+              <div className="flex items-center gap-3 mb-5">
+                <Shield className="h-7 w-7 text-indigo-400" />
+                <h3 className="text-xl font-bold text-white">Insurance Coverage</h3>
               </div>
-              <dl className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <dt className="text-gray-400">Provider</dt>
-                  <dd className="text-white font-medium">{collectible.insurance.provider}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-400">Coverage</dt>
-                  <dd className="text-green-400 font-bold">{collectible.insurance.coverage}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-400">Valid Until</dt>
-                  <dd className="text-white">{collectible.insurance.validUntil}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-400">Policy #</dt>
-                  <dd className="text-blue-300 font-mono text-xs">{collectible.insurance.policyNumber}</dd>
-                </div>
+
+              <dl className="grid grid-cols-2 gap-4 text-sm flex-1">
+                <div><dt className="text-gray-400">Provider</dt><dd className="text-white font-medium">{collectible.insurance.provider}</dd></div>
+                <div><dt className="text-gray-400">Coverage</dt><dd className="text-green-400 font-bold">{collectible.insurance.coverage}</dd></div>
+                <div><dt className="text-gray-400">Valid Until</dt><dd className="text-white">{collectible.insurance.validUntil}</dd></div>
+                <div><dt className="text-gray-400">Policy #</dt><dd className="text-blue-300 font-mono text-xs">{collectible.insurance.policyNumber}</dd></div>
               </dl>
+
+              {/* Full-width button stuck to the bottom */}
+              <button
+                onClick={() => setShowInsuranceModal(true)}
+                className="mt-6 w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg"
+              >
+                View Full Insurance Policy <FileText className="h-4 w-4" />
+              </button>
             </div>
           </motion.div>
         </div>
