@@ -304,13 +304,13 @@ const AdminDashboard = () => {
                         <td className="px-6 py-5">{getStatusBadge(item.status)}</td>
                         <td className="px-6 py-5">
                           <div className="flex items-center justify-center gap-2">
-                            <button
-                              onClick={() => navigate(`/collectible/${item.id}`)}
-                              className="p-2.5 hover:bg-gray-600 rounded-lg transition tooltip"
-                              title="View Details"
-                            >
-                              <Eye className="h-4.5 w-4.5 text-gray-400" />
-                            </button>
+                              <button
+                                onClick={() => navigate(`/admin/collectible/${item.id}`)}
+                                className="p-2.5 hover:bg-blue-600/20 rounded-lg transition tooltip"
+                                title="Admin Manage"
+                              >
+                                <Shield className="h-4.5 w-4.5 text-blue-400" />
+                              </button>
 
                             {item.status === 'pending' && (
                               <>
