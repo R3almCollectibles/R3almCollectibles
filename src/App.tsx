@@ -19,6 +19,7 @@ import ProvenanceDetail from './pages/ProvenanceDetail';
 import ActivityDetail from './pages/ActivityDetail';
 import Demo from './pages/Demo';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminCollectibleDetail from './pages/admin/AdminCollectibleDetail';
 
 function App() {
   return (
