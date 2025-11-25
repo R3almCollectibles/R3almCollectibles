@@ -1,356 +1,225 @@
-// src/pages/admin/AdminDashboard.tsx – FINAL & COMPLETE
+// src/pages/admin/AdminDashboard.tsx – ADMIN HOME PAGE (FINAL)
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import AdminSidebar from '../../components/admin/AdminSidebar';
 import {
   Shield,
   Package,
-  AlertCircle,
-  CheckCircle,
-  CheckCircle2,
-  XCircle,
-  Search,
-  MoreVertical,
-  Eye,
-  UserX,
-  Clock,
-  DollarSign,
+  Users,
   TrendingUp,
+  DollarSign,
+  AlertCircle,
+  Clock,
+  CheckCircle2,
+  Activity,
+  ArrowRight,
+  BarChart3,
+  FileText,
+  Settings,
 } from 'lucide-react';
 
-interface Collectible {
-  id: number;
-  name: string;
-  owner: string;
-  price: string;
-  shares: number;
-  availableShares: number;
-  status: 'pending' | 'verified' | 'listed' | 'sold' | 'rejected';
-  category: string;
-  createdAt: string;
-  flagged: boolean;
-}
-
-const AdminDashboard = () => {
-  const { user, isAuthenticated } = useAuth();
-  const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    if (!isAuthenticated || !user?.isAdmin) {
-      navigate('/');
-    }
-  }, [isAuthenticated, user, navigate]);
-
-  if (!isAuthenticated || !user?.isAdmin) return null;
-
-  const collectibles: Collectible[] = [
-    {
-      id: 1,
-      name: 'Vintage Gibson Les Paul 1959',
-      owner: '0x742d35Cc6634C0532925a3b8D46DE3C4',
-      price: '2.5 ETH',
-      shares: 100,
-      availableShares: 47,
-      status: 'verified',
-      category: 'Music Instruments',
-      createdAt: '2024-01-28',
-      flagged: false,
-    },
-    {
-      id: 2,
-      name: 'Monet Water Lilies Study',
-      owner: '0x891a2b3c4d5e6f7g8h9i0j1k2l3m4n5o',
-      price: '5.2 ETH',
-      shares: 250,
-      availableShares: 89,
-      status: 'pending',
-      category: 'Art & Paintings',
-      createdAt: '2024-01-29',
-      flagged: true,
-    },
-    {
-      id: 3,
-      name: 'Jordan Game-Worn Jersey 1996',
-      owner: '0x234b5c6d7e8f9g0h1i2j3k4l5m6n7o8p',
-      price: '1.8 ETH',
-      shares: 50,
-      availableShares: 0,
-      status: 'sold',
-      category: 'Sports Memorabilia',
-      createdAt: '2024-01-15',
-      flagged: false,
-    },
-    {
-      id: 4,
-      name: 'Counterfeit Rolex Submariner',
-      owner: '0x999888777666555444333222111000999',
-      price: '0.8 ETH',
-      shares: 100,
-      availableShares: 100,
-      status: 'rejected',
-      category: 'Watches',
-      createdAt: '2024-01-27',
-      flagged: true,
-    },
-  ];
-
-  const stats = {
-    total: collectibles.length,
-    pending: collectibles.filter(c => c.status === 'pending').length,
-    flagged: collectibles.filter(c => c.flagged).length,
-    platformFees: '0.46 ETH',
-  };
-
-  const filtered = collectibles.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.owner.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || item.status === filterStatus;
-    return matchesSearch && matchesFilter;
+const AdminDashboard: React.FC = () => {
+  const [stats] = useState({
+    totalCollectibles: 284,
+    pendingReview: 18,
+    flaggedUsers: 5,
+    totalRevenue: '127.4 ETH',
+    activeUsers: 892,
+    newUsersToday: 23,
+    platformFees: '8.9 ETH',
+    verifiedItems: 266,
   });
 
-  const handleVerify = (id: number) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      alert(`Collectible #${id} has been VERIFIED and listed!`);
-      setIsLoading(false);
-    }, 800);
-  };
+  const recentActivity = [
+    { id: 1, action: 'New collectible submitted', item: 'Rolex Daytona 1968', user: '0x742d...3C4', time: '2 min ago', type: 'pending' },
+    { id: 2, action: 'User flagged for spam', user: '0x9998...0999', time: '15 min ago', type: 'flagged' },
+    { id: 3, action: 'Collectible verified', item: 'Gibson Les Paul 1959', user: 'admin@realm.io', time: '1 hour ago', type: 'verified' },
+    { id: 4, action: 'Bulk shares purchased', item: 'Jordan Rookie Card', value: '12.5 ETH', time: '2 hours ago', type: 'sale' },
+  ];
 
-  const handleReject = (id: number) => {
-    if (window.confirm('Reject this collectible? User will be notified.')) {
-      alert(`Collectible #${id} rejected.`);
-    }
-  };
-
-  const handleBanUser = (owner: string) => {
-    if (window.confirm('Ban this user from the platform? This is permanent.')) {
-      alert(`User ${owner.slice(0, 8)}... banned.`);
-    }
-  };
-
-  const getStatusBadge = (status: Collectible['status']) => {
-    const config: Record<Collectible['status'], { class: string; icon: React.ElementType }> = {
-      verified: { class: 'bg-green-500/10 text-green-400', icon: CheckCircle },
-      pending: { class: 'bg-yellow-500/10 text-yellow-400', icon: Clock },
-      rejected: { class: 'bg-red-500/10 text-red-400', icon: XCircle },
-      sold: { class: 'bg-blue-500/10 text-blue-400', icon: DollarSign },
-      listed: { class: 'bg-purple-500/10 text-purple-400', icon: TrendingUp },
-    };
-
-    const { class: cls, icon: Icon } = config[status];
-    return (
-      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${cls}`}>
-        <Icon className="h-3.5 w-3.5" />
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </span>
-    );
-  };
+  const quickLinks = [
+    { title: 'Collectibles', icon: Package, href: '/admin/collectibles', color: 'from-blue-500 to-cyan-500', count: stats.pendingReview },
+    { title: 'Users', icon: Users, href: '/admin/users', color: 'from-purple-500 to-pink-500', count: stats.flaggedUsers },
+    { title: 'Reports', icon: FileText, href: '/admin/reports', color: 'from-green-500 to-emerald-500', count: 0 },
+    { title: 'Analytics', icon: BarChart3, href: '/admin/analytics', color: 'from-orange-500 to-red-500', count: 0 },
+  ];
 
   return (
     <div className="flex min-h-screen bg-gray-900">
-      {/* Sidebar */}
       <AdminSidebar />
 
-      {/* Main Content */}
       <div className="flex-1 ml-64">
         <div className="pt-16 min-h-screen bg-gray-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
             {/* Header */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-4xl font-bold text-white flex items-center gap-4">
-                    <Shield className="h-12 w-12 text-red-500" />
+                  <h1 className="text-5xl font-bold text-white flex items-center gap-5">
+                    <Shield className="h-14 w-14 text-red-500" />
                     Admin Dashboard
                   </h1>
-                  <p className="text-gray-400 mt-2">
-                    Welcome back, <span className="font-semibold text-white">{user?.name || 'Admin'}</span>
-                  </p>
+                  <p className="text-xl text-gray-400 mt-3">Welcome back, Admin. Here's what's happening today.</p>
                 </div>
-                <div className="bg-gradient-to-r from-red-600 to-pink-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg">
-                  ADMIN MODE
+                <div className="text-right">
+                  <div className="text-4xl font-bold text-white">Capital Realm</div>
+                  <div className="text-gray-400">Platform Control Center</div>
                 </div>
               </div>
             </motion.div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
               {[
-                { label: 'Total Collectibles', value: stats.total, icon: Package, color: 'from-blue-500 to-cyan-500' },
-                { label: 'Pending Review', value: stats.pending, icon: Clock, color: 'from-yellow-500 to-orange-500', alert: stats.pending > 0 },
-                { label: 'Flagged Items', value: stats.flagged, icon: AlertCircle, color: 'from-red-500 to-pink-500', alert: true },
-                { label: 'Platform Earnings', value: stats.platformFees, icon: DollarSign, color: 'from-green-500 to-emerald-500' },
+                { label: 'Total Collectibles', value: stats.totalCollectibles, icon: Package, color: 'from-blue-500 to-cyan-500' },
+                { label: 'Pending Review', value: stats.pendingReview, icon: Clock, color: 'from-yellow-500 to-orange-500', alert: true },
+                { label: 'Active Users', value: stats.activeUsers, icon: Users, color: 'from-purple-500 to-pink-500' },
+                { label: 'Total Revenue', value: stats.totalRevenue, icon: DollarSign, color: 'from-green-500 to-emerald-500' },
               ].map((stat, i) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
-                  className={`relative overflow-hidden rounded-2xl bg-gray-800 border ${stat.alert ? 'border-red-500/50' : 'border-gray-700'} p-6`}
+                  className={`relative overflow-hidden rounded-2xl bg-gray-800 border ${stat.alert ? 'border-yellow-500/50' : 'border-gray-700'} p-6 hover:shadow-2xl transition-shadow`}
                 >
                   <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-10`} />
                   <div className="relative flex items-center justify-between">
                     <div>
                       <p className="text-gray-400 text-sm">{stat.label}</p>
-                      <p className="text-3xl font-bold text-white mt-2">{stat.value}</p>
+                      <p className="text-4xl font-bold text-white mt-3">{stat.value}</p>
+                      {stat.alert && <p className="text-yellow-400 text-xs mt-2">Requires attention</p>}
                     </div>
-                    <div className={`p-3 rounded-xl bg-gradient-to-br ${stat.color}`}>
-                      <stat.icon className="h-8 w-8 text-white" />
+                    <div className={`p-4 rounded-2xl bg-gradient-to-br ${stat.color}`}>
+                      <stat.icon className="h-10 w-10 text-white" />
                     </div>
                   </div>
-                  {stat.alert && <div className="absolute top-3 right-3 animate-pulse"><div className="h-3 w-3 bg-red-500 rounded-full" /></div>}
+                  {stat.alert && <div className="absolute top-4 right-4 animate-pulse"><div className="h-3 w-3 bg-yellow-500 rounded-full" /></div>}
                 </motion.div>
               ))}
             </div>
 
-            {/* Search & Filter */}
-            <div className="bg-gray-800 rounded-2xl border border-gray-700 p-6 mb-8">
-              <div className="flex flex-col lg:flex-row gap-4">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  <input
-                    type="text"
-                    placeholder="Search by name or wallet..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 transition"
-                  />
-                </div>
-                <select
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                  className="px-6 py-4 bg-gray-700 border border-gray-600 rounded-xl text-white focus:outline-none focus:border-blue-500 transition"
-                >
-                  <option value="all">All Items</option>
-                  <option value="pending">Pending Review</option>
-                  <option value="verified">Verified</option>
-                  <option value="rejected">Rejected</option>
-                  <option value="sold">Sold Out</option>
-                </select>
+            {/* Quick Actions */}
+            <div className="mb-10">
+              <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <Activity className="h-8 w-8 text-blue-400" />
+                Quick Actions
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {quickLinks.map((link, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: i * 0.1 }}
+                  >
+                    <Link
+                      to={link.href}
+                      className="block relative overflow-hidden rounded-2xl bg-gray-800 border border-gray-700 p-6 hover:border-gray-600 transition-all group"
+                    >
+                      <div className={`absolute inset-0 bg-gradient-to-br ${link.color} opacity-0 group-hover:opacity-20 transition`} />
+                      <div className="relative flex items-center justify-between">
+                        <div>
+                          <link.icon className="h-12 w-12 text-gray-400 group-hover:text-white transition" />
+                          <h3 className="text-xl font-bold text-white mt-4">{link.title}</h3>
+                          {link.count > 0 && (
+                            <p className="text-3xl font-bold text-white mt-2">{link.count}</p>
+                          )}
+                        </div>
+                        <ArrowRight className="h-8 w-8 text-gray-500 group-hover:text-white group-hover:translate-x-2 transition" />
+                      </div>
+                      {link.count > 0 && (
+                        <div className="absolute top-4 right-4">
+                          <div className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full animate-pulse">
+                            {link.count} pending
+                          </div>
+                        </div>
+                      )}
+                    </Link>
+                  </motion.div>
+                ))}
               </div>
             </div>
 
-            {/* Table */}
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
-              <div className="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden">
-                <div className="p-6 border-b border-gray-700">
-                  <h2 className="text-2xl font-bold text-white">Collectible Management</h2>
-                </div>
-
-                {filtered.length === 0 ? (
-                  <div className="p-12 text-center text-gray-400">
-                    <Package className="h-16 w-16 mx-auto mb-4 opacity-30" />
-                    <p>No collectibles found matching your filters.</p>
+            {/* Recent Activity */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2">
+                <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
+                  <div className="bg-gray-800 rounded-2xl border border-gray-700">
+                    <div className="p-6 border-b border-gray-700">
+                      <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                        <Activity className="h-8 w-8 text-green-400" />
+                        Recent Activity
+                      </h2>
+                    </div>
+                    <div className="divide-y divide-gray-700">
+                      {recentActivity.map((activity) => (
+                        <div key={activity.id} className="p-6 hover:bg-gray-700/50 transition">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <p className="text-white font-medium">{activity.action}</p>
+                              {activity.item && <p className="text-gray-400 text-sm mt-1">{activity.item}</p>}
+                              {activity.user && (
+                                <p className="text-gray-500 text-sm">
+                                  by <span className="font-mono">{activity.user}</span>
+                                </p>
+                              )}
+                              {activity.value && <p className="text-green-400 font-bold mt-1">{activity.value}</p>}
+                            </div>
+                            <div className="text-right ml-4">
+                              <p className="text-gray-500 text-xs">{activity.time}</p>
+                              {activity.type === 'pending' && <Clock className="h-5 w-5 text-yellow-400 mt-2" />}
+                              {activity.type === 'verified' && <CheckCircle2 className="h-5 w-5 text-green-400 mt-2" />}
+                              {activity.type === 'flagged' && <AlertCircle className="h-5 w-5 text-red-400 mt-2" />}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-gray-700 text-left text-gray-400 text-sm">
-                          <th className="px-6 py-4">Collectible</th>
-                          <th className="px-6 py-4">Owner</th>
-                          <th className="px-6 py-4">Price</th>
-                          <th className="px-6 py-4">Shares</th>
-                          <th className="px-6 py-4">Status</th>
-                          <th className="px-6 py-4 text-center">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filtered.map((item) => (
-                          <tr
-                            key={item.id}
-                            className="border-b border-gray-700 hover:bg-gray-700/80 transition cursor-pointer"
-                            onClick={(e) => {
-                              if ((e.target as HTMLElement).closest('button')) return;
-                              navigate(`/admin/collectibles/${item.id}`);
-                            }}
-                          >
-                            <td className="px-6 py-5">
-                              <div className="flex items-center gap-4">
-                                <div className="bg-gray-700 rounded-xl w-12 h-12 flex items-center justify-center">
-                                  <Package className="h-7 w-7 text-gray-400" />
-                                </div>
-                                <div>
-                                  <div className="text-white font-medium">{item.name}</div>
-                                  <div className="text-gray-400 text-sm">{item.category}</div>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-6 py-5">
-                              <span className="font-mono text-gray-300 text-sm">
-                                {item.owner.slice(0, 8)}...{item.owner.slice(-6)}
-                              </span>
-                              {item.flagged && <span className="ml-2 text-red-400 text-xs">Flagged</span>}
-                            </td>
-                            <td className="px-6 py-5 text-white font-semibold">{item.price}</td>
-                            <td className="px-6 py-5">
-                              <div className="text-white">
-                                {item.availableShares} / {item.shares}
-                                {item.availableShares === 0 && <span className="ml-2 text-blue-400 text-xs font-medium">SOLD OUT</span>}
-                              </div>
-                            </td>
-                            <td className="px-6 py-5">{getStatusBadge(item.status)}</td>
-
-                            <td className="px-6 py-5" onClick={(e) => e.stopPropagation()}>
-                              <div className="flex items-center justify-center gap-2">
-                                <button
-                                  onClick={() => navigate(`/admin/collectibles/${item.id}`)}
-                                  className="p-2.5 hover:bg-gray-600 rounded-lg transition"
-                                  title="View Details"
-                                >
-                                  <Eye className="h-4.5 w-4.5 text-gray-400" />
-                                </button>
-                                {item.status === 'pending' && (
-                                  <>
-                                    <button
-                                      onClick={() => handleVerify(item.id)}
-                                      disabled={isLoading}
-                                      className="p-2.5 hover:bg-green-600/20 rounded-lg transition"
-                                      title="Verify & List"
-                                    >
-                                      <CheckCircle2 className="h-4.5 w-4.5 text-green-400" />
-                                    </button>
-                                    <button
-                                      onClick={() => handleReject(item.id)}
-                                      className="p-2.5 hover:bg-red-600/20 rounded-lg transition"
-                                      title="Reject"
-                                    >
-                                      <XCircle className="h-4.5 w-4.5 text-red-400" />
-                                    </button>
-                                  </>
-                                )}
-                                {item.flagged && (
-                                  <button
-                                    onClick={() => handleBanUser(item.owner)}
-                                    className="p-2.5 hover:bg-red-600/30 rounded-lg transition"
-                                    title="Ban User"
-                                  >
-                                    <UserX className="h-4.5 w-4.5 text-red-400" />
-                                  </button>
-                                )}
-                                <button
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="p-2.5 hover:bg-gray-600 rounded-lg transition"
-                                  title="More"
-                                >
-                                  <MoreVertical className="h-4.5 w-4.5 text-gray-400" />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
+                </motion.div>
               </div>
-            </motion.div>
+
+              {/* Platform Summary */}
+              <div>
+                <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
+                  <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 rounded-2xl p-8 text-white">
+                    <div className="flex items-center justify-between mb-6">
+                      <TrendingUp className="h-12 w-12" />
+                      <div className="text-right">
+                        <div className="text-4xl font-bold">{stats.platformFees}</div>
+                        <div className="text-sm opacity-90">Platform Earnings</div>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="bg-white/10 backdrop-blur rounded-xl p-4">
+                        <div className="flex justify-between">
+                          <span>New Users Today</span>
+                          <span className="font-bold">+{stats.newUsersToday}</span>
+                        </div>
+                      </div>
+                      <div className="bg-white/10 backdrop-blur rounded-xl p-4">
+                        <div className="flex justify-between">
+                          <span>Verified Items</span>
+                          <span className="font-bold">{stats.verifiedItems}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-6 pt-6 border-t border-white/20">
+                      <Link
+                        to="/admin/analytics"
+                        className="inline-flex items-center gap-2 text-white hover:underline font-medium"
+                      >
+                        View Full Analytics <ArrowRight className="h-5 w-5" />
+                      </Link>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
