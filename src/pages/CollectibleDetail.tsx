@@ -69,7 +69,6 @@ const CollectibleDetail: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* LEFT COLUMN */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-            {/* Image */}
             <div className="relative aspect-square rounded-xl overflow-hidden bg-gray-800">
               <img src={collectible.image} alt={collectible.name} className="w-full h-full object-cover" />
               <div className="absolute top-4 left-4 flex gap-2">
@@ -94,7 +93,6 @@ const CollectibleDetail: React.FC = () => {
               </div>
             </div>
 
-            {/* Stats */}
             <div className="grid grid-cols-3 gap-4">
               <div className="bg-gray-800 rounded-lg p-4 text-center border border-gray-700">
                 <div className="text-2xl font-bold text-white">{collectible.likes}</div>
@@ -112,13 +110,7 @@ const CollectibleDetail: React.FC = () => {
           </motion.div>
 
           {/* RIGHT COLUMN */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="space-y-8"
-          >
-            {/* Title */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-8">
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-blue-400 text-sm font-medium">{collectible.category}</span>
@@ -128,9 +120,8 @@ const CollectibleDetail: React.FC = () => {
               <p className="text-gray-300 leading-relaxed">{collectible.description}</p>
             </div>
 
-            {/* Pricing placeholder */}
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-              {/* Your pricing code */}
+              {/* Pricing placeholder */}
             </div>
 
             {/* Blockchain Details */}
@@ -153,34 +144,53 @@ const CollectibleDetail: React.FC = () => {
               </Link>
             </div>
 
-            {/* Storage & Security */}
+            {/* PHYSICAL STORAGE & SECURITY – EXACT MATCH */}
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-cyan-500/50 transition">
               <div className="flex items-center gap-3 mb-5">
                 <Lock className="h-7 w-7 text-cyan-400" />
-                <h3 className="text-xl font-bold text-white">Storage & Security</h3>
+                <h3 className="text-xl font-bold text-white">Physical Storage & Security</h3>
               </div>
               <dl className="space-y-3 text-sm mb-6">
-                <div className="flex justify-between"><dt className="text-gray-400">Storage Type</dt><dd className="text-white font-medium">{collectible.storage.location}</dd></div>
-                <div className="flex justify-between"><dt className="text-gray-400">Facility</dt><dd className="text-white font-medium">{collectible.storage.facility}</dd></div>
-                <div className="flex justify-between"><dt className="text-gray-400">Location</dt><dd className="text-white">{collectible.storage.address}</dd></div>
-                <div className="flex justify-between"><dt className="text-gray-400">Security Level</dt><dd className="text-green-400 font-medium">{collectible.storage.securityLevel}</dd></div>
+                <div className="flex justify-between">
+                  <dt className="text-gray-400">Storage Type</dt>
+                  <dd className="text-white font-medium">{collectible.storage.location}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-gray-400">Facility</dt>
+                  <dd className="text-white font-medium">{collectible.storage.facility}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-gray-400">Location</dt>
+                  <dd className="text-white">{collectible.storage.address}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-gray-400">Security Level</dt>
+                  <dd className="text-green-400 font-medium">{collectible.storage.securityLevel}</dd>
+                </div>
               </dl>
               <Link
-                to="/storage-security"
+                to="/physical-storage-details"
                 className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg"
               >
-                Show Storage & Security Details <ExternalLink className="h-4 w-4" />
+                Show Physical Storage Details <ExternalLink className="h-4 w-4" />
               </Link>
             </div>
 
-            {/* INSURANCE COVERAGE – BUTTON NOW ANCHORED TO BOTTOM */}
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-indigo-500/50 transition flex flex-col h-full">
-              <div className="flex items-center gap-3 mb-5">
-                <Shield className="h-7 w-7 text-indigo-400" />
-                <h3 className="text-xl font-bold text-white">Insurance Coverage</h3>
+            {/* INSURANCE COVERAGE – EXACT MATCH (button in header) */}
+            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-white flex items-center gap-3">
+                  <Shield className="h-7 w-7 text-blue-400" />
+                  Insurance Coverage
+                </h3>
+                <button
+                  onClick={() => setShowInsuranceModal(true)}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-all shadow-lg"
+                >
+                  View Policy <FileText className="h-4 w-4" />
+                </button>
               </div>
-
-              <dl className="grid grid-cols-2 gap-4 text-sm flex-grow">
+              <dl className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <dt className="text-gray-400">Provider</dt>
                   <dd className="text-white font-medium">{collectible.insurance.provider}</dd>
@@ -198,14 +208,6 @@ const CollectibleDetail: React.FC = () => {
                   <dd className="text-blue-300 font-mono text-xs">{collectible.insurance.policyNumber}</dd>
                 </div>
               </dl>
-
-              {/* Button anchored to bottom with mt-auto */}
-              <button
-                onClick={() => setShowInsuranceModal(true)}
-                className="mt-auto w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
-              >
-                View Full Insurance Policy <FileText className="h-4 w-4" />
-              </button>
             </div>
           </motion.div>
         </div>
