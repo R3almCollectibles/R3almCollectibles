@@ -14,6 +14,10 @@ import Mint from './pages/Mint';
 import Portfolio from './pages/Portfolio';
 import CollectibleDetail from './pages/CollectibleDetail';
 
+// Auth Pages
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminCollectibleDetail from './pages/admin/AdminCollectibleDetail';
@@ -22,14 +26,11 @@ import AdminUserDetail from './pages/admin/AdminUserDetail';
 
 // 404 Page
 const NotFound = () => (
-  <div className="flex items-center justify-center min-h-screen bg-gray-950 text-white">
+  <div className="min-h-screen bg-gray-950 flex items-center justify-center text-white">
     <div className="text-center">
       <h1 className="text-9xl font-bold text-gray-800">404</h1>
       <p className="text-3xl mt-8 text-gray-500">Page Not Found</p>
-      <a
-        href="/"
-        className="mt-10 inline-block px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-bold text-lg hover:scale-105 transition"
-      >
+      <a href="/" className="mt-10 inline-block px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-bold text-lg hover:scale-105 transition">
         Back to Home
       </a>
     </div>
@@ -41,31 +42,32 @@ const App = () => {
     <AuthProvider>
       <Router>
         <div className="min-h-screen bg-gray-950 text-white flex flex-col">
-          {/* Header (shown on all pages) */}
           <Header />
 
-          {/* Main Content */}
           <main className="flex-1">
             <Routes>
-              {/* === Public Routes === */}
+              {/* Public Routes */}
               <Route path="/" element={<Home />} />
               <Route path="/marketplace" element={<Marketplace />} />
               <Route path="/mint" element={<Mint />} />
               <Route path="/portfolio" element={<Portfolio />} />
               <Route path="/collectible/:id" element={<CollectibleDetail />} />
 
-              {/* === Admin Routes === */}
+              {/* Auth Routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+
+              {/* Admin Routes */}
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/collectible/:id" element={<AdminCollectibleDetail />} />
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/user/:id" element={<AdminUserDetail />} />
 
-              {/* === Catch-all 404 === */}
+              {/* 404 */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
 
-          {/* Footer */}
           <Footer />
         </div>
       </Router>
