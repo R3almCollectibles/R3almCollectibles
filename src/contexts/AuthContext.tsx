@@ -1,145 +1,159 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+// src/contexts/AuthContext.tsx
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { supabase } from '../lib/supabaseClient';
+import type { Session, User } from '@supabase/supabase-js';
 
-interface User {
+// Full profile type from your Supabase table
+export interface Profile {
   id: string;
-  email: string;
-  name: string;
-  avatar?: string;
-  walletAddress?: string;
-  joinDate: string;
-  isDemo: boolean;
-  isAdmin?: boolean;
+  name: string | null;
+  email: string | null;
+  wallet_address: string | null;
+  avatar_url: string | null;
+  role: 'user' | 'verified' | 'collector' | 'admin';
+  status: 'active' | 'suspended' | 'banned';
+  kyc_status: 'pending' | 'verified' | 'rejected';
+  total_spent: number;
+  created_at: string;
+  updated_at: string;
 }
 
 interface AuthContextType {
   user: User | null;
+  profile: Profile | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
-  signup: (email: string, password: string, name: string) => Promise<boolean>;
-  logout: () => void;
-  loginWithDemo: (demoType: 'collector' | 'creator' | 'investor' | 'admin') => void;
+  isAdmin: boolean;
+  loading: boolean;
+  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string) => Promise<{ error: any }>;
+  signOut: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Demo accounts
-const demoAccounts = {
-  collector: {
-    id: 'demo-collector',
-    email: 'collector@demo.com',
-    name: 'Alex Collector',
-    avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=100',
-    walletAddress: '0x742d35Cc6634C0532925a3b8D46DE3C4',
-    joinDate: '2023-08-15',
-    isDemo: true,
-    isAdmin: false
-  },
-  creator: {
-    id: 'demo-creator',
-    email: 'creator@demo.com',
-    name: 'Maya Artist',
-    avatar: 'https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=100',
-    walletAddress: '0x891a2b3c4d5e6f7g8h9i0j1k2l3m4n5o',
-    joinDate: '2023-06-22',
-    isDemo: true,
-    isAdmin: false
-  },
-  investor: {
-    id: 'demo-investor',
-    email: 'investor@demo.com',
-    name: 'Jordan Investor',
-    avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=100',
-    walletAddress: '0x234b5c6d7e8f9g0h1i2j3k4l5m6n7o8p',
-    joinDate: '2023-09-10',
-    isDemo: true,
-    isAdmin: false
-  },
-  admin: {
-    id: 'demo-admin',
-    email: 'admin@demo.com',
-    name: 'Platform Admin',
-    avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
-    walletAddress: '0x111222333444555666777888999000111',
-    joinDate: '2023-01-01',
-    isDemo: true,
-    isAdmin: true  // This enables access
-  }
-};
-
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // Fetch profile from Supabase
+  const fetchProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows
+        console.error('Error fetching profile:', error);
+        return;
+      }
+
+      setProfile(data || null);
+    } catch (err) {
+      console.error('Unexpected error fetching profile:', err);
+    }
+  };
+
+  // Refresh profile (useful after admin changes role/status)
+  const refreshProfile = async () => {
+    if (user) {
+      await fetchProfile(user.id);
+    }
+  };
 
   useEffect(() => {
-    // Check for stored user session
-    const storedUser = localStorage.getItem('r3alm_user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    // Check current session on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchProfile(session.user.id);
+      }
+      setLoading(false);
+    });
+
+    // Listen to auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setUser(session?.user ?? null);
+
+      if (session?.user) {
+        await fetchProfile(session.user.id);
+      } else {
+        setProfile(null);
+      }
+
+      setLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // For demo purposes, accept any email/password combination
-    const newUser: User = {
-      id: `user-${Date.now()}`,
+  const signIn = async (email: string, password: string) => {
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      name: email.split('@')[0],
-      joinDate: new Date().toISOString().split('T')[0],
-      isDemo: false
-    };
-    
-    setUser(newUser);
-    localStorage.setItem('r3alm_user', JSON.stringify(newUser));
-    return true;
+      password,
+    });
+
+    if (error) {
+      console.error('Sign in error:', error);
+    } else if (data.user) {
+      await fetchProfile(data.user.id);
+    }
+
+    return { error };
   };
 
-  const signup = async (email: string, password: string, name: string): Promise<boolean> => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const newUser: User = {
-      id: `user-${Date.now()}`,
+  const signUp = async (email: string, password: string) => {
+    const { data, error } = await supabase.auth.signUp({
       email,
-      name,
-      joinDate: new Date().toISOString().split('T')[0],
-      isDemo: false
-    };
-    
-    setUser(newUser);
-    localStorage.setItem('r3alm_user', JSON.stringify(newUser));
-    return true;
+      password,
+      options: {
+        emailRedirectTo: window.location.origin,
+      },
+    });
+
+    if (error) {
+      console.error('Sign up error:', error);
+    }
+
+    return { error };
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('r3alm_user');
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('Sign out error:', error);
+    } else {
+      setUser(null);
+      setProfile(null);
+    }
   };
 
-  const loginWithDemo = (demoType: 'collector' | 'creator' | 'investor' | 'admin') => {
-    const demoUser = demoAccounts[demoType];
-    setUser(demoUser);
-    localStorage.setItem('r3alm_user', JSON.stringify(demoUser));
+  const value: AuthContextType = {
+    user,
+    profile,
+    isAuthenticated: !!user,
+    isAdmin: profile?.role === 'admin',
+    loading,
+    signIn,
+    signUp,
+    signOut,
+    refreshProfile,
   };
 
-  return (
-    <AuthContext.Provider value={{
-      user,
-      isAuthenticated: !!user,
-      login,
-      signup,
-      logout,
-      loginWithDemo
-    }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => {
+// Custom hook
+export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
