@@ -15,8 +15,9 @@ import Portfolio from './pages/Portfolio';
 import CollectibleDetail from './pages/CollectibleDetail';
 
 // Auth Pages
-import Login from './pages/Login';
-import Signup from './pages/Signup';
+// src/App.tsx — UPDATE THESE LINES
+import { Login } from './pages/Login';
+import { Signup } from './pages/Signup';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
