@@ -78,7 +78,7 @@ const AdminCollectibleDetail = () => {
     }
   }, [isAuthenticated, user, navigate]);
 
-  // Mock data - replace with real API call
+  // Mock data – replace with real API later
   useEffect(() => {
     const mockData: CollectibleDetail = {
       id: parseInt(id || '2'),
@@ -169,59 +169,58 @@ const AdminCollectibleDetail = () => {
   return (
     <div className="pt-16 min-h-screen bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <button
-            onClick={() => navigate('/admin')}
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition mb-6"
-          >
-            <ArrowLeft className="h-5 w-5" />
-            Back to Dashboard
-          </button>
+        {/* Header & Back */}
+        <button
+          onClick={() => navigate('/admin')}
+          className="flex items-center gap-2 text-gray-400 hover:text-white transition mb-6"
+        >
+          <ArrowLeft className="h-5 w-5" />
+          Back to Dashboard
+        </button>
 
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-6">
-              <div className="bg-gray-800 rounded-2xl p-4 border border-gray-700">
-                <Package className="h-16 w-16 text-blue-400" />
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold text-white flex items-center gap-4">
-                  {collectible.name}
-                  {collectible.flagged && <Flag className="h-8 w-8 text-red-500 animate-pulse" />}
-                </h1>
-                <div className="flex items-center gap-4 mt-3">
-                  {getStatusBadge(collectible.status)}
-                  <span className="text-gray-400">ID #{collectible.id}</span>
-                </div>
+        {/* Title + Actions */}
+        <div className="flex items-start justify-between mb-10">
+          <div className="flex items-center gap-6">
+            <div className="bg-gray-800 rounded-2xl p-4 border border-gray-700">
+              <Package className="h-16 w-16 text-blue-400" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-bold text-white flex items-center gap-4">
+                {collectible.name}
+                {collectible.flagged && <Flag className="h-8 w-8 text-red-500 animate-pulse" />}
+              </h1>
+              <div className="flex items-center gap-4 mt-3">
+                {getStatusBadge(collectible.status)}
+                <span className="text-gray-400">ID #{collectible.id}</span>
               </div>
             </div>
+          </div>
 
-            <div className="flex items-center gap-3">
-              {collectible.status === 'pending' && (
-                <>
-                  <button
-                    onClick={handleVerify}
-                    className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold flex items-center gap-2 transition"
-                  >
-                    <CheckCircle2 className="h-5 w-5" />
-                    Verify & List
-                  </button>
-                  <button
-                    onClick={handleReject}
-                    className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold flex items-center gap-2 transition"
-                  >
-                    <XCircle className="h-5 w-5" />
-                    Reject
-                  </button>
-                </>
-              )}
-              <button
-                onClick={() => setIsEditing(!isEditing)}
-                className="p-3 bg-gray-700 hover:bg-gray-600 rounded-xl transition"
-              >
-                {isEditing ? <Save className="h-5 w-5 text-green-400" /> : <Edit3 className="h-5 w-5 text-blue-400" />}
-              </button>
-            </div>
+          <div className="flex items-center gap-3">
+            {collectible.status === 'pending' && (
+              <>
+                <button
+                  onClick={handleVerify}
+                  className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold flex items-center gap-2 transition"
+                >
+                  <CheckCircle2 className="h-5 w-5" />
+                  Verify & List
+                </button>
+                <button
+                  onClick={handleReject}
+                  className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold flex items-center gap-2 transition"
+                >
+                  <XCircle className="h-5 w-5" />
+                  Reject
+                </button>
+              </>
+            )}
+            <button
+              onClick={() => setIsEditing(!isEditing)}
+              className="p-3 bg-gray-700 hover:bg-gray-600 rounded-xl transition"
+            >
+              {isEditing ? <Save className="h-5 w-5 text-green-400" /> : <Edit3 className="h-5 w-5 text-blue-400" />}
+            </button>
           </div>
         </div>
 
@@ -247,9 +246,10 @@ const AdminCollectibleDetail = () => {
           </div>
         </div>
 
-        {/* Content */}
+        {/* TAB: Details */}
         {activeTab === 'details' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left – Media + Description */}
             <div className="lg:col-span-2 space-y-6">
               {/* Images */}
               <div className="bg-gray-800 rounded-2xl border border-gray-700 p-6">
@@ -299,9 +299,9 @@ const AdminCollectibleDetail = () => {
               </div>
             </div>
 
-            {/* Sidebar */}
+            {/* Right Sidebar */}
             <div className="space-y-6">
-              {/* Owner Info */}
+              {/* Owner */}
               <div className="bg-gray-800 rounded-2xl border border-gray-700 p-6">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <User className="h-5 w-5" />
@@ -319,7 +319,7 @@ const AdminCollectibleDetail = () => {
                 </div>
               </div>
 
-              {/* Flags */}
+              {/* Flagged warning */}
               {collectible.flagged && (
                 <div className="bg-red-900/20 border border-red-500/50 rounded-2xl p-6">
                   <div className="flex items-center gap-3 text-red-400 mb-4">
@@ -354,6 +354,7 @@ const AdminCollectibleDetail = () => {
           </div>
         )}
 
+        {/* TAB: Provenance */}
         {activeTab === 'provenance' && (
           <div className="bg-gray-800 rounded-2xl border border-gray-700 p-8">
             <h3 className="text-2xl font-bold text-white mb-6">Provenance History</h3>
@@ -388,6 +389,7 @@ const AdminCollectibleDetail = () => {
           </div>
         )}
 
+        {/* TAB: Attributes */}
         {activeTab === 'attributes' && (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {collectible.attributes.map((attr, i) => (
@@ -399,6 +401,7 @@ const AdminCollectibleDetail = () => {
           </div>
         )}
 
+        {/* TAB: Activity – THIS WAS THE BROKEN PART */}
         {activeTab === 'activity' && (
           <div className="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden">
             <div className="p-6 border-b border-gray-700">
@@ -420,7 +423,8 @@ const AdminCollectibleDetail = () => {
                         <p className="text-sm text-gray-400">by {log.user}</p>
                       </div>
                     </div>
-                    <span className="text-sm text-gray-500">{log.date}</p>
+                    {/* Fixed: closed <span> correctly and removed stray </p> */}
+                    <span className="text-sm text-gray-500">{log.date}</span>
                   </div>
                   <p className="text-gray-400 text-sm mt-3 ml-13">{log.details}</p>
                 </div>
