@@ -1,152 +1,122 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode, useCallback } from 'react';
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
-import { TrendingUp, TrendingDown, Calendar, DollarSign } from 'lucide-react'; // Keep for demo if needed
+import { toast } from 'react-hot-toast';
+import type { Session } from '@supabase/supabase-js';
 
-// Env vars (load from .env)
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://iwqkumtemswzmnucexfn.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key-here';
-
-const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey);
-
-interface UserProfile {
-  id: string;
-  email: string;
-  name: string;
-  avatar?: string;
-  wallet_address?: string;
-  join_date: string;
-  is_demo: boolean;
-  is_admin?: boolean;
+// TypeScript Interfaces
+interface CustomUser extends User {
+  name?: string; // Optional custom field (fetch from profile table if needed)
 }
 
 interface AuthContextType {
-  user: UserProfile | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
-  signup: (email: string, password: string, name: string) => Promise<boolean>;
-  logout: () => Promise<void>;
-  loginWithDemo: (demoType: 'collector' | 'creator' | 'investor' | 'admin') => void;
+  user: CustomUser | null;
+  session: Session | null;
+  loading: boolean;
+  signUp: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
+  refreshSession: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Demo accounts (unchanged – fallback for quick testing)
-const demoAccounts = {
-  // ... (your existing demoAccounts object)
-};
+// Supabase Client (singleton for performance)
+const supabase: SupabaseClient = createClient(
+  import.meta.env.VITE_SUPABASE_URL as string,
+  import.meta.env.VITE_SUPABASE_ANON_KEY as string
+);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+// Auth Provider Component
+interface AuthProviderProps {
+  children: ReactNode;
+}
 
+export const AuthProvider: React.FC<AuthProviderProps> = React.memo(({ children }) => {
+  const [user, setUser] = useState<CustomUser | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Initialize session on mount
   useEffect(() => {
-    // Restore session on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        fetchUserProfile(session.user.id).then(profile => {
-          setUser(profile);
-          setIsLoading(false);
-        });
-      } else {
-        // Fallback to localStorage demo (for offline/dev)
-        const storedUser = localStorage.getItem('r3alm_user');
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
-        }
-        setIsLoading(false);
-      }
+      setSession(session);
+      setUser(session?.user as CustomUser ?? null);
+      setLoading(false);
     });
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN') {
-        const profile = await fetchUserProfile(session!.user.id);
-        setUser(profile);
-        localStorage.setItem('r3alm_user', JSON.stringify(profile)); // Hybrid sync
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-        localStorage.removeItem('r3alm_user');
-      }
+    // Listen for auth changes (real-time)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession(newSession);
+      setUser(newSession?.user as CustomUser ?? null);
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const fetchUserProfile = useCallback(async (userId: string): Promise<UserProfile | null> => {
-    const { data } = await supabase.from('profiles').select('*').eq('id', userId).single();
-    return data || null;
+  // Sign Up Handler
+  const signUp = useCallback(async (email: string, password: string) => {
+    setLoading(true);
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) {
+      toast.error(`Sign up failed: ${error.message}`, { style: { background: '#007BFF', color: 'white' } });
+    } else {
+      toast.success('Check your email for confirmation!', { style: { background: '#007BFF', color: 'white' } });
+    }
+    setLoading(false);
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    setIsLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  // Sign In Handler
+  const signIn = useCallback(async (email: string, password: string) => {
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      console.error('Login error:', error);
-      return false;
+      toast.error(`Login failed: ${error.message}`, { style: { background: '#007BFF', color: 'white' } });
+    } else {
+      toast.success('Logged in successfully!', { style: { background: '#007BFF', color: 'white' } });
     }
-    if (data.user) {
-      const profile = await fetchUserProfile(data.user.id);
-      setUser(profile || { ...data.user, name: email.split('@')[0], join_date: new Date().toISOString().split('T')[0], is_demo: false });
-      return true;
+    setLoading(false);
+  }, []);
+
+  // Sign Out Handler
+  const signOut = useCallback(async () => {
+    setLoading(true);
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast.error(`Logout failed: ${error.message}`, { style: { background: '#007BFF', color: 'white' } });
+    } else {
+      toast.success('Logged out successfully!', { style: { background: '#007BFF', color: 'white' } });
+      setUser(null);
+      setSession(null);
     }
-    return false;
-  };
+    setLoading(false);
+  }, []);
 
-  const signup = async (email: string, password: string, name: string): Promise<boolean> => {
-    setIsLoading(true);
-    const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
-    if (authError || !authData.user) {
-      console.error('Signup error:', authError);
-      return false;
+  // Refresh Session (for token expiry)
+  const refreshSession = useCallback(async () => {
+    setLoading(true);
+    const { data: { session }, error } = await supabase.auth.refreshSession();
+    if (error) {
+      toast.error('Session refresh failed', { style: { background: '#007BFF', color: 'white' } });
+    } else {
+      setSession(session);
+      setUser(session?.user as CustomUser ?? null);
     }
+    setLoading(false);
+  }, []);
 
-    // Insert profile (assumes trigger or manual insert)
-    const { error: profileError } = await supabase.from('profiles').insert({
-      id: authData.user.id,
-      email,
-      name,
-      join_date: new Date().toISOString(),
-      is_demo: false,
-    });
-
-    if (profileError) {
-      console.error('Profile insert error:', profileError);
-      return false;
-    }
-
-    const profile = await fetchUserProfile(authData.user.id);
-    setUser(profile);
-    return true;
-  };
-
-  const logout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-  };
-
-  const loginWithDemo = (demoType: 'collector' | 'creator' | 'investor' | 'admin') => {
-    const demoUser = demoAccounts[demoType];
-    setUser(demoUser);
-    localStorage.setItem('r3alm_user', JSON.stringify(demoUser));
-    // Optional: Insert as demo profile in Supabase for persistence
-  };
-
-  return (
-    <AuthContext.Provider value={{
-      user,
-      isAuthenticated: !!user,
-      isLoading,
-      login,
-      signup,
-      logout,
-      loginWithDemo
-    }}>
-      {children}
-    </AuthContext.Provider>
+  // Memoized Context Value (prevents unnecessary re-renders)
+  const value = useMemo(
+    () => ({ user, session, loading, signUp, signIn, signOut, refreshSession }),
+    [user, session, loading, signUp, signIn, signOut, refreshSession]
   );
-};
 
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+});
+
+AuthProvider.displayName = 'AuthProvider';
+
+// Custom Hook
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
