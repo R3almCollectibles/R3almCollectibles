@@ -11,7 +11,9 @@ import { createDemoUsersIfNotExist } from './lib/createDemoUsers';
 
 // Pages
 import { Login } from './pages/Login';
-import { Profile } from './pages/Profile';
+import { Profile } from './pages/Profile';  // ← CORRECT PATH
+
+// Dashboards (role-specific)
 import { CollectorDashboard } from './pages/dashboards/CollectorDashboard';
 import { CreatorDashboard } from './pages/dashboards/CreatorDashboard';
 import { InvestorDashboard } from './pages/dashboards/InvestorDashboard';
@@ -36,10 +38,10 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   return user ? <>{children}</> : <Navigate to="/login" replace />;
 };
 
-// Role-based Dashboard Router
+// Dynamic Dashboard based on user role
 const RoleBasedDashboard = () => {
   const { user } = useAuth();
-  const role = user?.user_metadata?.role || 'collector';
+  const role = (user?.user_metadata?.role as string)?.toLowerCase() || 'collector';
 
   switch (role) {
     case 'admin':
@@ -67,10 +69,10 @@ function AppWithAuth() {
         {user && <Navbar />}
 
         <Routes>
+          {/* Public */}
           <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
-          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
-          {/* Dynamic Dashboard Based on Role */}
+          {/* Protected */}
           <Route
             path="/"
             element={
@@ -79,12 +81,26 @@ function AppWithAuth() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
 
+          {/* Catch-all */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
 
-      <Toaster position="top-center" />
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          style: { background: '#1f1f1f', color: '#fff', borderRadius: '12px' },
+        }}
+      />
     </>
   );
 }
