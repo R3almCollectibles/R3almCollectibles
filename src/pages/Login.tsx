@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import {
   Mail,
   Lock,
+  ArrowRight,        // ← THIS WAS MISSING!
   Sparkles,
   Shield,
   Palette,
@@ -54,18 +55,16 @@ export const Login = () => {
   const { signIn } = useAuth();
   const navigate = useNavigate();
 
-  const DEMO_PASSWORD = 'demo123'; // ← Fixed! Was '123456' before
+  const DEMO_PASSWORD = 'demo123';
 
   const handleDemoLogin = async (demoEmail: string) => {
     setLoading(true);
     setError('');
     const { error } = await signIn(demoEmail, DEMO_PASSWORD);
     if (error) {
-      setError(
-        error.message.includes('email_not_confirmed')
-          ? 'Please disable "Confirm email" in Supabase Auth settings for demo to work.'
-          : error.message
-      );
+      setError(error.message.includes('email_not_confirmed')
+        ? 'Demo login failed — disable "Confirm email" in Supabase Auth settings.'
+        : error.message);
     } else {
       navigate('/');
     }
@@ -87,7 +86,6 @@ export const Login = () => {
       <div className="h-16" aria-hidden="true" />
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="max-w-5xl w-full">
-          {/* Header
           <div className="text-center mb-16">
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
               Welcome to{' '}
@@ -144,7 +142,7 @@ export const Login = () => {
             </div>
           </div>
 
-          {/* Manual Login */}
+          {/* Manual Login Form */}
           <div className="max-w-md mx-auto">
             <div className="bg-gray-900/90 backdrop-blur-md rounded-3xl border border-gray-800 p-10 shadow-2xl">
               <form onSubmit={handleSubmit} className="space-y-8">
