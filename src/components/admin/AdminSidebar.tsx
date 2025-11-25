@@ -1,65 +1,78 @@
-// src/components/admin/AdminSidebar.tsx
+// src/components/admin/AdminSidebar.tsx – FIXED HIGHLIGHTING
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   Shield,
   Package,
   Users,
+  BarChart3,
   FileText,
-  TrendingUp,
   Settings,
   LogOut,
+  Home,
 } from 'lucide-react';
 
-const navigation = [
-  { name: 'Dashboard', href: '/admin', icon: Shield },
-  { name: 'Collectibles', href: '/admin/collectibles', icon: Package },
-  { name: 'Users', href: '/admin/users', icon: Users },
-  { name: 'Reports', href: '/admin/reports', icon: FileText },
-  { name: 'Analytics', href: '/admin/analytics', icon: TrendingUp },
-  { name: 'Settings', href: '/admin/settings', icon: Settings },
-];
-
-const AdminSidebar = () => {
+const AdminSidebar: React.FC = () => {
   const location = useLocation();
 
+  const menuItems = [
+    { label: 'Dashboard', icon: Home, path: '/admin' },
+    { label: 'Collectibles', icon: Package, path: '/admin/collectibles' },
+    { label: 'Users', icon: Users, path: '/admin/users' },
+    { label: 'Reports', icon: FileText, path: '/admin/reports' },
+    { label: 'Analytics', icon: BarChart3, path: '/admin/analytics' },
+    { label: 'Settings', icon: Settings, path: '/admin/settings' },
+  ];
+
+  const isActive = (path: string) => {
+    // Special case: Dashboard is only active on exact '/admin'
+    if (path === '/admin') {
+      return location.pathname === '/admin';
+    }
+    // For all other routes, match if pathname starts with the path
+    return location.pathname.startsWith(path);
+  };
+
   return (
-    <div className="fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 border-r border-gray-800 pt-20 lg:pt-0">
-      {/* Logo */}
-      <div className="flex items-center gap-3 px-8 py-8 border-b border-gray-800">
-        <Shield className="h-10 w-10 text-red-500" />
-        <div>
-          <h1 className="text-2xl font-bold text-white">Admin</h1>
-          <p className="text-xs text-gray-500">Control Panel</p>
+    <div className="fixed left-0 top-0 h-full w-64 bg-gray-900 border-r border-gray-800 z-50">
+      <div className="p-8">
+        <div className="flex items-center gap-3">
+          <Shield className="h-10 w-10 text-purple-500" />
+          <div>
+            <h1 className="text-2xl font-bold text-white">Admin Panel</h1>
+            <p className="text-xs text-gray-500">Capital Realm</p>
+          </div>
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="px-4 py-6 space-y-1">
-        {navigation.map((item) => {
-          const isActive = location.pathname === item.href || location.pathname.startsWith(item.href + '/');
+      <nav className="px-6">
+        {menuItems.map((item) => {
+          const Icon = item.icon;
+          const active = isActive(item.path);
+
           return (
-            <NavLink
-              key={item.name}
-              to={item.href}
-              className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 ${
-                isActive
-                  ? 'bg-gradient-to-r from-red-600/20 to-pink-600/20 text-white border border-red-500/30 shadow-lg shadow-red-500/10'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`flex items-center gap-4 px-5 py-4 rounded-xl mb-2 transition-all ${
+                active
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
+                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
               }`}
             >
-              <item.icon className="h-5 w-5" />
-              <span className="font-medium">{item.name}</span>
-              {isActive && <div className="ml-auto h-2 w-2 bg-red-500 rounded-full animate-pulse" />}
-            </NavLink>
+              <Icon className="h-6 w-6" />
+              <span className="font-medium">{item.label}</span>
+              {active && (
+                <div className="ml-auto w-2 h-2 bg-white rounded-full animate-pulse" />
+              )}
+            </Link>
           );
         })}
       </nav>
 
-      {/* Logout */}
-      <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-800">
-        <button className="flex items-center gap-4 w-full px-4 py-3 text-gray-400 hover:text-red-400 hover:bg-gray-800/50 rounded-xl transition">
-          <LogOut className="h-5 w-5" />
+      <div className="absolute bottom-8 left-6 right-6">
+        <button className="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-400 hover:bg-gray-800 hover:text-red-400 transition-all w-full">
+          <LogOut className="h-6 w-6" />
           <span className="font-medium">Logout</span>
         </button>
       </div>
