@@ -45,6 +45,7 @@ function App() {
               <Route path="/collectible/:id/activity/:activityId" element={<ActivityDetail />} />
               <Route path="/demo" element={<Demo />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/collectible/:id" element={<AdminCollectibleDetail />} />
             </Routes>
           </main>
           <Footer />
