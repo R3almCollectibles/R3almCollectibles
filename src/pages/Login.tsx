@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
 
-const Login = () => {
+export const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -90,5 +90,3 @@ const Login = () => {
     </div>
   );
 };
-
-export default Login;
