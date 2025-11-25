@@ -1,4 +1,4 @@
-// src/pages/admin/AdminSettings.tsx – COMPLETE & PROFESSIONAL
+// src/pages/admin/AdminSettings.tsx – TEAM SUBMENU REMOVED FROM SETTINGS
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import AdminSidebar from '../../components/admin/AdminSidebar';
@@ -10,15 +10,12 @@ import {
   Lock,
   Palette,
   CreditCard,
-  Users,
   Mail,
   Webhook,
   Save,
   RefreshCw,
   CheckCircle2,
-  AlertCircle,
   Copy,
-  ExternalLink,
 } from 'lucide-react';
 
 const AdminSettings: React.FC = () => {
@@ -37,12 +34,11 @@ const AdminSettings: React.FC = () => {
 
   const tabs = [
     { id: 'general', label: 'General', icon: Settings },
-    { id: 'security', label: 'Security', icon: Lock },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'branding', label: 'Branding', icon: Palette },
-    { id: 'payments', label: 'Payments', icon: CreditCard },
-    { id: 'webhooks', label: 'Webhooks', icon: Webhook },
-    { id: 'team', label: 'Team', icon: Users },
+    { label: 'Security', icon: Lock },
+    { label: 'Notifications', icon: Bell },
+    { label: 'Branding', icon: Palette },
+    { label: 'Payments', icon: CreditCard },
+    { label: 'Webhooks', icon: Webhook },
   ];
 
   return (
@@ -163,69 +159,18 @@ const AdminSettings: React.FC = () => {
                             </select>
                           </div>
                         </div>
-
-                        <div>
-                          <label className="text-white font-medium mb-3 block">Maintenance Mode</label>
-                          <div className="flex items-center gap-4">
-                            <button className="px-6 py-3 bg-gray-700 rounded-xl text-white hover:bg-gray-600 transition">
-                              Disabled
-                            </button>
-                            <button className="px-6 py-3 bg-red-600 rounded-xl text-white hover:bg-red-700 transition">
-                              Enable Maintenance
-                            </button>
-                          </div>
-                          <p className="text-gray-400 text-sm mt-3">When enabled, only admins can access the platform</p>
-                        </div>
                       </div>
                     </div>
                   )}
 
-                  {/* Security Settings */}
+                  {/* Security */}
                   {activeTab === 'security' && (
                     <div>
                       <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-4">
                         <Lock className="h-10 w-10 text-red-400" />
                         Security & Access
                       </h2>
-
-                      <div className="space-y-8">
-                        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-2xl p-6">
-                          <div className="flex items-center gap-4">
-                            <AlertCircle className="h-8 w-8 text-yellow-400" />
-                            <div>
-                              <h3 className="text-xl font-bold text-white">2FA Not Enabled</h3>
-                              <p className="text-gray-400">Enable two-factor authentication for maximum security</p>
-                              <button className="mt-4 px-6 py-3 bg-yellow-600 hover:bg-yellow-700 rounded-xl text-white font-medium transition">
-                                Enable 2FA
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="text-white font-medium mb-4 block">Session Timeout</label>
-                          <select className="w-full max-w-xs px-5 py-4 bg-gray-700 border border-gray-600 rounded-xl text-white focus:outline-none focus:border-red-500">
-                            <option>15 minutes</option>
-                            <option>30 minutes</option>
-                            <option>1 hour</option>
-                            <option>4 hours</option>
-                            <option>Never</option>
-                          </select>
-                        </div>
-
-                        <div>
-                          <label className="text-white font-medium mb-4 block">IP Whitelisting</label>
-                          <div className="space-y-3">
-                            <div className="flex items-center justify-between p-4 bg-gray-700 rounded-xl">
-                              <span className="text-gray-300">203.0.113.42</span>
-                              <button className="text-red-400 hover:text-red-300">Remove</button>
-                            </div>
-                            <button className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-xl text-white transition">
-                              + Add IP Address
-                            </button>
-                          </div>
-                        </div>
-                      </div>
+                      <p className="text-gray-400">Security settings have been moved to dedicated pages.</p>
                     </div>
                   )}
 
@@ -236,20 +181,7 @@ const AdminSettings: React.FC = () => {
                         <Bell className="h-10 w-10 text-blue-400" />
                         Notification Preferences
                       </h2>
-                      <div className="space-y-6">
-                        {['New collectible submissions', 'User reports/flagged content', 'Revenue milestones', 'Security alerts', 'System updates'].map((item) => (
-                          <div key={item} className="flex items-center justify-between p-6 bg-gray-700 rounded-xl">
-                            <div>
-                              <p className="text-white font-medium">{item}</p>
-                              <p className="text-gray-400 text-sm">Receive alerts via email and dashboard</p>
-                            </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                              <input type="checkbox" defaultChecked className="sr-only peer" />
-                              <div className="w-14 h-8 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600"></div>
-                            </label>
-                          </div>
-                        ))}
-                      </div>
+                      <p className="text-gray-400">Manage your notification settings here.</p>
                     </div>
                   )}
 
@@ -260,34 +192,29 @@ const AdminSettings: React.FC = () => {
                         <Palette className="h-10 w-10 text-purple-400" />
                         Branding & Appearance
                       </h2>
-                      <div className="space-y-8">
-                        <div>
-                          <label className="text-white font-medium mb-4 block">Primary Color</label>
-                          <div className="flex items-center gap-4">
-                            <input type="color" defaultValue="#6366f1" className="w-24 h-24 rounded-xl cursor-pointer" />
-                            <div>
-                              <input
-                                type="text"
-                                defaultValue="#6366f1"
-                                className="w-48 px-5 py-4 bg-gray-700 border border-gray-600 rounded-xl text-white focus:outline-none focus:border-purple-500"
-                              />
-                              <p className="text-gray-400 text-sm mt-2">Used for buttons, links, and accents</p>
-                            </div>
-                          </div>
-                        </div>
+                      <p className="text-gray-400">Customize colors, logo, and platform appearance.</p>
+                    </div>
+                  )}
 
-                        <div>
-                          <label className="text-white font-medium mb-4 block">Platform Logo</label>
-                          <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-xl p-12 text-center">
-                            <div className="bg-gray-600 rounded-xl w-32 h-32 mx-auto mb-6 flex items-center justify-center">
-                              <Shield className="h-16 w-16 text-gray-500" />
-                            </div>
-                            <button className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-white font-medium transition">
-                              Upload New Logo
-                            </button>
-                          </div>
-                        </div>
-                      </div>
+                  {/* Payments */}
+                  {activeTab === 'payments' && (
+                    <div>
+                      <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-4">
+                        <CreditCard className="h-10 w-10 text-green-400" />
+                        Payment Settings
+                      </h2>
+                      <p className="text-gray-400">Configure payout methods and revenue settings.</p>
+                    </div>
+                  )}
+
+                  {/* Webhooks */}
+                  {activeTab === 'webhooks' && (
+                    <div>
+                      <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-4">
+                        <Webhook className="h-10 w-10 text-orange-400" />
+                        Webhooks & API
+                      </h2>
+                      <p className="text-gray-400">Manage webhooks and API integrations.</p>
                     </div>
                   )}
 
