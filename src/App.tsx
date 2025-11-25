@@ -1,4 +1,4 @@
-// src/App.tsx – FINAL & COMPLETE (November 2025)
+// src/App.tsx – FINAL & COMPLETE (November 2025) – ALL ADMIN PAGES LIVE
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
@@ -7,7 +7,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
-// Public Pages (all exist)
+// Public Pages
 const HomePage = lazy(() => import('./pages/HomePage'));
 const Marketplace = lazy(() => import('./pages/Marketplace'));
 const CollectibleDetail = lazy(() => import('./pages/CollectibleDetail'));
@@ -24,30 +24,13 @@ const ProvenanceDetail = lazy(() => import('./pages/ProvenanceDetail'));
 const ActivityDetail = lazy(() => import('./pages/ActivityDetail'));
 const Demo = lazy(() => import('./pages/Demo'));
 
-// Admin Pages (real ones)
+// Admin Pages – ALL NOW REAL & FULLY FUNCTIONAL
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const AdminCollectibleDetail = lazy(() => import('./pages/admin/AdminCollectibleDetail'));
 const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
-
-// Future Pages (safe Coming Soon placeholders)
-const ComingSoon = () => (
-  <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
-    <div className="text-center">
-      <h1 className="text-5xl font-bold mb-4">Coming Soon</h1>
-      <p className="text-xl text-gray-400 mb-8">This admin section is under development</p>
-      <button
-        onClick={() => window.history.back()}
-        className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-bold hover:shadow-2xl transition"
-      >
-        Go Back
-      </button>
-    </div>
-  </div>
-);
-
-const AdminReports = lazy(() => Promise.resolve({ default: ComingSoon }));
-const AdminAnalytics = lazy(() => Promise.resolve({ default: ComingSoon }));
-const AdminSettings = lazy(() => Promise.resolve({ default: ComingSoon }));
+const AdminReports = lazy(() => import('./pages/admin/AdminReports'));
+const AdminAnalytics = lazy(() => import('./pages/admin/AdminAnalytics'));
+const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'));
 
 // Loading Spinner
 const LoadingSpinner = () => (
@@ -125,7 +108,7 @@ function App() {
                   <h1 className="text-9xl font-bold text-gray-800">404</h1>
                   <p className="text-3xl mt-8 mb-4">Page Not Found</p>
                   <a href="/" className="text-xl text-purple-400 hover:underline">
-                    Back to Home
+                    ← Back to Home
                   </a>
                 </div>
               }
