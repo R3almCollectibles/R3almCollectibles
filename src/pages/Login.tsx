@@ -46,7 +46,7 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-12 pr-4 py-4 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition"
-                  placeholder="you@example.com"
+                  placeholder="admin@demo.com"
                 />
               </div>
             </div>
@@ -61,7 +61,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-12 pr-4 py-4 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition"
-                  placeholder="••••••••"
+                  placeholder="123456"
                 />
               </div>
             </div>
@@ -82,19 +82,8 @@ const Login = () => {
             </button>
           </form>
 
-          <div className="mt-8 text-center">
-            <p className="text-gray-400">
-              Don't have an account?{' '}
-              <Link to="/signup" className="text-blue-400 hover:text-blue-300 font-medium">
-                Sign up
-              </Link>
-            </p>
-          </div>
-
-          <div className="mt-6 text-center">
-            <p className="text-xs text-gray-500">
-              Demo Admin: admin@demo.com / password: 123456
-            </p>
+          <div className="mt-8 text-center text-sm text-gray-500">
+            <p>Demo Admin: admin@demo.com / 123456</p>
           </div>
         </div>
       </div>
