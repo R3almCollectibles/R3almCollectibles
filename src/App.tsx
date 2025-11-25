@@ -24,12 +24,12 @@ const ProvenanceDetail = lazy(() => import('./pages/ProvenanceDetail'));
 const ActivityDetail = lazy(() => import('./pages/ActivityDetail'));
 const Demo = lazy(() => import('./pages/Demo'));
 
-// NEW: Dedicated Security & Transparency Pages
+// NEW Dedicated Transparency Pages
 const BlockchainDetails = lazy(() => import('./pages/BlockchainDetails'));
 const PhysicalStorageSecurity = lazy(() => import('./pages/PhysicalStorageSecurity'));
 const InsuranceCoverage = lazy(() => import('./pages/InsuranceCoverage'));
 
-// Admin Pages – ALL REAL & FULLY FUNCTIONAL
+// Admin Pages
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const AdminCollectibles = lazy(() => import('./pages/admin/AdminCollectibles'));
 const AdminCollectibleDetail = lazy(() => import('./pages/admin/AdminCollectibleDetail'));
@@ -52,14 +52,14 @@ function App() {
       <Router>
         <Suspense fallback={<LoadingSpinner />}>
           <Routes>
-            {/* PUBLIC ROUTES – With Header & Footer */}
+            {/* PUBLIC LAYOUT – Header + Footer */}
             <Route
               element={
                 <div className="min-h-screen bg-gray-900 text-white flex flex-col">
                   <Header />
                   <main className="flex-1">
                     <Routes>
-                      {/* Core Pages */}
+                      {/* Core Public Routes */}
                       <Route path="/" element={<HomePage />} />
                       <Route path="/marketplace" element={<Marketplace />} />
                       <Route path="/collectible/:id" element={<CollectibleDetail />} />
@@ -73,45 +73,57 @@ function App() {
                       <Route path="/settings" element={<Settings />} />
                       <Route path="/demo" element={<Demo />} />
 
-                      {/* Legacy Combined Page (kept for backward compatibility) */}
+                      {/* Legacy route (backward compatibility) */}
                       <Route path="/storage-security" element={<StorageSecurity />} />
 
-                      {/* NEW: Dedicated Transparency Pages */}
+                      {/* NEW Dedicated Security & Transparency Pages */}
                       <Route path="/security/blockchain" element={<BlockchainDetails />} />
                       <Route path="/security/physical-storage" element={<PhysicalStorageSecurity />} />
                       <Route path="/security/insurance" element={<InsuranceCoverage />} />
 
                       {/* Detail Views */}
-                      <Route path="/collectible/:id/provenance/:eventId" element={<ProvenanceDetail />} />
-                      <Route path="/collectible/:id/activity/:activityId" element={<ActivityDetail />} />
+                      <Route
+                        path="/collectible/:id/provenance/:eventId"
+                        element={<ProvenanceDetail />}
+                      />
+                      <Route
+                        path="/collectible/:id/activity/:activityId"
+                        element={<ActivityDetail />}
+                      />
                     </Routes>
                   </main>
                   <Footer />
                 </div>
               }
             >
-              {/* These nested routes are required for React Router v6 outlet behavior */}
+              {/* These nested routes are required for the layout wrapper to work in React Router v6 */}
               <Route path="/" element={<HomePage />} />
               <Route path="/marketplace" element={<Marketplace />} />
               <Route path="/collectible/:id" element={<CollectibleDetail />} />
               <Route path="/mint" element={<MintNFT />} />
-              <Route pathει, "/portfolio" element={<Portfolio />} />
+              <Route path="/portfolio" element={<Portfolio />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/help" element={<HelpCenter />} />
               <Route path="/api-docs" element={<APIDocumentation />} />
               <Route path="/terms" element={<TermsOfService />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/settings" element={<Settings />} />
-              <Route path="/storage-security" element={<StorageSecurity />} />
               <Route path="/demo" element={<Demo />} />
+              <Route path="/storage-security" element={<StorageSecurity />} />
               <Route path="/security/blockchain" element={<BlockchainDetails />} />
               <Route path="/security/physical-storage" element={<PhysicalStorageSecurity />} />
               <Route path="/security/insurance" element={<InsuranceCoverage />} />
-              <Route path="/collectible/:id/provenance/:eventId" element={<ProvenanceDetail />} />
-              <Route path="/collectible/:id/activity/:activityId" element={<ActivityDetail />} />
+              <Route
+                path="/collectible/:id/provenance/:eventId"
+                element={<ProvenanceDetail />}
+              />
+              <Route
+                path="/collectible/:id/activity/:activityId"
+                element={<ActivityDetail />}
+              />
             </Route>
 
-            {/* ADMIN ROUTES – No Header/Footer, uses AdminSidebar */}
+            {/* ADMIN ROUTES – No Header/Footer */}
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/collectibles" element={<AdminCollectibles />} />
             <Route path="/admin/collectibles/:id" element={<AdminCollectibleDetail />} />
@@ -121,7 +133,7 @@ function App() {
             <Route path="/admin/settings" element={<AdminSettings />} />
             <Route path="/admin/team" element={<AdminTeam />} />
 
-            {/* 404 - Not Found */}
+            {/* 404 */}
             <Route
               path="*"
               element={
