@@ -1,3 +1,4 @@
+// src/pages/CollectibleDetail.tsx – UPDATED & FINAL (November 2025)
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -67,7 +68,7 @@ const CollectibleDetail: React.FC = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* LEFT COLUMN */}
+          {/* LEFT COLUMN - Image & Stats */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
             <div className="relative aspect-square rounded-xl overflow-hidden bg-gray-800">
               <img src={collectible.image} alt={collectible.name} className="w-full h-full object-cover" />
@@ -109,7 +110,7 @@ const CollectibleDetail: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* RIGHT COLUMN */}
+          {/* RIGHT COLUMN - Details */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -127,7 +128,7 @@ const CollectibleDetail: React.FC = () => {
 
             {/* Pricing placeholder */}
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-              {/* Your pricing code */}
+              {/* Your pricing/buy logic here */}
             </div>
 
             {/* Blockchain Details */}
@@ -143,14 +144,14 @@ const CollectibleDetail: React.FC = () => {
                 <div><dt className="text-gray-400">Royalties</dt><dd className="text-white">{collectible.royalties}</dd></div>
               </dl>
               <Link
-                to="/blockchain-details"
+                to="/security/blockchain"
                 className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg"
               >
-                Show Blockchain Details <ExternalLink className="h-4 w-4" />
+                View Full Blockchain Details <ExternalLink className="h-4 w-4" />
               </Link>
             </div>
 
-            {/* Physical Storage & Security – button at bottom */}
+            {/* Physical Storage & Security */}
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-cyan-500/50 transition">
               <div className="flex items-center gap-3 mb-5">
                 <Lock className="h-7 w-7 text-cyan-400" />
@@ -163,34 +164,31 @@ const CollectibleDetail: React.FC = () => {
                 <div className="flex justify-between"><dt className="text-gray-400">Security Level</dt><dd className="text-green-400 font-medium">{collectible.storage.securityLevel}</dd></div>
               </dl>
               <Link
-                to="/physical-storage-details"
+                to="/security/physical-storage"
                 className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg"
               >
-                Show Physical Storage Details <ExternalLink className="h-4 w-4" />
+                View Full Vault Details <ExternalLink className="h-4 w-4" />
               </Link>
             </div>
 
-            {/* INSURANCE COVERAGE – BUTTON NOW ANCHORED TO BOTTOM */}
+            {/* Insurance Coverage */}
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-indigo-500/50 transition flex flex-col">
               <div className="flex items-center gap-3 mb-5">
                 <Shield className="h-7 w-7 text-indigo-400" />
                 <h3 className="text-xl font-bold text-white">Insurance Coverage</h3>
               </div>
-
               <dl className="grid grid-cols-2 gap-4 text-sm flex-1">
                 <div><dt className="text-gray-400">Provider</dt><dd className="text-white font-medium">{collectible.insurance.provider}</dd></div>
                 <div><dt className="text-gray-400">Coverage</dt><dd className="text-green-400 font-bold">{collectible.insurance.coverage}</dd></div>
                 <div><dt className="text-gray-400">Valid Until</dt><dd className="text-white">{collectible.insurance.validUntil}</dd></div>
                 <div><dt className="text-gray-400">Policy #</dt><dd className="text-blue-300 font-mono text-xs">{collectible.insurance.policyNumber}</dd></div>
               </dl>
-
-              {/* Full-width button stuck to the bottom */}
-              <button
-                onClick={() => setShowInsuranceModal(true)}
+              <Link
+                to="/security/insurance"
                 className="mt-6 w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg"
               >
                 View Full Insurance Policy <FileText className="h-4 w-4" />
-              </button>
+              </Link>
             </div>
           </motion.div>
         </div>
