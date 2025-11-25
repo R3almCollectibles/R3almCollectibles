@@ -129,7 +129,7 @@ const CollectibleDetail: React.FC = () => {
             </div>
 
             {/* Pricing placeholder */}
-            <div className="bg-gray-800 rounded-xl p-6 bordered border-gray-700">
+            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
               {/* Your pricing code */}
             </div>
 
@@ -173,13 +173,14 @@ const CollectibleDetail: React.FC = () => {
               </Link>
             </div>
 
-            {/* INSURANCE COVERAGE – NOW IDENTICAL TO BLOCKCHAIN DETAILS CARD */}
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-indigo-500/50 transition">
+            {/* INSURANCE COVERAGE – BUTTON NOW ANCHORED TO BOTTOM */}
+            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-indigo-500/50 transition flex flex-col h-full">
               <div className="flex items-center gap-3 mb-5">
                 <Shield className="h-7 w-7 text-indigo-400" />
                 <h3 className="text-xl font-bold text-white">Insurance Coverage</h3>
               </div>
-              <dl className="grid grid-cols-2 gap-4 text-sm mb-6">
+
+              <dl className="grid grid-cols-2 gap-4 text-sm flex-grow">
                 <div>
                   <dt className="text-gray-400">Provider</dt>
                   <dd className="text-white font-medium">{collectible.insurance.provider}</dd>
@@ -197,9 +198,11 @@ const CollectibleDetail: React.FC = () => {
                   <dd className="text-blue-300 font-mono text-xs">{collectible.insurance.policyNumber}</dd>
                 </div>
               </dl>
+
+              {/* Button anchored to bottom with mt-auto */}
               <button
                 onClick={() => setShowInsuranceModal(true)}
-                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
+                className="mt-auto w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
               >
                 View Full Insurance Policy <FileText className="h-4 w-4" />
               </button>
