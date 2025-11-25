@@ -3,26 +3,25 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { createDemoUsersIfNeeded } from './lib/createDemoUsers'; // Adjust path if needed
 
-// Pages
-import { Login } from './pages/Login';
-import { Profile } from './pages/Profile';
+// Pages (default imports)
+import Login from './pages/Login';
+import Profile from './pages/Profile';
+import HomePage from './pages/HomePage'; // Fixed: Default import
 
-// Dashboards (role-based)
-import { CollectorDashboard } from './pages/dashboards/CollectorDashboard';
-import { CreatorDashboard } from './pages/dashboards/CreatorDashboard';
-import { InvestorDashboard } from './pages/dashboards/InvestorDashboard';
-import { AdminDashboard } from './pages/dashboards/AdminDashboard';
+// Dashboards (default imports)
+import CollectorDashboard from './pages/dashboards/CollectorDashboard';
+import CreatorDashboard from './pages/dashboards/CreatorDashboard';
+import InvestorDashboard from './pages/dashboards/InvestorDashboard';
+import AdminDashboard from './pages/dashboards/AdminDashboard';
 
-// R3alm-Specific Pages (add imports as you build)
-import { HomePage } from './pages/HomePage'; // e.g., from previous snippets
-import { Marketplace } from './pages/Marketplace';
-// import { MintNFT } from './pages/MintNFT';
-// import { Portfolio } from './pages/Portfolio';
-// import { Analytics } from './pages/Analytics';
-// import { Settings } from './pages/Settings';
+import Marketplace from './pages/Marketplace';
+// import MintNFT from './pages/MintNFT';
+// import Portfolio from './pages/Portfolio';
+// import Analytics from './pages/Analytics';
+// import Settings from './pages/Settings';
 
 // Components
-import { Navbar } from './components/Navbar'; // Or rename to Header if using my previous
+import Navbar from './components/Navbar'; // Or rename to Header if using my previous
 import { Toaster } from 'react-hot-toast';
 
 // Loading Spinner (simple, memoized)
