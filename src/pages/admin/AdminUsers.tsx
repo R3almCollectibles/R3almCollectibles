@@ -1,4 +1,4 @@
-// src/pages/admin/AdminUsers.tsx – COMPLETE & READY
+// src/pages/admin/AdminUsers.tsx – FULLY FIXED & WORKING
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import AdminSidebar from '../../components/admin/AdminSidebar';
@@ -15,7 +15,6 @@ import {
   CheckCircle2,
   Clock,
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
 interface User {
   id: string;
@@ -31,7 +30,6 @@ interface User {
 }
 
 const AdminUsers: React.FC = () => {
-  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterRole, setFilterRole] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -252,5 +250,59 @@ const AdminUsers: React.FC = () => {
                               <div className="text-sm">
                                 <div className="text-white">{user.collectiblesOwned} owned</div>
                                 <div className="text-gray-400">Spent {user.totalSpent}</div>
-                                <div className="text-gray-500 text-xs mt-1">
-                                  <Calendar className="inline h-3
+                                <div className="text-gray-500 text-xs mt-1 flex items-center gap-1">
+                                  <Calendar className="h-3 w-3" />
+                                  Joined {user.joinedDate}
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-5">
+                              <div className="flex items-center justify-center gap-2">
+                                {user.role !== 'admin' && (
+                                  <button
+                                    onClick={() => handleMakeAdmin(user.id)}
+                                    className="p-2.5 hover:bg-purple-600/20 rounded-lg transition"
+                                    title="Make Admin"
+                                  >
+                                    <Shield className="h-4.5 w-4.5 text-purple-400" />
+                                  </button>
+                                )}
+                                {user.status === 'active' && (
+                                  <button
+                                    onClick={() => handleSuspend(user.id)}
+                                    className="p-2.5 hover:bg-yellow-600/20 rounded-lg transition"
+                                    title="Suspend"
+                                  >
+                                    <Clock className="h-4.5 w-4.5 text-yellow-400" />
+                                  </button>
+                                )}
+                                {user.status !== 'banned' && (
+                                  <button
+                                    onClick={() => handleBan(user.id)}
+                                    className="p-2.5 hover:bg-red-600/20 rounded-lg transition"
+                                    title="Ban User"
+                                  >
+                                    <Ban className="h-4.5 w-4.5 text-red-400" />
+                                  </button>
+                                )}
+                                <button className="p-2.5 hover:bg-gray-600 rounded-lg transition">
+                                  <MoreVertical className="h-4.5 w-4.5 text-gray-400" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AdminUsers;
