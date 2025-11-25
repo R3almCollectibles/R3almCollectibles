@@ -1,4 +1,4 @@
-// src/App.tsx – FINAL & COMPLETE (November 2025) – ALL ADMIN PAGES LIVE
+// src/App.tsx – FINAL & COMPLETE (November 2025) – FULLY FIXED & WORKING
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
@@ -24,8 +24,9 @@ const ProvenanceDetail = lazy(() => import('./pages/ProvenanceDetail'));
 const ActivityDetail = lazy(() => import('./pages/ActivityDetail'));
 const Demo = lazy(() => import('./pages/Demo'));
 
-// Admin Pages – ALL NOW REAL & FULLY FUNCTIONAL
+// Admin Pages – ALL REAL & FULLY FUNCTIONAL
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+const AdminCollectibles = lazy(() => import('./pages/admin/AdminCollectibles'));        // NEW
 const AdminCollectibleDetail = lazy(() => import('./pages/admin/AdminCollectibleDetail'));
 const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
 const AdminReports = lazy(() => import('./pages/admin/AdminReports'));
@@ -74,6 +75,7 @@ function App() {
                 </div>
               }
             >
+              {/* Duplicate routes inside for nested layout – this is correct */}
               <Route path="/" element={<HomePage />} />
               <Route path="/marketplace" element={<Marketplace />} />
               <Route path="/collectible/:id" element={<CollectibleDetail />} />
@@ -93,7 +95,7 @@ function App() {
 
             {/* ADMIN ROUTES – No Header/Footer, uses AdminSidebar */}
             <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/collectibles" element={<AdminDashboard />} />
+            <Route path="/admin/collectibles" element={<AdminCollectibles />} />              {/* FIXED */}
             <Route path="/admin/collectibles/:id" element={<AdminCollectibleDetail />} />
             <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/admin/reports" element={<AdminReports />} />
