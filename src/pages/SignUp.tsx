@@ -7,7 +7,6 @@ import { User, Mail, Lock, ArrowRight } from 'lucide-react';
 const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { signUp } = useAuth();
@@ -22,7 +21,7 @@ const Signup = () => {
     if (error) {
       setError(error.message);
     } else {
-      // Optional: create profile with name
+      alert('Check your email for confirmation link!');
       navigate('/login');
     }
     setLoading(false);
@@ -38,21 +37,6 @@ const Signup = () => {
 
         <div className="bg-gray-900 rounded-3xl border border-gray-800 p-8 shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
-              <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition"
-                  placeholder="John Doe"
-                />
-              </div>
-            </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
               <div className="relative">
