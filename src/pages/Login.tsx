@@ -76,14 +76,11 @@ export const Login = () => {
 
   return (
     <div className="min-h-screen bg-gray-950 flex flex-col">
-      {/* Top Navigation Bar (your existing navbar goes here or is rendered via layout) */}
-      {/* This empty div reserves space for your top bar if it's in a Layout component */}
       <div className="h-16" aria-hidden="true" />
 
-      {/* Main Content - Starts below navbar */}
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="max-w-5xl w-full">
-          {/* Hero Header - Now perfectly below navbar */}
+          {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
               Welcome to{' '}
@@ -96,7 +93,7 @@ export const Login = () => {
             </p>
           </div>
 
-          {/* Demo Accounts Grid */}
+          {/* Demo Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
             {Object.values(demoAccounts).map((account) => {
               const Icon = account.icon;
@@ -105,26 +102,32 @@ export const Login = () => {
                   key={account.email}
                   onClick={() => handleDemoLogin(account.email)}
                   disabled={loading}
-                  className="group relative overflow-hidden rounded-3xl border border-gray-800 bg-gray-900/80 backdrop-blur-sm p-8 transition-all duration-300 hover:scale-105 hover:border-gray-700 hover:shadow-2xl hover:bg-gray-900"
+                  className="group relative flex flex-col h-full overflow-hidden rounded-3xl border border-gray-800 bg-gray-900/80 backdrop-blur-sm p-8 transition-all duration-300 hover:scale-105 hover:border-gray-700 hover:shadow-2xl hover:bg-gray-900"
                 >
                   <div className={`absolute inset-0 bg-gradient-to-br ${account.color} opacity-10 group-hover:opacity-25 transition`} />
 
-                  <div className="relative z-10 text-center">
-                    <div className="w-28 h-28 mx-auto mb-6 rounded-full overflow-hidden ring-4 ring-gray-800 group-hover:ring-gray-600 transition">
+                  <div className="relative z-10 flex flex-col items-center flex-1">
+                    {/* Avatar */}
+                    <div className="w-28 h-28 mb-6 rounded-full overflow-hidden ring-4 ring-gray-800 group-hover:ring-gray-600 transition">
                       <img src={account.avatar} alt={account.name} className="w-full h-full object-cover" />
                     </div>
 
+                    {/* Name & Role */}
                     <h3 className="text-2xl font-bold text-white mb-2">{account.name}</h3>
                     <p className="text-lg text-gray-300 mb-6">{account.role}</p>
 
-                    <div className="flex items-center justify-center gap-2 text-sm text-gray-500 mb-6">
+                    {/* Email */}
+                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-8">
                       <Icon className="h-5 w-5" />
                       <span>{account.email}</span>
                     </div>
 
-                    <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-full text-base font-semibold bg-gradient-to-r ${account.color} text-white shadow-lg`}>
-                      <Sparkles className="h-5 w-5" />
-                      Instant Login
+                    {/* Button – Pinned to bottom */}
+                    <div className="mt-auto w-full">
+                      <div className={`inline-flex w-full justify-center items-center gap-3 px-6 py-4 rounded-full text-base font-semibold bg-gradient-to-r ${account.color} text-white shadow-lg transition-all group-hover:shadow-xl`}>
+                        <Sparkles className="h-5 w-5" />
+                        Instant Login
+                      </div>
                     </div>
                   </div>
                 </button>
@@ -177,7 +180,7 @@ export const Login = () => {
                 </div>
 
                 {error && (
-                  <div className="p-5 bg-red-900/20 border border-red-500/50 rounded-2xl text-red-400 text-sm text-center">
+                  <div className="p-5 bg-red-900/20 border border-red-500/50 rounded-2xl text-red-400 text-center">
                     {error}
                   </div>
                 )}
