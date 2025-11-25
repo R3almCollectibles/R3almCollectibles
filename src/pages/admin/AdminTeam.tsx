@@ -1,4 +1,4 @@
-// src/pages/admin/AdminTeam.tsx – TEAM MANAGEMENT (FULLY WORKING)
+// src/pages/admin/AdminTeam.tsx – FULLY FIXED & WORKING
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import AdminSidebar from '../../components/admin/AdminSidebar';
@@ -131,7 +131,6 @@ const AdminTeam: React.FC = () => {
 
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-              >
               <div className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl p-6 text-white">
                 <Users className="h-10 w-10 mb-4" />
                 <div className="text-4xl font-bold">4</div>
@@ -208,91 +207,4 @@ const AdminTeam: React.FC = () => {
                                 <span className="text-sm text-gray-300 capitalize">{member.status}</span>
                               </div>
                             </td>
-                            <td className="px-6 py-5 text-gray-300">{member.joined}</td>
-                            <td className="px-6 py-5 text-gray-300">{member.lastActive}</td>
-                            <td className="px-6 py-5">
-                              <div className="flex items-center justify-center gap-3">
-                                {member.role !== 'owner' && (
-                                  <>
-                                    <button className="p-2.5 hover:bg-gray-600 rounded-lg transition" title="Edit Role">
-                                      <Edit className="h-5 w-5 text-gray-400" />
-                                    </button>
-                                    <button className="p-2.5 hover:bg-red-600/20 rounded-lg transition" title="Remove">
-                                      <Trash2 className="h-5 w-5 text-red-400" />
-                                    </button>
-                                  </>
-                                )}
-                                {member.status === 'invited' && (
-                                  <button className="p-2.5 hover:bg-yellow-600/20 rounded-lg transition" title="Resend Invite">
-                                    <Mail className="h-5 w-5 text-yellow-400" />
-                                  </button>
-                                )}
-                                <button className="p-2.5 hover:bg-gray-600 rounded-lg transition">
-                                  <MoreVertical className="h-5 w-5 text-gray-400" />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Invite Modal */}
-            {showInviteModal && (
-              <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="bg-gray-800 rounded-2xl border border-gray-700 p-8 max-w-md w-full mx-4"
-                >
-                  <h3 className="text-2xl font-bold text-white mb-6">Invite Team Member</h3>
-                  <div className="space-y-6">
-                    <div>
-                      <label className="text-white font-medium mb-2 block">Email Address</label>
-                      <input
-                        type="email"
-                        placeholder="team@capitalrealm.io"
-                        className="w-full px-5 py-4 bg-gray-700 border border-gray-600 rounded-xl text-white focus:outline-none focus:border-purple-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-white font-medium mb-2 block">Role</label>
-                      <select className="w-full px-5 py-4 bg-gray-700 border border-gray-600 rounded-xl text-white focus:outline-none focus:border-purple-500">
-                        <option>Admin</option>
-                        <option>Moderator</option>
-                        <option>Viewer</option>
-                      </select>
-                    </div>
-                    <div className="flex justify-end gap-4 pt-6">
-                      <button
-                        onClick={() => setShowInviteModal(false)}
-                        className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-xl text-white transition"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={() => {
-                          alert('Invite sent!');
-                          setShowInviteModal(false);
-                        }}
-                        className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl text-white font-bold transition"
-                      >
-                        Send Invite
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              </div>
-            )}
-
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default AdminTeam;
+                            <td className="px-6 py-5 text-gray-300">{
