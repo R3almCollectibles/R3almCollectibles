@@ -24,6 +24,11 @@ const ProvenanceDetail = lazy(() => import('./pages/ProvenanceDetail'));
 const ActivityDetail = lazy(() => import('./pages/ActivityDetail'));
 const Demo = lazy(() => import('./pages/Demo'));
 
+// NEW: Dedicated Security & Transparency Pages
+const BlockchainDetails = lazy(() => import('./pages/BlockchainDetails'));
+const PhysicalStorageSecurity = lazy(() => import('./pages/PhysicalStorageSecurity'));
+const InsuranceCoverage = lazy(() => import('./pages/InsuranceCoverage'));
+
 // Admin Pages – ALL REAL & FULLY FUNCTIONAL
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const AdminCollectibles = lazy(() => import('./pages/admin/AdminCollectibles'));
@@ -32,7 +37,7 @@ const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
 const AdminReports = lazy(() => import('./pages/admin/AdminReports'));
 const AdminAnalytics = lazy(() => import('./pages/admin/AdminAnalytics'));
 const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'));
-const AdminTeam = lazy(() => import('./pages/admin/AdminTeam')); // NEW
+const AdminTeam = lazy(() => import('./pages/admin/AdminTeam'));
 
 // Loading Spinner
 const LoadingSpinner = () => (
@@ -47,7 +52,6 @@ function App() {
       <Router>
         <Suspense fallback={<LoadingSpinner />}>
           <Routes>
-
             {/* PUBLIC ROUTES – With Header & Footer */}
             <Route
               element={
@@ -55,6 +59,7 @@ function App() {
                   <Header />
                   <main className="flex-1">
                     <Routes>
+                      {/* Core Pages */}
                       <Route path="/" element={<HomePage />} />
                       <Route path="/marketplace" element={<Marketplace />} />
                       <Route path="/collectible/:id" element={<CollectibleDetail />} />
@@ -66,22 +71,31 @@ function App() {
                       <Route path="/terms" element={<TermsOfService />} />
                       <Route path="/privacy" element={<PrivacyPolicy />} />
                       <Route path="/settings" element={<Settings />} />
+                      <Route path="/demo" element={<Demo />} />
+
+                      {/* Legacy Combined Page (kept for backward compatibility) */}
                       <Route path="/storage-security" element={<StorageSecurity />} />
+
+                      {/* NEW: Dedicated Transparency Pages */}
+                      <Route path="/security/blockchain" element={<BlockchainDetails />} />
+                      <Route path="/security/physical-storage" element={<PhysicalStorageSecurity />} />
+                      <Route path="/security/insurance" element={<InsuranceCoverage />} />
+
+                      {/* Detail Views */}
                       <Route path="/collectible/:id/provenance/:eventId" element={<ProvenanceDetail />} />
                       <Route path="/collectible/:id/activity/:activityId" element={<ActivityDetail />} />
-                      <Route path="/demo" element={<Demo />} />
                     </Routes>
                   </main>
                   <Footer />
                 </div>
               }
             >
-              {/* Nested routes for layout */}
+              {/* These nested routes are required for React Router v6 outlet behavior */}
               <Route path="/" element={<HomePage />} />
               <Route path="/marketplace" element={<Marketplace />} />
               <Route path="/collectible/:id" element={<CollectibleDetail />} />
               <Route path="/mint" element={<MintNFT />} />
-              <Route path="/portfolio" element={<Portfolio />} />
+              <Route pathει, "/portfolio" element={<Portfolio />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/help" element={<HelpCenter />} />
               <Route path="/api-docs" element={<APIDocumentation />} />
@@ -89,9 +103,12 @@ function App() {
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/storage-security" element={<StorageSecurity />} />
+              <Route path="/demo" element={<Demo />} />
+              <Route path="/security/blockchain" element={<BlockchainDetails />} />
+              <Route path="/security/physical-storage" element={<PhysicalStorageSecurity />} />
+              <Route path="/security/insurance" element={<InsuranceCoverage />} />
               <Route path="/collectible/:id/provenance/:eventId" element={<ProvenanceDetail />} />
               <Route path="/collectible/:id/activity/:activityId" element={<ActivityDetail />} />
-              <Route path="/demo" element={<Demo />} />
             </Route>
 
             {/* ADMIN ROUTES – No Header/Footer, uses AdminSidebar */}
@@ -102,7 +119,7 @@ function App() {
             <Route path="/admin/reports" element={<AdminReports />} />
             <Route path="/admin/analytics" element={<AdminAnalytics />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
-            <Route path="/admin/team" element={<AdminTeam />} /> {/* NEW */}
+            <Route path="/admin/team" element={<AdminTeam />} />
 
             {/* 404 - Not Found */}
             <Route
@@ -117,7 +134,6 @@ function App() {
                 </div>
               }
             />
-
           </Routes>
         </Suspense>
       </Router>
