@@ -1,59 +1,38 @@
-// src/pages/Profile.tsx
-import React from 'react';
+import React, { memo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Mail, User, LogOut } from 'lucide-react';
 
-const roleInfo = {
-  collector: { label: 'Collector', gradient: 'from-purple-500 to-pink-500', icon: 'Sparkles' },
-  creator:   { label: 'Creator',   gradient: 'from-blue-500 to-cyan-500',   icon: 'Palette' },
-  investor:  { label: 'Investor',  gradient: 'from-green-500 to-emerald-500', icon: 'DollarSign' },
-  admin:     { label: 'Admin',     gradient: 'from-red-500 to-orange-500',    icon: 'Shield' },
-};
-
-export const Profile = () => {
+const Profile: React.FC = memo(() => {
   const { user, signOut } = useAuth();
-  const meta = user?.user_metadata || {};
-  const role = (meta.role || 'collector').toLowerCase();
-  const config = roleInfo[role as keyof typeof roleInfo] || roleInfo.collector;
+
+  if (!user) {
+    return (
+      <main className="container mx-auto px-4 py-8" role="main" aria-label="Profile Loading">
+        <div className="text-center">Loading profile...</div>
+      </main>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-950 pt-20 px-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-gray-900/80 backdrop-blur-sm rounded-3xl border border-gray-800 p-10">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-4xl font-bold text-white">{meta.name || user?.email}</h1>
-              <p className={`text-2xl bg-gradient-to-r ${config.gradient} bg-clip-text text-transparent`}>
-                {config.label}
-              </p>
-            </div>
-            <button
-              onClick={signOut}
-              className="flex items-center gap-3 px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-white transition"
-            >
-              <LogOut className="h-5 w-5" />
-              Sign Out
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="flex items-center gap-4">
-              <Mail className="h-6 w-6 text-gray-500" />
-              <div>
-                <p className="text-sm text-gray-500">Email</p>
-                <p className="text-white">{user?.email}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <User className="h-6 w-6 text-gray-500" />
-              <div>
-                <p className="text-sm text-gray-500">Role</p>
-                <p className="text-white capitalize">{role}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+    <main className="container mx-auto px-4 py-8 max-w-md" role="main" aria-label="User Profile">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Profile</h1>
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md" role="region">
+        <p className="mb-2"><strong>Email:</strong> {user.email}</p>
+        <p className="mb-4"><strong>Role:</strong> {user.user_metadata?.role || 'Collector'}</p>
+        <button
+          onClick={signOut}
+          className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
+          aria-label="Logout"
+        >
+          Logout
+        </button>
+        <button className="ml-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">
+          Edit Profile
+        </button>
       </div>
-    </div>
+    </main>
   );
-};
+});
+
+Profile.displayName = 'Profile';
+
+export default Profile;
