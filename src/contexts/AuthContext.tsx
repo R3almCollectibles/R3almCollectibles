@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode, useCallback } from 'react';
-import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, ReactNode } from 'react';
+import { User, Session } from '@supabase/supabase-js';
 import { toast } from 'react-hot-toast';
-import type { Session } from '@supabase/supabase-js';
+import getSupabaseClient from '../lib/supabaseClient'; // New import: Singleton client
 
 // TypeScript Interfaces
 interface CustomUser extends User {
@@ -20,11 +20,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Supabase Client (singleton for performance)
-const supabase: SupabaseClient = createClient(
-  import.meta.env.VITE_SUPABASE_URL as string,
-  import.meta.env.VITE_SUPABASE_ANON_KEY as string
-);
+// Supabase Client (singleton via import)
+const supabase = getSupabaseClient();
 
 // Auth Provider Component
 interface AuthProviderProps {
