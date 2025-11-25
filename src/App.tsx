@@ -1,51 +1,53 @@
+// src/App.tsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import HomePage from './pages/HomePage';
-import Marketplace from './pages/Marketplace';
-import CollectibleDetail from './pages/CollectibleDetail';
-import MintNFT from './pages/MintNFT';
-import Portfolio from './pages/Portfolio';
-import Analytics from './pages/Analytics';
-import HelpCenter from './pages/HelpCenter';
-import APIDocumentation from './pages/APIDocumentation';
-import TermsOfService from './pages/TermsOfService';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import Settings from './pages/Settings';
-import StorageSecurity from './pages/StorageSecurity';
-import ProvenanceDetail from './pages/ProvenanceDetail';
-import ActivityDetail from './pages/ActivityDetail';
-import Demo from './pages/Demo';
-import AdminDashboard from './pages/AdminDashboard';
-import AdminCollectibleDetail from './pages/admin/AdminCollectibleDetail';
 
-function App() {
+// Public Pages
+import Home from './pages/Home';
+import Marketplace from './pages/Marketplace';
+import Mint from './pages/Mint';
+import Portfolio from './pages/Portfolio';
+import CollectibleDetail from './pages/CollectibleDetail';
+
+// Admin Pages
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminCollectibleDetail from './pages/admin/AdminCollectibleDetail';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminUserDetail from './pages/admin/AdminUserDetail'; // optional future
+
+const App = () => {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-gray-900 text-white">
+        <div className="min-h-screen bg-gray-950 text-white flex flex-col">
           <Header />
-          <main>
+          <main className="flex-1">
             <Routes>
-              <Route path="/" element={<HomePage />} />
+              {/* Public Routes */}
+              <Route path="/" element={<Home />} />
               <Route path="/marketplace" element={<Marketplace />} />
-              <Route path="/collectible/:id" element={<CollectibleDetail />} />
-              <Route path="/mint" element={<MintNFT />} />
+              <Route path="/mint" element={<Mint />} />
               <Route path="/portfolio" element={<Portfolio />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/help" element={<HelpCenter />} />
-              <Route path="/api-docs" element={<APIDocumentation />} />
-              <Route path="/terms" element={<TermsOfService />} />
-              <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/storage-security" element={<StorageSecurity />} />
-              <Route path="/collectible/:id/provenance/:eventId" element={<ProvenanceDetail />} />
-              <Route path="/collectible/:id/activity/:activityId" element={<ActivityDetail />} />
-              <Route path="/demo" element={<Demo />} />
+              <Route path="/collectible/:id" element={<CollectibleDetail />} />
+
+              {/* Admin Routes */}
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/collectible/:id" element={<AdminCollectibleDetail />} />
+              <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/user/:id" element={<AdminUserDetail />} />
+
+              {/* 404 */}
+              <Route path="*" element={
+                <div className="flex items-center justify-center h-screen">
+                  <div className="text-center">
+                    <h1 className="text-6xl font-bold text-gray-700">404</h1>
+                    <p className="text-xl text-gray-500 mt-4">Page not found</p>
+                  </div>
+                </div>
+              } />
             </Routes>
           </main>
           <Footer />
@@ -53,6 +55,6 @@ function App() {
       </Router>
     </AuthProvider>
   );
-}
+};
 
 export default App;
