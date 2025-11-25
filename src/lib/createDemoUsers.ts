@@ -1,5 +1,5 @@
 // src/lib/createDemoUsers.ts
-import { supabase } from './supabaseClient'  // ← was "../supabaseClient" → now "./supabaseClient"
+import { supabase } from './supabaseClient'
 
 const DEMO_USERS = [
   {
@@ -24,25 +24,36 @@ const DEMO_USERS = [
   },
 ]
 
-export async function createDemoUsersIfNotExist() {
+export async function createDemoUsersIfNeeded() {
+  // Only run in development (remove this line if you want it in production too)
   if (import.meta.env.PROD) return
 
   for (const user of DEMO_USERS) {
-    const { data: existing } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('email', user.email)
-      .single()
+    // Check if user already exists
+    const { data: existingUser } = await supabase.auth.signInWithPassword({
+      email: user.email,
+      password: user.password,
+    })
 
-    if (!existing) {
-      console.log(`Creating demo user: ${user.email}`)
-      const { error } = await supabase.auth.signUp({
-        email: user.email,
-        password: user.password,
-        options: { data: user.data },
-      })
-      if (error) console.warn(error.message)
-      else console.log(`Created: ${user.email}`)
+    if (existingUser.user) {
+      console.log(`Demo user already exists: ${user.email}`)
+      continue
+    }
+
+    // If not, create + auto-confirm via admin API trick
+    console.log(`Creating & auto-confirming: ${user.email}`)
+
+    const { data, error } = await supabase.auth.admin.createUser({
+      email: user.email,
+      password: user.password,
+      user_metadata: user.data,
+      email_confirm: true, // This bypasses confirmation!
+    })
+
+    if (error) {
+      console.warn(`Failed to create ${user.email}:`, error.message)
+    } else {
+      console.log(`Demo user ready: ${user.email}`)
     }
   }
 }
