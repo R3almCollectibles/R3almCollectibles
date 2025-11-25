@@ -14,11 +14,9 @@ import APIDocumentation from './pages/APIDocumentation';
 import TermsOfService from './pages/TermsOfService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Settings from './pages/Settings';
-import StorageSecurity from './pages/StorageSecurity';
 import ProvenanceDetail from './pages/ProvenanceDetail';
 import ActivityDetail from './pages/ActivityDetail';
 import Demo from './pages/Demo';
-import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
   return (
@@ -39,11 +37,9 @@ function App() {
               <Route path="/terms" element={<TermsOfService />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/settings" element={<Settings />} />
-              <Route path="/storage-security" element={<StorageSecurity />} />
               <Route path="/collectible/:id/provenance/:eventId" element={<ProvenanceDetail />} />
               <Route path="/collectible/:id/activity/:activityId" element={<ActivityDetail />} />
               <Route path="/demo" element={<Demo />} />
-              <Route path="/admin" element={<AdminDashboard />} />
             </Routes>
           </main>
           <Footer />

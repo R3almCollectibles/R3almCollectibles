@@ -1,119 +1,142 @@
-import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, ReactNode } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { toast } from 'react-hot-toast';
-import getSupabaseClient from '../lib/supabaseClient'; // New import: Singleton client
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-// TypeScript Interfaces
-interface CustomUser extends User {
-  name?: string; // Optional custom field (fetch from profile table if needed)
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  avatar?: string;
+  walletAddress?: string;
+  joinDate: string;
+  isDemo: boolean;
+  isAdmin?: boolean;
 }
 
 interface AuthContextType {
-  user: CustomUser | null;
-  session: Session | null;
-  loading: boolean;
-  signUp: (email: string, password: string) => Promise<void>;
-  signIn: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
-  refreshSession: () => Promise<void>;
+  user: User | null;
+  isAuthenticated: boolean;
+  login: (email: string, password: string) => Promise<boolean>;
+  signup: (email: string, password: string, name: string) => Promise<boolean>;
+  logout: () => void;
+  loginWithDemo: (demoType: 'collector' | 'creator' | 'investor' | 'admin') => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Supabase Client (singleton via import)
-const supabase = getSupabaseClient();
+// Demo accounts
+const demoAccounts = {
+  collector: {
+    id: 'demo-collector',
+    email: 'collector@demo.com',
+    name: 'Alex Collector',
+    avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=100',
+    walletAddress: '0x742d35Cc6634C0532925a3b8D46DE3C4',
+    joinDate: '2023-08-15',
+    isDemo: true,
+    isAdmin: false
+  },
+  creator: {
+    id: 'demo-creator',
+    email: 'creator@demo.com',
+    name: 'Maya Artist',
+    avatar: 'https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=100',
+    walletAddress: '0x891a2b3c4d5e6f7g8h9i0j1k2l3m4n5o',
+    joinDate: '2023-06-22',
+    isDemo: true,
+    isAdmin: false
+  },
+  investor: {
+    id: 'demo-investor',
+    email: 'investor@demo.com',
+    name: 'Jordan Investor',
+    avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=100',
+    walletAddress: '0x234b5c6d7e8f9g0h1i2j3k4l5m6n7o8p',
+    joinDate: '2023-09-10',
+    isDemo: true,
+    isAdmin: false
+  },
+  admin: {
+    id: 'demo-admin',
+    email: 'admin@demo.com',
+    name: 'Platform Admin',
+    avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
+    walletAddress: '0x111222333444555666777888999000111',
+    joinDate: '2023-01-01',
+    isDemo: true,
+    isAdmin: true  // This enables access
+  }
+};
 
-// Auth Provider Component
-interface AuthProviderProps {
-  children: ReactNode;
-}
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
 
-export const AuthProvider: React.FC<AuthProviderProps> = React.memo(({ children }) => {
-  const [user, setUser] = useState<CustomUser | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  // Initialize session on mount
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user as CustomUser ?? null);
-      setLoading(false);
-    });
-
-    // Listen for auth changes (real-time)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setSession(newSession);
-      setUser(newSession?.user as CustomUser ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  // Sign Up Handler
-  const signUp = useCallback(async (email: string, password: string) => {
-    setLoading(true);
-    const { error } = await supabase.auth.signUp({ email, password });
-    if (error) {
-      toast.error(`Sign up failed: ${error.message}`, { style: { background: '#007BFF', color: 'white' } });
-    } else {
-      toast.success('Check your email for confirmation!', { style: { background: '#007BFF', color: 'white' } });
+    // Check for stored user session
+    const storedUser = localStorage.getItem('r3alm_user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
     }
-    setLoading(false);
   }, []);
 
-  // Sign In Handler
-  const signIn = useCallback(async (email: string, password: string) => {
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      toast.error(`Login failed: ${error.message}`, { style: { background: '#007BFF', color: 'white' } });
-    } else {
-      toast.success('Logged in successfully!', { style: { background: '#007BFF', color: 'white' } });
-    }
-    setLoading(false);
-  }, []);
+  const login = async (email: string, password: string): Promise<boolean> => {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // For demo purposes, accept any email/password combination
+    const newUser: User = {
+      id: `user-${Date.now()}`,
+      email,
+      name: email.split('@')[0],
+      joinDate: new Date().toISOString().split('T')[0],
+      isDemo: false
+    };
+    
+    setUser(newUser);
+    localStorage.setItem('r3alm_user', JSON.stringify(newUser));
+    return true;
+  };
 
-  // Sign Out Handler
-  const signOut = useCallback(async () => {
-    setLoading(true);
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast.error(`Logout failed: ${error.message}`, { style: { background: '#007BFF', color: 'white' } });
-    } else {
-      toast.success('Logged out successfully!', { style: { background: '#007BFF', color: 'white' } });
-      setUser(null);
-      setSession(null);
-    }
-    setLoading(false);
-  }, []);
+  const signup = async (email: string, password: string, name: string): Promise<boolean> => {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    const newUser: User = {
+      id: `user-${Date.now()}`,
+      email,
+      name,
+      joinDate: new Date().toISOString().split('T')[0],
+      isDemo: false
+    };
+    
+    setUser(newUser);
+    localStorage.setItem('r3alm_user', JSON.stringify(newUser));
+    return true;
+  };
 
-  // Refresh Session (for token expiry)
-  const refreshSession = useCallback(async () => {
-    setLoading(true);
-    const { data: { session }, error } = await supabase.auth.refreshSession();
-    if (error) {
-      toast.error('Session refresh failed', { style: { background: '#007BFF', color: 'white' } });
-    } else {
-      setSession(session);
-      setUser(session?.user as CustomUser ?? null);
-    }
-    setLoading(false);
-  }, []);
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('r3alm_user');
+  };
 
-  // Memoized Context Value (prevents unnecessary re-renders)
-  const value = useMemo(
-    () => ({ user, session, loading, signUp, signIn, signOut, refreshSession }),
-    [user, session, loading, signUp, signIn, signOut, refreshSession]
+  const loginWithDemo = (demoType: 'collector' | 'creator' | 'investor' | 'admin') => {
+    const demoUser = demoAccounts[demoType];
+    setUser(demoUser);
+    localStorage.setItem('r3alm_user', JSON.stringify(demoUser));
+  };
+
+  return (
+    <AuthContext.Provider value={{
+      user,
+      isAuthenticated: !!user,
+      login,
+      signup,
+      logout,
+      loginWithDemo
+    }}>
+      {children}
+    </AuthContext.Provider>
   );
+};
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-});
-
-AuthProvider.displayName = 'AuthProvider';
-
-// Custom Hook
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

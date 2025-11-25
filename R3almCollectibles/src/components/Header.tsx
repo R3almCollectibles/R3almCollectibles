@@ -1,18 +1,7 @@
-// src/components/Header.tsx
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  Wallet, 
-  Menu, 
-  X, 
-  Zap, 
-  User, 
-  LogOut, 
-  Settings as SettingsIcon,
-  Shield,
-  ChevronDown
-} from 'lucide-react';
+import { Wallet, Menu, X, Zap, User, LogOut, Settings as SettingsIcon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import AuthModal from './AuthModal';
 
@@ -21,7 +10,6 @@ const Header = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
 
   const navigation = [
@@ -32,13 +20,6 @@ const Header = () => {
   ];
 
   const isActive = (path: string) => location.pathname === path;
-
-  const handleLogout = () => {
-    logout();
-    setShowUserMenu(false);
-    setIsMenuOpen(false);
-    navigate('/');
-  };
 
   return (
     <motion.header
@@ -77,59 +58,64 @@ const Header = () => {
                 {isActive(item.href) && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500"
                   />
                 )}
               </Link>
             ))}
           </nav>
 
-          {/* Desktop Auth / User Menu */}
+          {/* Wallet Connection */}
           <div className="hidden md:flex items-center space-x-4">
             {isAuthenticated ? (
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
+                  className="flex items-center space-x-3 px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors"
                 >
-                  <div className="flex items-center space-x-3">
-                    {user?.avatar ? (
-                      <img
-                        src={user.avatar}
-                        alt={user.name}
-                        className="w-9 h-9 rounded-full object-cover ring-2 ring-gray-700"
-                      />
-                    ) : (
-                      <div className="w-9 h-9 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center ring-2 ring-gray-700">
-                        <User className="h-5 w-5 text-white" />
-                      </div>
-                    )}
-                    <div className="text-left">
-                      <div className="text-white font-medium text-sm">{user?.name}</div>
-                      {user?.isDemo && (
-                        <div className="text-emerald-400 text-xs">Demo Account</div>
-                      )}
+                  {user?.avatar ? (
+                    <img
+                      src={user.avatar}
+                      alt={user.name}
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+                      <User className="h-4 w-4 text-white" />
                     </div>
-                  </div>
-                  <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
+                  )}
+                  <span className="text-white font-medium">{user?.name}</span>
                 </button>
 
-                {/* User Dropdown */}
                 {showUserMenu && (
                   <motion.div
-                    initial={{ opacity: 0, y: -10 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 mt-2 w-64 bg-gray-800 rounded-xl shadow-2xl border border-gray-700 overflow-hidden"
+                    className="absolute right-0 top-full mt-2 w-64 bg-gray-800 rounded-xl border border-gray-700 shadow-xl z-50"
                   >
-                    <div className="p-3 border-b border-gray-700">
-                      <div className="text-white font-medium">{user?.name}</div>
-                      <div className="text-gray-400 text-sm font-mono">
-                        {user?.walletAddress?.slice(0, 8)}...{user?.walletAddress?.slice(-6)}
+                    <div className="p-4 border-b border-gray-700">
+                      <div className="flex items-center space-x-3">
+                        {user?.avatar ? (
+                          <img
+                            src={user.avatar}
+                            alt={user.name}
+                            className="w-12 h-12 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+                            <User className="h-6 w-6 text-white" />
+                          </div>
+                        )}
+                        <div>
+                          <div className="text-white font-semibold">{user?.name}</div>
+                          <div className="text-gray-400 text-sm">{user?.email}</div>
+                          {user?.isDemo && (
+                            <div className="text-emerald-400 text-xs font-medium">Demo Account</div>
+                          )}
+                        </div>
                       </div>
                     </div>
-
-                    <nav className="p-2">
+                    <div className="p-2">
                       <Link
                         to="/portfolio"
                         onClick={() => setShowUserMenu(false)}
@@ -138,7 +124,6 @@ const Header = () => {
                         <User className="h-4 w-4" />
                         <span>Portfolio</span>
                       </Link>
-
                       <Link
                         to="/settings"
                         onClick={() => setShowUserMenu(false)}
@@ -147,50 +132,42 @@ const Header = () => {
                         <SettingsIcon className="h-4 w-4" />
                         <span>Settings</span>
                       </Link>
-
-                      {/* ADMIN DASHBOARD LINK - ONLY FOR ADMINS */}
-                      {user?.isAdmin && (
-                        <>
-                          <div className="h-px bg-gray-700 my-2 mx-3" />
-                          <Link
-                            to="/admin"
-                            onClick={() => setShowUserMenu(false)}
-                            className="flex items-center space-x-2 w-full px-3 py-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition-colors font-medium"
-                          >
-                            <Shield className="h-4 w-4" />
-                            <span>Admin Dashboard</span>
-                          </Link>
-                        </>
-                      )}
-
-                      <div className="h-px bg-gray-700 my-2 mx-3" />
-
+                      <Link
+                        to="/demo"
+                        onClick={() => setShowUserMenu(false)}
+                        className="flex items-center space-x-2 w-full px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
+                      >
+                        <Zap className="h-4 w-4" />
+                        <span>Try Demo</span>
+                      </Link>
                       <button
-                        onClick={handleLogout}
+                        onClick={() => {
+                          logout();
+                          setShowUserMenu(false);
+                        }}
                         className="flex items-center space-x-2 w-full px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
                       >
                         <LogOut className="h-4 w-4" />
                         <span>Sign Out</span>
                       </button>
-                    </nav>
+                    </div>
                   </motion.div>
                 )}
               </div>
             ) : (
               <button
                 onClick={() => setIsAuthModalOpen(true)}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2.5 rounded-lg font-semibold transition-all flex items-center space-x-2"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-all"
               >
-                <Wallet className="h-4 w-4" />
-                <span>Connect Wallet</span>
+                Sign In
               </button>
             )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile menu button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-gray-800 transition-colors"
+            className="md:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800"
           >
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -201,15 +178,15 @@ const Header = () => {
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="md:hidden border-t border-gray-800"
+            className="md:hidden py-4 border-t border-gray-800"
           >
-            <nav className="py-4">
+            <nav className="flex flex-col space-y-2">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`block px-4 py-3 text-lg font-medium transition-colors ${
+                  className={`px-3 py-2 text-base font-medium rounded-lg transition-colors ${
                     isActive(item.href)
                       ? 'text-blue-400 bg-gray-800'
                       : 'text-gray-300 hover:text-white hover:bg-gray-800'
@@ -218,19 +195,19 @@ const Header = () => {
                   {item.name}
                 </Link>
               ))}
-
+              
               {isAuthenticated ? (
                 <div className="mt-4 pt-4 border-t border-gray-700">
-                  <div className="flex items-center space-x-3 px-4 py-3">
+                  <div className="flex items-center space-x-3 px-3 py-2 mb-2">
                     {user?.avatar ? (
                       <img
                         src={user.avatar}
                         alt={user.name}
-                        className="w-10 h-10 rounded-full object-cover"
+                        className="w-8 h-8 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
-                        <User className="h-5 w-5 text-white" />
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+                        <User className="h-4 w-4 text-white" />
                       </div>
                     )}
                     <div>
@@ -240,45 +217,16 @@ const Header = () => {
                       )}
                     </div>
                   </div>
-
-                  <div className="mt-2">
-                    <Link
-                      to="/portfolio"
-                      onClick={() => setIsMenuOpen(false)}
-                      className="flex items-center space-x-2 px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800"
-                    >
-                      <User className="h-4 w-4" />
-                      <span>Portfolio</span>
-                    </Link>
-                    <Link
-                      to="/settings"
-                      onClick={() => setIsMenuOpen(false)}
-                      className="flex items-center space-x-2 px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800"
-                    >
-                      <SettingsIcon className="h-4 w-4" />
-                      <span>Settings</span>
-                    </Link>
-
-                    {/* ADMIN LINK IN MOBILE MENU */}
-                    {user?.isAdmin && (
-                      <Link
-                        to="/admin"
-                        onClick={() => setIsMenuOpen(false)}
-                        className="flex items-center space-x-2 px-4 py-3 text-red-400 hover:text-red-300 hover:bg-red-900/20 font-medium"
-                      >
-                        <Shield className="h-4 w-4" />
-                        <span>Admin Dashboard</span>
-                      </Link>
-                    )}
-
-                    <button
-                      onClick={handleLogout}
-                      className="flex items-center space-x-2 w-full px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      <span>Sign Out</span>
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setIsMenuOpen(false);
+                    }}
+                    className="flex items-center space-x-2 w-full px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Sign Out</span>
+                  </button>
                 </div>
               ) : (
                 <button
@@ -286,17 +234,17 @@ const Header = () => {
                     setIsAuthModalOpen(true);
                     setIsMenuOpen(false);
                   }}
-                  className="mx-4 mt-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2"
+                  className="flex items-center space-x-2 px-3 py-2 mt-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium"
                 >
-                  <Wallet className="h-5 w-5" />
-                  <span>Connect Wallet</span>
+                  <User className="h-4 w-4" />
+                  <span>Sign In</span>
                 </button>
               )}
             </nav>
           </motion.div>
         )}
       </div>
-
+      
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
