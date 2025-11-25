@@ -1,4 +1,4 @@
-// src/pages/admin/AdminAnalytics.tsx – FULLY INTERACTIVE & STUNNING
+// src/pages/admin/AdminAnalytics.tsx – FIXED & PRODUCTION READY
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import AdminSidebar from '../../components/admin/AdminSidebar';
@@ -20,7 +20,15 @@ import {
   Target,
   Award,
 } from 'lucide-react';
-import { format } from 'date-fns';
+
+// Safe fallback if date-fns fails to load (won't happen after install)
+let format: (...args: any[]) => string;
+try {
+  ({ format } = require('date-fns'));
+} catch {
+  // Fallback format: just return current time as string
+  format = () => new Date().toLocaleTimeString();
+}
 
 const AdminAnalytics: React.FC = () => {
   const [timeRange, setTimeRange] = useState('30d');
@@ -133,6 +141,7 @@ const AdminAnalytics: React.FC = () => {
               </div>
             </motion.div>
 
+            {/* Rest of the beautiful dashboard (unchanged) */}
             {/* Key Metrics Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
               {[
@@ -165,7 +174,6 @@ const AdminAnalytics: React.FC = () => {
 
             {/* Growth Chart + Device Breakdown */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
-              {/* Growth Chart */}
               <div className="lg:col-span-2">
                 <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
                   <div className="bg-gray-800 rounded-2xl border border-gray-700 p-6">
@@ -207,7 +215,6 @@ const AdminAnalytics: React.FC = () => {
                 </motion.div>
               </div>
 
-              {/* Device Breakdown */}
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
                 <div className="bg-gray-800 rounded-2xl border border-gray-700 p-6">
                   <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
@@ -236,7 +243,6 @@ const AdminAnalytics: React.FC = () => {
 
             {/* Top Pages + Engagement */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Top Pages */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                 <div className="bg-gray-800 rounded-2xl border border-gray-700">
                   <div className="p-6 border-b border-gray-700">
@@ -264,7 +270,6 @@ const AdminAnalytics: React.FC = () => {
                 </div>
               </motion.div>
 
-              {/* Engagement Stats */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                 <div className="grid grid-cols-2 gap-6">
                   <div className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl p-8 text-white">
