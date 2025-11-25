@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useParams, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   ArrowLeft,
   Heart,
@@ -12,15 +12,10 @@ import {
   Globe,
   Lock,
   FileText,
-  Download,
-  X,
 } from 'lucide-react';
 
 const CollectibleDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('details');
-  const [shareAmount, setShareAmount] = useState(1);
   const [showInsuranceModal, setShowInsuranceModal] = useState(false);
 
   const collectibles = [
@@ -28,7 +23,6 @@ const CollectibleDetail: React.FC = () => {
       id: 1,
       name: 'Vintage Gibson Les Paul 1959',
       description: 'An exceptional example of the legendary 1959 Gibson Les Paul Standard…',
-      fullDescription: `This 1959 Gibson Les Paul Standard is a true holy grail…`,
       price: '2.5 ETH',
       fractionalPrice: '0.025 ETH',
       fractional: '1/100',
@@ -40,28 +34,21 @@ const CollectibleDetail: React.FC = () => {
       trending: true,
       likes: 147,
       views: '2.1k',
-      owner: '0x742d35Cc6634C0532925a3b8D46DE3C4',
       mintDate: '2024-01-15',
       blockchain: 'Ethereum',
       tokenStandard: 'ERC-721',
       royalties: '2.5%',
-      provenance: [],
-      attributes: [],
       storage: {
         location: 'Climate-Controlled Private Vault',
         facility: 'SecureVault Manhattan',
         address: 'New York, NY, USA',
         securityLevel: 'Level 5 - Maximum Security',
-        climateControl: 'Temperature: 68-72°F, Humidity: 45-55%',
-        accessProtocol: '24/7 Biometric Access Control',
       },
       insurance: {
         provider: "Lloyd's of London",
         policyNumber: 'LLO-2024-MUS-001847',
         coverage: '$150,000 USD',
-        type: 'Fine Arts & Collectibles Policy',
         validUntil: '2025-01-15',
-        deductible: '$2,500 USD',
       },
     },
   ];
@@ -71,6 +58,7 @@ const CollectibleDetail: React.FC = () => {
   return (
     <div className="pt-16 min-h-screen bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
         {/* Back Button */}
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-8">
           <Link to="/marketplace" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition">
@@ -80,9 +68,10 @@ const CollectibleDetail: React.FC = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Left Column */}
+
+          {/* LEFT COLUMN */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-            {/* Image & Badges */}
+            {/* Image */}
             <div className="relative aspect-square rounded-xl overflow-hidden bg-gray-800">
               <img src={collectible.image} alt={collectible.name} className="w-full h-full object-cover" />
               <div className="absolute top-4 left-4 flex gap-2">
@@ -124,8 +113,10 @@ const CollectibleDetail: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Right Column */}
+          {/* RIGHT COLUMN */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-8">
+
+            {/* Title */}
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-blue-400 text-sm font-medium">{collectible.category}</span>
@@ -135,8 +126,9 @@ const CollectibleDetail: React.FC = () => {
               <p className="text-gray-300 leading-relaxed">{collectible.description}</p>
             </div>
 
+            {/* Pricing placeholder */}
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-              {/* Pricing card placeholder */}
+              {/* Your pricing code */}
             </div>
 
             {/* Blockchain Details */}
@@ -151,7 +143,10 @@ const CollectibleDetail: React.FC = () => {
                 <div><dt className="text-gray-400">Mint Date</dt><dd className="text-white">{collectible.mintDate}</dd></div>
                 <div><dt className="text-gray-400">Royalties</dt><dd className="text-white">{collectible.royalties}</dd></div>
               </dl>
-              <Link to="/blockchain-details" className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg">
+              <Link
+                to="/blockchain-details"
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg"
+              >
                 Show Blockchain Details <ExternalLink className="h-4 w-4" />
               </Link>
             </div>
@@ -168,31 +163,49 @@ const CollectibleDetail: React.FC = () => {
                 <div className="flex justify-between"><dt className="text-gray-400">Location</dt><dd className="text-white">{collectible.storage.address}</dd></div>
                 <div className="flex justify-between"><dt className="text-gray-400">Security Level</dt><dd className="text-green-400 font-medium">{collectible.storage.securityLevel}</dd></div>
               </dl>
-              <Link to="/storage-security" className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg">
+              <Link
+                to="/storage-security"
+                className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg"
+              >
                 Show Storage & Security Details <ExternalLink className="h-4 w-4" />
               </Link>
             </div>
 
-            {/* INSURANCE COVERAGE – NOW PERFECT */}
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-blue-500/50 transition">
+            {/* INSURANCE COVERAGE – NOW IDENTICAL TO THE OTHERS */}
+            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-indigo-500/50 transition">
               <div className="flex items-center gap-3 mb-5">
-                <Shield className="h-7 w-7 text-blue-400" />
+                <Shield className="h-7 w-7 text-indigo-400" />
                 <h3 className="text-xl font-bold text-white">Insurance Coverage</h3>
               </div>
               <dl className="grid grid-cols-2 gap-4 text-sm mb-6">
-                <div><dt className="text-gray-400">Provider</dt><dd className="text-white font-medium">{collectible.insurance.provider}</dd></div>
-                <div><dt className="text-gray-400">Coverage</dt><dd className="text-green-400 font-bold">{collectible.insurance.coverage}</dd></div>
-                <div><dt className="text-gray-400">Valid Until</dt><dd className="text-white">{collectible.insurance.validUntil}</dd></div>
-                <div><dt className="text-gray-400">Policy #</dt><dd className="text-blue-300 font-mono text-xs">{collectible.insurance.policyNumber}</dd></div>
+                <div>
+                  <dt className="text-gray-400">Provider</dt>
+                  <dd className="text-white font-medium">{collectible.insurance.provider}</dd>
+                </div>
+                <div>
+                  <dt className="text-gray-400">Coverage</dt>
+                  <dd className="text-green-400 font-bold">{collectible.insurance.coverage}</dd>
+                </div>
+                <div>
+                  <dt className="text-gray-400">Valid Until</dt>
+                  <dd className="text-white">{collectible.insurance.validUntil}</dd>
+                </div>
+                <div>
+                  <dt className="text-gray-400">Policy #</dt>
+                  <dd className="text-blue-300 font-mono text-xs">{collectible.insurance.policyNumber}</dd>
+                </div>
               </dl>
+
+              {/* EXACT SAME BUTTON STYLE AS THE OTHER TWO */}
               <button
                 onClick={() => setShowInsuranceModal(true)}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
+                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
               >
                 View Full Insurance Policy
                 <FileText className="h-4 w-4" />
               </button>
             </div>
+
           </motion.div>
         </div>
       </div>
