@@ -1,5 +1,5 @@
 // src/lib/createDemoUsers.ts
-import { supabase } from '../supabaseClient';
+import { supabase } from './supabaseClient'  // ← was "../supabaseClient" → now "./supabaseClient"
 
 const DEMO_USERS = [
   {
@@ -22,34 +22,27 @@ const DEMO_USERS = [
     password: '123456',
     data: { name: 'Admin Manager', role: 'admin' },
   },
-];
+]
 
 export async function createDemoUsersIfNotExist() {
-  if (import.meta.env.PROD) return; // Only run in dev (or remove this line for production too)
+  if (import.meta.env.PROD) return
 
   for (const user of DEMO_USERS) {
-    const { data: existingUser } = await supabase
+    const { data: existing } = await supabase
       .from('profiles')
       .select('id')
       .eq('email', user.email)
-      .single();
+      .single()
 
-    if (!existingUser) {
-      console.log(`Creating demo user: ${user.email}`);
-
-      const { error: signUpError } = await supabase.auth.signUp({
+    if (!existing) {
+      console.log(`Creating demo user: ${user.email}`)
+      const { error } = await supabase.auth.signUp({
         email: user.email,
         password: user.password,
-        options: {
-          data: user.data,
-        },
-      });
-
-      if (signUpError) {
-        console.warn(`Could not create ${user.email}:`, signUpError.message);
-      } else {
-        console.log(`Demo user created: ${user.email}`);
-      }
+        options: { data: user.data },
+      })
+      if (error) console.warn(error.message)
+      else console.log(`Created: ${user.email}`)
     }
   }
 }
