@@ -16,7 +16,22 @@ import CollectibleDetail from './pages/CollectibleDetail';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminCollectibleDetail from './pages/admin/AdminCollectibleDetail';
 import AdminUsers from './pages/admin/AdminUsers';
-import AdminUserDetail from './pages/admin/AdminUserDetail'; // optional future
+
+// Optional: User detail page (you can create later)
+import AdminUserDetail from './pages/admin/AdminUserDetail';
+
+// Fallback 404 Component
+const NotFound = () => (
+  <div className="flex items-center justify-center min-h-screen bg-gray-950">
+    <div className="text-center">
+      <h1 className="text-9xl font-bold text-gray-800">404</h1>
+      <p className="text-2xl text-gray-500 mt-8">Page Not Found</p>
+      <a href="/" className="mt-8 inline-block px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-xl text-white font-semibold">
+        Back to Home
+      </a>
+    </div>
+  </div>
+);
 
 const App = () => {
   return (
@@ -39,15 +54,8 @@ const App = () => {
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/user/:id" element={<AdminUserDetail />} />
 
-              {/* 404 */}
-              <Route path="*" element={
-                <div className="flex items-center justify-center h-screen">
-                  <div className="text-center">
-                    <h1 className="text-6xl font-bold text-gray-700">404</h1>
-                    <p className="text-xl text-gray-500 mt-4">Page not found</p>
-                  </div>
-                </div>
-              } />
+              {/* Catch-all 404 */}
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
           <Footer />
