@@ -1,6 +1,6 @@
-// src/components/admin/AdminSidebar.tsx – TEAM MENU RESTORED & PERFECT
+// src/components/admin/AdminSidebar.tsx – EXIT DASHBOARD WITHOUT LOGOUT
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Shield,
   Package,
@@ -10,27 +10,31 @@ import {
   Settings,
   LogOut,
   Home,
-  UserCog, // Beautiful icon for Team
+  UserCog,
+  ArrowLeft,
 } from 'lucide-react';
 
 const AdminSidebar: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const menuItems = [
     { label: 'Dashboard', icon: Home, path: '/admin' },
     { label: 'Collectibles', icon: Package, path: '/admin/collectibles' },
     { label: 'Users', icon: Users, path: '/admin/users' },
-    { label: 'Team', icon: UserCog, path: '/admin/team' }, // BACK & BETTER
+    { label: 'Team', icon: UserCog, path: '/admin/team' },
     { label: 'Reports', icon: FileText, path: '/admin/reports' },
     { label: 'Analytics', icon: BarChart3, path: '/admin/analytics' },
     { label: 'Settings', icon: Settings, path: '/admin/settings' },
   ];
 
   const isActive = (path: string) => {
-    if (path === '/admin') {
-      return location.pathname === '/admin';
-    }
+    if (path === '/admin') return location.pathname === '/admin';
     return location.pathname.startsWith(path);
+  };
+
+  const handleExitDashboard = () => {
+    navigate('/', { replace: true });
   };
 
   return (
@@ -46,8 +50,22 @@ const AdminSidebar: React.FC = () => {
         </div>
       </div>
 
+      {/* Exit Dashboard Button */}
+      <div className="px-6 mb-6">
+        <button
+          onClick={handleExitDashboard}
+          className="w-full flex items-center gap-4 px-5 py-4 rounded-xl bg-gray-800/50 border border-gray-700 text-cyan-400 hover:bg-gray-800 hover:border-cyan-600 transition-all group"
+        >
+          <ArrowLeft className="h-6 w-6" />
+          <span className="font-medium">Back to Platform</span>
+          <div className="ml-auto opacity-0 group-hover:opacity-100 transition">
+            <span className="text-xs text-cyan-300">Exit Admin</span>
+          </div>
+        </button>
+      </div>
+
       {/* Navigation */}
-      <nav className="px-6">
+      <nav className="px-6 flex-1">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.path);
@@ -73,8 +91,8 @@ const AdminSidebar: React.FC = () => {
       </nav>
 
       {/* Logout */}
-      <div className="absolute bottom-8 left-6 right-6">
-        <button className="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-400 hover:bg-gray-800 hover:text-red-400 transition-all w-full group">
+      <div className="px-6 pb-8">
+        <button className="w-full flex items-center gap-4 px-5 py-4 rounded-xl text-red-400 hover:bg-red-900/20 hover:text-red-300 transition-all group border border-red-800/30">
           <LogOut className="h-6 w-6" />
           <span className="font-medium">Logout</span>
         </button>
