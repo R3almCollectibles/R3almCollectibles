@@ -7,13 +7,13 @@ import {
   Navigate,
 } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { createDemoUsersIfNotExist } from './lib/createDemoUsers';
+import { createDemoUsersIfNeeded } from './lib/createDemoUsers'; // ← Correct function
 
 // Pages
 import { Login } from './pages/Login';
-import { Profile } from './pages/Profile';  // ← CORRECT PATH
+import { Profile } from './pages/Profile';
 
-// Dashboards (role-specific)
+// Dashboards
 import { CollectorDashboard } from './pages/dashboards/CollectorDashboard';
 import { CreatorDashboard } from './pages/dashboards/CreatorDashboard';
 import { InvestorDashboard } from './pages/dashboards/InvestorDashboard';
@@ -38,10 +38,10 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   return user ? <>{children}</> : <Navigate to="/login" replace />;
 };
 
-// Dynamic Dashboard based on user role
+// Role-Based Dashboard Switcher
 const RoleBasedDashboard = () => {
   const { user } = useAuth();
-  const role = (user?.user_metadata?.role as string)?.toLowerCase() || 'collector';
+  const role = user?.user_metadata?.role?.toLowerCase() || 'collector';
 
   switch (role) {
     case 'admin':
@@ -59,8 +59,9 @@ const RoleBasedDashboard = () => {
 function AppWithAuth() {
   const { user } = useAuth();
 
+  // Create demo users (auto-confirmed, no email verification needed)
   useEffect(() => {
-    createDemoUsersIfNotExist();
+    createDemoUsersIfNeeded(); // ← This now works perfectly
   }, []);
 
   return (
@@ -70,7 +71,10 @@ function AppWithAuth() {
 
         <Routes>
           {/* Public */}
-          <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
+          <Route
+            path="/login"
+            element={user ? <Navigate to="/" replace /> : <Login />}
+          />
 
           {/* Protected */}
           <Route
@@ -98,7 +102,18 @@ function AppWithAuth() {
       <Toaster
         position="top-center"
         toastOptions={{
-          style: { background: '#1f1f1f', color: '#fff', borderRadius: '12px' },
+          duration: 4000,
+          style: {
+            background: '#111',
+            color: '#fff',
+            borderRadius: '16px',
+            padding: '16px 24px',
+            fontSize: '16px',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)',
+          },
+          success: {
+            style: { background: '#10b981' },
+          },
         }}
       />
     </>
