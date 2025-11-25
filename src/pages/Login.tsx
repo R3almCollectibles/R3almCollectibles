@@ -5,7 +5,6 @@ import { useAuth } from '../contexts/AuthContext';
 import {
   Mail,
   Lock,
-  ArrowRight,
   Sparkles,
   Shield,
   Palette,
@@ -55,12 +54,21 @@ export const Login = () => {
   const { signIn } = useAuth();
   const navigate = useNavigate();
 
+  const DEMO_PASSWORD = 'demo123'; // ← Fixed! Was '123456' before
+
   const handleDemoLogin = async (demoEmail: string) => {
     setLoading(true);
     setError('');
-    const { error } = await signIn(demoEmail, '123456');
-    if (error) setError(error.message);
-    else navigate('/');
+    const { error } = await signIn(demoEmail, DEMO_PASSWORD);
+    if (error) {
+      setError(
+        error.message.includes('email_not_confirmed')
+          ? 'Please disable "Confirm email" in Supabase Auth settings for demo to work.'
+          : error.message
+      );
+    } else {
+      navigate('/');
+    }
     setLoading(false);
   };
 
@@ -77,10 +85,9 @@ export const Login = () => {
   return (
     <div className="min-h-screen bg-gray-950 flex flex-col">
       <div className="h-16" aria-hidden="true" />
-
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="max-w-5xl w-full">
-          {/* Header */}
+          {/* Header
           <div className="text-center mb-16">
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
               Welcome to{' '}
@@ -93,7 +100,7 @@ export const Login = () => {
             </p>
           </div>
 
-          {/* Demo Cards Grid */}
+          {/* Demo Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
             {Object.values(demoAccounts).map((account) => {
               const Icon = account.icon;
@@ -102,27 +109,19 @@ export const Login = () => {
                   key={account.email}
                   onClick={() => handleDemoLogin(account.email)}
                   disabled={loading}
-                  className="group relative flex flex-col h-full overflow-hidden rounded-3xl border border-gray-800 bg-gray-900/80 backdrop-blur-sm p-8 transition-all duration-300 hover:scale-105 hover:border-gray-700 hover:shadow-2xl hover:bg-gray-900"
+                  className="group relative flex flex-col h-full overflow-hidden rounded-3xl border border-gray-800 bg-gray-900/80 backdrop-blur-sm p-8 transition-all duration-300 hover:scale-105 hover:border-gray-700 hover:shadow-2xl hover:bg-gray-900 disabled:opacity-60"
                 >
                   <div className={`absolute inset-0 bg-gradient-to-br ${account.color} opacity-10 group-hover:opacity-25 transition`} />
-
                   <div className="relative z-10 flex flex-col items-center flex-1">
-                    {/* Avatar */}
                     <div className="w-28 h-28 mb-6 rounded-full overflow-hidden ring-4 ring-gray-800 group-hover:ring-gray-600 transition">
                       <img src={account.avatar} alt={account.name} className="w-full h-full object-cover" />
                     </div>
-
-                    {/* Name & Role */}
                     <h3 className="text-2xl font-bold text-white mb-2">{account.name}</h3>
                     <p className="text-lg text-gray-300 mb-6">{account.role}</p>
-
-                    {/* Email */}
                     <div className="flex items-center gap-2 text-sm text-gray-500 mb-8">
                       <Icon className="h-5 w-5" />
                       <span>{account.email}</span>
                     </div>
-
-                    {/* Button – Pinned to bottom */}
                     <div className="mt-auto w-full">
                       <div className={`inline-flex w-full justify-center items-center gap-3 px-6 py-4 rounded-full text-base font-semibold bg-gradient-to-r ${account.color} text-white shadow-lg transition-all group-hover:shadow-xl`}>
                         <Sparkles className="h-5 w-5" />
@@ -145,7 +144,7 @@ export const Login = () => {
             </div>
           </div>
 
-          {/* Manual Login Form */}
+          {/* Manual Login */}
           <div className="max-w-md mx-auto">
             <div className="bg-gray-900/90 backdrop-blur-md rounded-3xl border border-gray-800 p-10 shadow-2xl">
               <form onSubmit={handleSubmit} className="space-y-8">
@@ -180,7 +179,7 @@ export const Login = () => {
                 </div>
 
                 {error && (
-                  <div className="p-5 bg-red-900/20 border border-red-500/50 rounded-2xl text-red-400 text-center">
+                  <div className="p-5 bg-red-900/20 border border-red-500/50 rounded-2xl text-red-400 text-center text-sm">
                     {error}
                   </div>
                 )}
@@ -188,7 +187,7 @@ export const Login = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold rounded-2xl transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
+                  className="w-full py-5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold rounded-2xl transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl disabled:opacity-60"
                 >
                   {loading ? 'Logging in...' : 'Log In'}
                   <ArrowRight className="h-6 w-6" />
@@ -197,10 +196,8 @@ export const Login = () => {
 
               <div className="mt-10 text-center">
                 <p className="text-gray-400 text-sm">
-                  Don't have an account?{' '}
-                  <Link to="/signup" className="text-blue-400 hover:text-blue-300 font-semibold transition">
-                    Sign up
-                  </Link>
+                  All demo accounts use password:{' '}
+                  <code className="font-mono bg-gray-800 px-3 py-1 rounded-lg">demo123</code>
                 </p>
               </div>
             </div>
