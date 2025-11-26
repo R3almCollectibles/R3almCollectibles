@@ -1,4 +1,5 @@
-// src/contexts/AuthContext.tsx — FIXED FOR BOLT.NEW (SessionStorage Fallback + Error Handling)
+// src/contexts/AuthContext.tsx
+// FINAL VERSION — admin@r3alm.com NOW HAS FULL ADMIN STATUS
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface User {
@@ -25,11 +26,10 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Demo accounts
 const demoAccounts = {
   collector: {
     id: 'demo-collector',
-    email: 'collector@demo.com',
+    email: 'collector@r3alm.com',
     name: 'Alex Collector',
     avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=100',
     walletAddress: '0x742d35Cc6634C0532925a3b8D46DE3C4',
@@ -39,7 +39,7 @@ const demoAccounts = {
   },
   creator: {
     id: 'demo-creator',
-    email: 'creator@demo.com',
+    email: 'creator@r3alm.com',
     name: 'Maya Artist',
     avatar: 'https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=100',
     walletAddress: '0x891a2b3c4d5e6f7g8h9i0j1k2l3m4n5o',
@@ -49,7 +49,7 @@ const demoAccounts = {
   },
   investor: {
     id: 'demo-investor',
-    email: 'investor@demo.com',
+    email: 'investor@r3alm.com',
     name: 'Jordan Investor',
     avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=100',
     walletAddress: '0x234b5c6d7e8f9g0h1i2j3k4l5m6n7o8p',
@@ -59,8 +59,8 @@ const demoAccounts = {
   },
   admin: {
     id: 'demo-admin',
-    email: 'admin@demo.com',
-    name: 'Admin Manager',
+    email: 'admin@r3alm.com',
+    name: 'R3alm Admin',
     avatar: 'https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=100',
     walletAddress: '0x567c8d9e0f1g2h3i4j5k6l7m8n9o0p1q',
     joinDate: '2023-01-01',
@@ -74,29 +74,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Check for stored user session (try localStorage first, fallback to sessionStorage for Bolt.new)
   useEffect(() => {
-    const getStoredUser = () => {
-      try {
-        const localUser = localStorage.getItem('r3alm_user');
-        if (localUser) return JSON.parse(localUser);
-        const sessionUser = sessionStorage.getItem('r3alm_user');
-        if (sessionUser) return JSON.parse(sessionUser);
-      } catch (e) {
-        console.warn('Storage read error (Bolt.new sandbox?)', e);
-      }
-      return null;
-    };
+    const stored = (() => {
+      try { return localStorage.getItem('r3alm_user'); } catch { return null; }
+    })();
+    const fallback = (() => {
+      try { return sessionStorage.getItem('r3alm_user'); } catch { return null; }
+    })();
 
-    const storedUser = getStoredUser();
-    if (storedUser) setUser(storedUser);
+    if (stored || fallback) {
+      setUser(JSON.parse(stored || fallback || '{}'));
+    }
   }, []);
 
   const storeUser = (userData: User) => {
     try {
       localStorage.setItem('r3alm_user', JSON.stringify(userData));
-    } catch (e) {
-      // Fallback for Bolt.new sandbox restrictions
+    } catch {
       sessionStorage.setItem('r3alm_user', JSON.stringify(userData));
     }
   };
@@ -105,53 +99,58 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setLoading(true);
     setError(null);
 
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API
+    await new Promise(r => setTimeout(r, 800));
 
-      // For demo, accept any (production: real Supabase auth)
-      const newUser: User = {
-        id: `user-${Date.now()}`,
-        email,
-        name: email.split('@')[0],
+    // SPECIAL ADMIN CHECK — THIS IS THE FIX
+    if (email.toLowerCase() === 'admin@r3alm.com') {
+      const adminUser: User = {
+        id: 'real-admin',
+        email: 'admin@r3alm.com',
+        name: 'R3alm Administrator',
+        walletAddress: '0xAdmin1337CafeBabeDeadBeef',
         joinDate: new Date().toISOString().split('T')[0],
-        isDemo: false
+        isDemo: false,
+        isAdmin: true
       };
-
-      setUser(newUser);
-      storeUser(newUser);
-      return true;
-    } catch (err) {
-      setError('Login failed. Try demo account.');
-      return false;
-    } finally {
+      setUser(adminUser);
+      storeUser(adminUser);
       setLoading(false);
+      return true;
     }
+
+    // Normal user (demo-style)
+    const newUser: User = {
+      id: `user-${Date.now()}`,
+      email,
+      name: email.split('@')[0],
+      joinDate: new Date().toISOString().split('T')[0],
+      isDemo: false,
+      isAdmin: false
+    };
+
+    setUser(newUser);
+    storeUser(newUser);
+    setLoading(false);
+    return true;
   };
 
   const signup = async (email: string, password: string, name: string): Promise<boolean> => {
     setLoading(true);
-    setError(null);
+    await new Promise(r => setTimeout(r, 800));
 
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API
+    const newUser: User = {
+      id: `user-${Date.now()}`,
+      email,
+      name,
+      joinDate: new Date().toISOString().split('T')[0],
+      isDemo: false,
+      isAdmin: email.toLowerCase() === 'admin@r3alm.com'
+    };
 
-      const newUser: User = {
-        id: `user-${Date.now()}`,
-        email,
-        name,
-        joinDate: new Date().toISOString().split('T')[0],
-        isDemo: false
-      };
-
-      setUser(newUser);
-      storeUser(newUser);
-      return true;
-    } catch (err) {
-      setError('Signup failed. Please try again.');
-      return false;
-    } finally {
-      setLoading(false);
-    }
+    setUser(newUser);
+    storeUser(newUser);
+    setLoading(false);
+    return true;
   };
 
   const logout = () => {
@@ -185,8 +184,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within AuthProvider');
   return context;
 };
