@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Headphones, Mic2, Disc3, TrendingUp, Shield, Sparkles, Play, Pause } from 'lucide-react';
+import { Headphones, Disc3, TrendingUp, Shield, Play, Search } from 'lucide-react';
 
 interface MusicCollectible {
   id: string;
@@ -19,7 +19,6 @@ interface MusicCollectible {
   key?: string;
   verified: boolean;
   trending?: boolean;
-  playing?: boolean;
 }
 
 const musicCollectibles: MusicCollectible[] = [
@@ -164,13 +163,13 @@ const MusicMarketplace = () => {
             <div className="inline-flex items-center gap-4 text-purple-400 mb-6">
               <Headphones className="h-10 w-10" />
               <span className="text-2xl font-bold">Music NFTs & Masters</span>
-              <Mic2 className="h-10 w-10" />
+              <Disc3 className="h-10 w-10" />
             </div>
             <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent mb-6">
               Own Music History
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 max-w-5xl mx-auto leading-relaxed">
-              Invest in iconic master recordings, unreleased demos, live performances, and royalty streams — 
+              Invest in iconic master recordings, unreleased demos, live performances, and royalty streams —
               all tokenized with immutable provenance and fractionalized for accessibility.
             </p>
           </motion.div>
@@ -211,7 +210,6 @@ const MusicMarketplace = () => {
                     {type}
                   </button>
                 ))}
-              ))}
               </div>
             </div>
 
