@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 
 // Layout
-import Header from './components/Header';
+import { MegaMenu } from './components/navigation/MegaMenu'; // ← NEW: Replaced Header
 import Footer from './components/Footer';
 
 // Public Pages
@@ -52,13 +52,13 @@ function App() {
       <Router>
         <Suspense fallback={<LoadingSpinner />}>
           <Routes>
-            {/* PUBLIC LAYOUT – Header + Footer on all /* routes */}
+            {/* PUBLIC LAYOUT – MegaMenu + Footer on all /* routes */}
             <Route
               path="/*"
               element={
                 <div className="min-h-screen bg-gray-900 text-white flex flex-col">
-                  <Header />
-                  <main className="flex-1">
+                  <MegaMenu />
+                  <main className="flex-1 pt-16">
                     <Routes>
                       <Route path="/" element={<HomePage />} />
                       <Route path="/marketplace" element={<Marketplace />} />
@@ -73,7 +73,7 @@ function App() {
                       <Route path="/settings" element={<Settings />} />
                       <Route path="/demo" element={<Demo />} />
 
-                      {/* Legacy route – kept for old links */}
+                      {/* Legacy route */}
                       <Route path="/storage-security" element={<StorageSecurity />} />
 
                       {/* NEW: Dedicated Security Pages */}
@@ -84,6 +84,18 @@ function App() {
                       {/* Nested detail views */}
                       <Route path="/collectible/:id/provenance/:eventId" element={<ProvenanceDetail />} />
                       <Route path="/collectible/:id/activity/:activityId" element={<ActivityDetail />} />
+
+                      {/* MegaMenu placeholder routes (won't 404) */}
+                      <Route path="/marketplace/art" element={<Marketplace />} />
+                      <Route path="/marketplace/collectibles" element={<Marketplace />} />
+                      <Route path="/marketplace/music" element={<Marketplace />} />
+                      <Route path="/marketplace/fractions" element={<Marketplace />} />
+                      <Route path="/marketplace/provenance" element={<Marketplace />} />
+                      <Route path="/marketplace/auctions" element={<Marketplace />} />
+                      <Route path="/about" element={<div className="p-20 text-center text-3xl">About Us – Coming Soon</div>} />
+                      <Route path="/team" element={<div className="p-20 text-center text-3xl">Team – Coming Soon</div>} />
+                      <Route path="/careers" element={<div className="p-20 text-center text-3xl">Careers – Join Us</div>} />
+                      <Route path="/blog" element={<div className="p-20 text-center text-3xl">Blog – Coming Soon</div>} />
                     </Routes>
                   </main>
                   <Footer />
