@@ -1,10 +1,9 @@
 // src/pages/Blog.tsx
-// FULLY DYNAMIC WITH SUPABASE — LIVE DATA
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Calendar, Clock, ArrowRight, Search } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 interface BlogPost {
   id: string;
@@ -34,13 +33,14 @@ const Blog = () => {
   }, []);
 
   const fetchPosts = async () => {
+    setLoading(true);
     const { data, error } = await supabase
       .from('blog_posts')
       .select('*')
       .order('date', { ascending: false });
 
     if (error) {
-      console.error('Error fetching posts:', error);
+      console.error('Supabase fetch error:', error);
     } else {
       setPosts(data || []);
     }
@@ -52,30 +52,31 @@ const Blog = () => {
 
   const filteredPosts = regularPosts.filter(post => {
     const matchesCategory = selectedCategory === 'All' || post.category === selectedCategory;
-    const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesSearch = 
+      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesCategory && matchesSearch;
   });
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-2xl text-gray-400">Loading R3alm Journal...</div>
+        <div className="text-2xl text-gray-400 animate-pulse">Loading R3alm Journal...</div>
       </div>
     );
   }
 
   return (
     <>
-      {/* Same beautiful UI as before — now powered by Supabase */}
+      {/* Hero */}
       <section className="relative pt-24 pb-32 overflow-hidden bg-gradient-to-b from-gray-900 via-purple-900/20 to-gray-900">
         <div className="absolute inset-0 bg-grid-purple-500/10"></div>
         <div className="relative max-w-7xl mx-auto px-6 text-center">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-6"
+            className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clipciip-text text-transparent mb-6"
           >
             R3alm Journal
           </motion.h1>
@@ -217,7 +218,9 @@ const Blog = () => {
                       <img src={post.author_avatar} alt={post.author} className="w-9 h-9 rounded-full" />
                       <div>
                         <div className="text-xs font-medium text-white">{post.author}</div>
-                        <div className="text-xs text-gray-500">{new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
+                        <div className="text-xs text-gray-500">
+                          {new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </div>
                       </div>
                     </div>
                     <ArrowRight className="h-5 w-5 text-gray-500 group-hover:text-purple-400 transition-colors" />
@@ -227,7 +230,7 @@ const Blog = () => {
             ))}
           </div>
 
-          {filteredPosts.length === 0 && (
+          {filteredPosts.length === 0 && !loading && (
             <div className="text-center py-20">
               <p className="text-xl text-gray-400">No articles found matching your criteria.</p>
             </div>
