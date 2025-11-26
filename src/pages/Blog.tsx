@@ -1,89 +1,54 @@
 // src/pages/Blog.tsx
-// ORIGINAL R3ALM DARK STYLE — BUT WITH SMALLER, ELEGANT TEXT
-import React, { useState } from 'react';
+// FULLY DYNAMIC WITH SUPABASE — LIVE DATA
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Calendar, Clock, ArrowRight, Search } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface BlogPost {
   id: string;
   title: string;
   excerpt: string;
   author: string;
-  authorRole: string;
-  authorAvatar: string;
+  author_role: string;
+  author_avatar: string;
   date: string;
-  readTime: string;
+  read_time: string;
   category: string;
   tags: string[];
-  featured?: boolean;
+  featured: boolean;
   image: string;
 }
-
-const blogPosts: BlogPost[] = [
-  {
-    id: '1',
-    title: 'How Fractional Ownership is Revolutionizing Rare Guitar Collecting',
-    excerpt: 'For decades, owning a 1959 Gibson Les Paul was reserved for rockstars and billionaires. Here’s how blockchain changed everything...',
-    author: 'Marcus Rivera',
-    authorRole: 'CTO & Co-Founder',
-    authorAvatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=800',
-    date: 'November 22, 2025',
-    readTime: '8 min read',
-    category: 'Technology',
-    tags: ['Fractional NFTs', 'Music Collectibles', 'Blockchain'],
-    featured: true,
-    image: 'https://images.pexels.com/photos/1659710/pexels-photo-1659710.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  },
-  {
-    id: '2',
-    title: 'The $2.8M Guitar: Inside the Provenance of Jimi Hendrix’s Woodstock Strat',
-    excerpt: 'We tracked every owner, repair, and performance of this legendary instrument using on-chain provenance verification.',
-    author: 'Sofia Patel',
-    authorRole: 'Head of Curation',
-    authorAvatar: 'https://images.pexels.com/photos/3760583/pexels-photo-3760583.jpeg?auto=compress&cs=tinysrgb&w=800',
-    date: 'November 18, 2025',
-    readTime: '12 min read',
-    category: 'Provenance',
-    tags: ['Music History', 'Provenance', 'Hendrix'],
-    image: 'https://images.pexels.com/photos/1402789/pexels-photo-1402789.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  },
-  {
-    id: '3',
-    title: 'Why Physical Storage Security Matters More Than Ever in 2025',
-    excerpt: 'With rising NFT theft and exchange hacks, here’s why institutional-grade vaults are the future of collectible ownership.',
-    author: 'James Park',
-    authorRole: 'Head of Asset Security',
-    authorAvatar: 'https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&w=800',
-    date: 'November 15, 2025',
-    readTime: '10 min read',
-    category: 'Security',
-    tags: ['Vault Security', 'Insurance', 'Risk'],
-    image: 'https://images.pexels.com/photos/5847614/pexels-photo-5847614.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  },
-  {
-    id: '4',
-    title: 'From Garage Find to $1.2M NFT: The Story of a Lost Beatles Master Tape',
-    excerpt: 'A collector discovered an unreleased 1967 Beatles session in his attic. Here’s how we brought it to the blockchain.',
-    author: 'Alexandra Chen',
-    authorRole: 'Founder & CEO',
-    authorAvatar: 'https://images.pexels.com/photos/3760067/pexels-photo-3760067.jpeg?auto=compress&cs=tinysrgb&w=800',
-    date: 'November 10, 2025',
-    readTime: '15 min read',
-    category: 'Culture',
-    tags: ['Beatles', 'Music NFTs', 'Discovery'],
-    image: 'https://images.pexels.com/photos/1117862/pexels-photo-1117862.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  },
-];
 
 const categories = ['All', 'Technology', 'Provenance', 'Security', 'Culture', 'Announcements'];
 
 const Blog = () => {
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const featuredPost = blogPosts.find(p => p.featured);
-  const regularPosts = blogPosts.filter(p => !p.featured);
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .order('date', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching posts:', error);
+    } else {
+      setPosts(data || []);
+    }
+    setLoading(false);
+  };
+
+  const featuredPost = posts.find(p => p.featured);
+  const regularPosts = posts.filter(p => !p.featured);
 
   const filteredPosts = regularPosts.filter(post => {
     const matchesCategory = selectedCategory === 'All' || post.category === selectedCategory;
@@ -93,9 +58,17 @@ const Blog = () => {
     return matchesCategory && matchesSearch;
   });
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-2xl text-gray-400">Loading R3alm Journal...</div>
+      </div>
+    );
+  }
+
   return (
     <>
-      {/* Hero */}
+      {/* Same beautiful UI as before — now powered by Supabase */}
       <section className="relative pt-24 pb-32 overflow-hidden bg-gradient-to-b from-gray-900 via-purple-900/20 to-gray-900">
         <div className="absolute inset-0 bg-grid-purple-500/10"></div>
         <div className="relative max-w-7xl mx-auto px-6 text-center">
@@ -133,7 +106,7 @@ const Blog = () => {
                   </span>
                   <span>{featuredPost.category}</span>
                   <span>•</span>
-                  <span>{featuredPost.readTime}</span>
+                  <span>{featuredPost.read_time}</span>
                 </div>
                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-5 leading-tight">
                   {featuredPost.title}
@@ -143,15 +116,15 @@ const Blog = () => {
                 </p>
                 <div className="flex items-center gap-6 mb-8">
                   <div className="flex items-center gap-4">
-                    <img src={featuredPost.authorAvatar} alt={featuredPost.author} className="w-10 h-10 rounded-full" />
+                    <img src={featuredPost.author_avatar} alt={featuredPost.author} className="w-10 h-10 rounded-full" />
                     <div>
                       <div className="text-white text-sm font-medium">{featuredPost.author}</div>
-                      <div className="text-xs text-gray-400">{featuredPost.authorRole}</div>
+                      <div className="text-xs text-gray-400">{featuredPost.author_role}</div>
                     </div>
                   </div>
                   <div className="text-gray-400 text-xs">
                     <Calendar className="inline h-3.5 w-3.5 mr-1" />
-                    {featuredPost.date}
+                    {new Date(featuredPost.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                   </div>
                 </div>
                 <Link
@@ -229,7 +202,7 @@ const Blog = () => {
                     <span className="text-purple-400 font-medium">{post.category}</span>
                     <span>•</span>
                     <Clock className="h-3.5 w-3.5" />
-                    <span>{post.readTime}</span>
+                    <span>{post.read_time}</span>
                   </div>
                   <h3 className="text-xl font-bold text-white mb-3 group-hover:text-purple-400 transition-colors line-clamp-2">
                     <Link to={`/blog/${post.id}`}>
@@ -241,10 +214,10 @@ const Blog = () => {
                   </p>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <img src={post.authorAvatar} alt={post.author} className="w-9 h-9 rounded-full" />
+                      <img src={post.author_avatar} alt={post.author} className="w-9 h-9 rounded-full" />
                       <div>
                         <div className="text-xs font-medium text-white">{post.author}</div>
-                        <div className="text-xs text-gray-500">{post.date}</div>
+                        <div className="text-xs text-gray-500">{new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
                       </div>
                     </div>
                     <ArrowRight className="h-5 w-5 text-gray-500 group-hover:text-purple-400 transition-colors" />
