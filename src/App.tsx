@@ -7,48 +7,48 @@ import { AuthProvider } from './contexts/AuthContext';
 import { MegaMenu } from './components/navigation/MegaMenu';
 import Footer from './components/Footer';
 
-// Public Pages
-const HomePage = lazy(() => import('./pages/HomePage'));
-const Marketplace = lazy(() => import('./pages/Marketplace'));
-const CollectibleDetail = lazy(() => import('./pages/CollectibleDetail'));
-const MintNFT = lazy(() => import('./pages/MintNFT'));
-const Portfolio = lazy(() => import('./pages/Portfolio'));
-const Analytics = lazy(() => import('./pages/Analytics'));
-const HelpCenter = lazy(() => import('./pages/HelpCenter'));
-const APIDocumentation = lazy(() => import('./pages/APIDocumentation'));
-const TermsOfService = lazy(() => import('./pages/TermsOfService'));
-const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
-const Settings = lazy(() => import('./pages/Settings'));
-const StorageSecurity = lazy(() => import('./pages/StorageSecurity'));
-const ProvenanceDetail = lazy(() => import('./pages/ProvenanceDetail'));
-const ActivityDetail = lazy(() => import('./pages/ActivityDetail'));
-const Demo = lazy(() => import('./pages/Demo'));
+// Public Pages – ALL USING FULL /src/... PATHS (bolt.new safe)
+const HomePage = lazy(() => import('/src/pages/HomePage'));
+const Marketplace = lazy(() => import('/src/pages/Marketplace'));
+const CollectibleDetail = lazy(() => import('/src/pages/CollectibleDetail'));
+const MintNFT = lazy(() => import('/src/pages/MintNFT'));
+const Portfolio = lazy(() => import('/src/pages/Portfolio'));
+const Analytics = lazy(() => import('/src/pages/Analytics'));
+const HelpCenter = lazy(() => import('/src/pages/HelpCenter'));
+const APIDocumentation = lazy(() => import('/src/pages/APIDocumentation'));
+const TermsOfService = lazy(() => import('/src/pages/TermsOfService'));
+const PrivacyPolicy = lazy(() => import('/src/pages/PrivacyPolicy'));
+const Settings = lazy(() => import('/src/pages/Settings'));
+const StorageSecurity = lazy(() => import('/src/pages/StorageSecurity'));
+const ProvenanceDetail = lazy(() => import('/src/pages/ProvenanceDetail'));
+const ActivityDetail = lazy(() => import('/src/pages/ActivityDetail'));
+const Demo = lazy(() => import('/src/pages/Demo'));
 
-// About Company Pages
-const About = lazy(() => import('./pages/About'));
-const Team = lazy(() => import('./pages/Team'));
-const Careers = lazy(() => import('./pages/Careers'));
-const Blog = lazy(() => import('./pages/Blog'));
+// About Company
+const About = lazy(() => import('/src/pages/About'));
+const Team = lazy(() => import('/src/pages/Team'));
+const Careers = lazy(() => import('/src/pages/Careers'));
+const Blog = lazy(() => import('/src/pages/Blog')); // ← NOW WORKS
 
 // Security Pages
-const BlockchainDetails = lazy(() => import('./pages/BlockchainDetails'));
-const PhysicalStorageSecurity = lazy(() => import('./pages/PhysicalStorageSecurity'));
-const InsuranceCoverage = lazy(() => import('./pages/InsuranceCoverage'));
+const BlockchainDetails = lazy(() => import('/src/pages/BlockchainDetails'));
+const PhysicalStorageSecurity = lazy(() => import('/src/pages/PhysicalStorageSecurity'));
+const InsuranceCoverage = lazy(() => import('/src/pages/InsuranceCoverage'));
 
-// NEW: Dedicated Marketplace Category Pages
-const ArtMarketplace = lazy(() => import('./pages/marketplace/ArtMarketplace'));
-const MusicMarketplace = lazy(() => import('./pages/marketplace/MusicMarketplace'));
-const CollectiblesMarketplace = lazy(() => import('./pages/marketplace/CollectiblesMarketplace'));
+// Marketplace Category Pages
+const ArtMarketplace = lazy(() => import('/src/pages/marketplace/ArtMarketplace'));
+const MusicMarketplace = lazy(() => import('/src/pages/marketplace/MusicMarketplace'));
+const CollectiblesMarketplace = lazy(() => import('/src/pages/marketplace/CollectiblesMarketplace'));
 
 // Admin Pages
-const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
-const AdminCollectibles = lazy(() => import('./pages/admin/AdminCollectibles'));
-const AdminCollectibleDetail = lazy(() => import('./pages/admin/AdminCollectibleDetail'));
-const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
-const AdminReports = lazy(() => import('./pages/admin/AdminReports'));
-const AdminAnalytics = lazy(() => import('./pages/admin/AdminAnalytics'));
-const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'));
-const AdminTeam = lazy(() => import('./pages/admin/AdminTeam'));
+const AdminDashboard = lazy(() => import('/src/pages/admin/AdminDashboard'));
+const AdminCollectibles = lazy(() => import('/src/pages/admin/AdminCollectibles'));
+const AdminCollectibleDetail = lazy(() => import('/src/pages/admin/AdminCollectibleDetail'));
+const AdminUsers = lazy(() => import('/src/pages/admin/AdminUsers'));
+const AdminReports = lazy(() => import('/src/pages/admin/AdminReports'));
+const AdminAnalytics = lazy(() => import('/src/pages/admin/AdminAnalytics'));
+const AdminSettings = lazy(() => import('/src/pages/admin/AdminSettings'));
+const AdminTeam = lazy(() => import('/src/pages/admin/AdminTeam'));
 
 // Loading Spinner
 const LoadingSpinner = () => (
@@ -71,7 +71,6 @@ function App() {
                   <MegaMenu />
                   <main className="flex-1 pt-16">
                     <Routes>
-                      {/* Core Pages */}
                       <Route path="/" element={<HomePage />} />
                       <Route path="/marketplace" element={<Marketplace />} />
                       <Route path="/collectible/:id" element={<CollectibleDetail />} />
@@ -84,31 +83,30 @@ function App() {
                       <Route path="/privacy" element={<PrivacyPolicy />} />
                       <Route path="/settings" element={<Settings />} />
                       <Route path="/demo" element={<Demo />} />
-
-                      {/* Legacy */}
                       <Route path="/storage-security" element={<StorageSecurity />} />
-
+                      
                       {/* Security & Transparency */}
                       <Route path="/security/blockchain" element={<BlockchainDetails />} />
                       <Route path="/security/physical-storage" element={<PhysicalStorageSecurity />} />
                       <Route path="/security/insurance" element={<InsuranceCoverage />} />
-
+                      
                       {/* Nested Detail Views */}
                       <Route path="/collectible/:id/provenance/:eventId" element={<ProvenanceDetail />} />
                       <Route path="/collectible/:id/activity/:activityId" element={<ActivityDetail />} />
-
-                      {/* About Company */}
+                      
+                      {/* About */}
                       <Route path="/about" element={<About />} />
                       <Route path="/team" element={<Team />} />
                       <Route path="/careers" element={<Careers />} />
                       <Route path="/blog" element={<Blog />} />
+                      <Route path="/blog/:id" element={<Blog />} />
 
-                      {/* MARKETPLACE CATEGORY PAGES – NOW LIVE */}
+                      {/* MARKETPLACE CATEGORIES */}
                       <Route path="/marketplace/art" element={<ArtMarketplace />} />
                       <Route path="/marketplace/music" element={<MusicMarketplace />} />
                       <Route path="/marketplace/collectibles" element={<CollectiblesMarketplace />} />
-
-                      {/* Placeholder Routes (for future expansion) */}
+                      
+                      {/* Future Routes */}
                       <Route path="/marketplace/fractions" element={<Marketplace />} />
                       <Route path="/marketplace/provenance" element={<Marketplace />} />
                       <Route path="/marketplace/auctions" element={<Marketplace />} />
@@ -119,7 +117,7 @@ function App() {
               }
             />
 
-            {/* ADMIN ROUTES – No Header/Footer */}
+            {/* ADMIN ROUTES – No Layout */}
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/collectibles" element={<AdminCollectibles />} />
             <Route path="/admin/collectibles/:id" element={<AdminCollectibleDetail />} />
@@ -129,7 +127,7 @@ function App() {
             <Route path="/admin/settings" element={<AdminSettings />} />
             <Route path="/admin/team" element={<AdminTeam />} />
 
-            {/* 404 – Must be last */}
+            {/* 404 */}
             <Route
               path="*"
               element={
