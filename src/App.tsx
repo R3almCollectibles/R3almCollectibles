@@ -1,10 +1,10 @@
-// src/App.tsx – FINAL & CORRECTED (November 2025) – 100% WORKING
+// src/App.tsx – FINAL & FULLY UPDATED (November 2025)
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 
 // Layout
-import { MegaMenu } from './components/navigation/MegaMenu'; // ← NEW: Replaced Header
+import { MegaMenu } from './components/navigation/MegaMenu';
 import Footer from './components/Footer';
 
 // Public Pages
@@ -24,7 +24,13 @@ const ProvenanceDetail = lazy(() => import('./pages/ProvenanceDetail'));
 const ActivityDetail = lazy(() => import('./pages/ActivityDetail'));
 const Demo = lazy(() => import('./pages/Demo'));
 
-// NEW: Dedicated Security & Transparency Pages
+// NEW: About Company Pages
+const About = lazy(() => import('./pages/About'));
+const Team = lazy(() => import('./pages/Team'));
+const Careers = lazy(() => import('./pages/Careers'));
+const Blog = lazy(() => import('./pages/Blog')); // optional – create later
+
+// Dedicated Security Pages
 const BlockchainDetails = lazy(() => import('./pages/BlockchainDetails'));
 const PhysicalStorageSecurity = lazy(() => import('./pages/PhysicalStorageSecurity'));
 const InsuranceCoverage = lazy(() => import('./pages/InsuranceCoverage'));
@@ -52,7 +58,7 @@ function App() {
       <Router>
         <Suspense fallback={<LoadingSpinner />}>
           <Routes>
-            {/* PUBLIC LAYOUT – MegaMenu + Footer on all /* routes */}
+            {/* PUBLIC LAYOUT – MegaMenu + Footer */}
             <Route
               path="/*"
               element={
@@ -60,6 +66,7 @@ function App() {
                   <MegaMenu />
                   <main className="flex-1 pt-16">
                     <Routes>
+                      {/* Core Pages */}
                       <Route path="/" element={<HomePage />} />
                       <Route path="/marketplace" element={<Marketplace />} />
                       <Route path="/collectible/:id" element={<CollectibleDetail />} />
@@ -73,29 +80,31 @@ function App() {
                       <Route path="/settings" element={<Settings />} />
                       <Route path="/demo" element={<Demo />} />
 
-                      {/* Legacy route */}
+                      {/* Legacy */}
                       <Route path="/storage-security" element={<StorageSecurity />} />
 
-                      {/* NEW: Dedicated Security Pages */}
+                      {/* Security & Transparency */}
                       <Route path="/security/blockchain" element={<BlockchainDetails />} />
                       <Route path="/security/physical-storage" element={<PhysicalStorageSecurity />} />
                       <Route path="/security/insurance" element={<InsuranceCoverage />} />
 
-                      {/* Nested detail views */}
+                      {/* Nested Detail Views */}
                       <Route path="/collectible/:id/provenance/:eventId" element={<ProvenanceDetail />} />
                       <Route path="/collectible/:id/activity/:activityId" element={<ActivityDetail />} />
 
-                      {/* MegaMenu placeholder routes (won't 404) */}
+                      {/* About Company Pages */}
+                      <Route path="/about" element={<About />} />
+                      <Route path="/team" element={<Team />} />
+                      <Route path="/careers" element={<Careers />} />
+                      <Route path="/blog" element={<Blog />} />
+
+                      {/* Marketplace Sub-Routes (MegaMenu) */}
                       <Route path="/marketplace/art" element={<Marketplace />} />
                       <Route path="/marketplace/collectibles" element={<Marketplace />} />
                       <Route path="/marketplace/music" element={<Marketplace />} />
                       <Route path="/marketplace/fractions" element={<Marketplace />} />
                       <Route path="/marketplace/provenance" element={<Marketplace />} />
                       <Route path="/marketplace/auctions" element={<Marketplace />} />
-                      <Route path="/about" element={<div className="p-20 text-center text-3xl">About Us – Coming Soon</div>} />
-                      <Route path="/team" element={<div className="p-20 text-center text-3xl">Team – Coming Soon</div>} />
-                      <Route path="/careers" element={<div className="p-20 text-center text-3xl">Careers – Join Us</div>} />
-                      <Route path="/blog" element={<div className="p-20 text-center text-3xl">Blog – Coming Soon</div>} />
                     </Routes>
                   </main>
                   <Footer />
@@ -113,7 +122,7 @@ function App() {
             <Route path="/admin/settings" element={<AdminSettings />} />
             <Route path="/admin/team" element={<AdminTeam />} />
 
-            {/* 404 – Catch-all (must be last) */}
+            {/* 404 – Must be last */}
             <Route
               path="*"
               element={
