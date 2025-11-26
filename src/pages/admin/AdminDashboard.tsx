@@ -8,25 +8,25 @@ import {
 
 export default function AdminDashboard() {
   const location = useLocation();
-  const nukeInterval = useRef<NodeJS.Timeout>();
+  const nukeInterval = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // NUCLEAR MODE: Keep killing Bolt's sidebar every 100ms forever
+    // NUCLEAR MODE: Obliterate Bolt.new UI every 100ms — FOREVER
     nukeInterval.current = setInterval(() => {
-      document.querySelectorAll('[data-testid="sidebar"], [data-testid="topbar"], aside, [class*="floating"], [id^="headlessui"]').forEach(el => el?.remove());
-      document.body.style.marginLeft = '0px';
-      document.body.style.paddingLeft = '0px';
-      document.body.style.overflowX = 'hidden';
+      document.querySelectorAll('[data-testid="sidebar"], [data-testid="topbar"], aside, [class*="floating"], [id^="headlessui"], [class*="overlay"]').forEach(el => el?.remove());
+      document.body.style.cssText = 'margin:0 !important; padding:0 !important; overflow-x:hidden !important';
     }, 100);
 
-    // Also run immediately
+    // Immediate kill on mount
     const nuke = () => {
-      document.querySelectorAll('[data-testid="sidebar"], [data-testid="topbar"], aside, [class*="floating"], [id^="headlessui"]').forEach(el => el?.remove());
-      document.body.style.cssText = 'margin:0 !important; padding:0 !important; overflow-x:hidden';
+      document.querySelectorAll('[data-testid="sidebar"], [data-testid="topbar"], aside, [class*="floating"], [id^="headlessui"], [class*="overlay"]').forEach(el => el?.remove());
+      document.body.style.cssText = 'margin:0 !important; padding:0 !important; overflow-x:hidden !important';
     };
     nuke();
 
-    return () => clearInterval(nukeInterval.current);
+    return () => {
+      if (nukeInterval.current) clearInterval(nukeInterval.current);
+    };
   }, []);
 
   const menuItems = [
@@ -42,7 +42,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="fixed inset-0 bg-gray-950 text-white overflow-hidden">
-      {/* YOUR ADMIN SIDEBAR — NOW UNKILLABLE */}
+      {/* UNKILLABLE ADMIN SIDEBAR — HARD-CODED, Z-INDEX 999999 */}
       <div className="fixed left-0 top-0 w-72 h-full bg-black border-r border-red-900 z-[999999] shadow-2xl">
         <div className="p-8 border-b border-red-900">
           <div className="flex items-center gap-4">
@@ -63,9 +63,9 @@ export default function AdminDashboard() {
               <Link
                 key={item.href}
                 to={item.href}
-                className={`flex items-center justify-between px-6 py-5 rounded-2xl text-lg font-bold transition-all ${
+                className={`flex items-center justify-between px-6 py-5 rounded-2xl text-lg font-bold transition-all duration-300 ${
                   isActive
-                    ? 'bg-gradient-to-r from-red-600 to-pink-600 text-white shadow-2xl shadow-red-500/50'
+                    ? 'bg-gradient-to-r from-red-600 to-pink-600 text-white shadow-2xl shadow-red-500/50 scale-105'
                     : 'text-gray-400 hover:bg-gray-900 hover:text-white'
                 }`}
               >
@@ -91,7 +91,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* MAIN CONTENT */}
+      {/* MAIN CONTENT AREA */}
       <div className="ml-72 min-h-screen bg-gradient-to-br from-black via-gray-900 to-purple-900 p-12">
         <div className="text-center py-24">
           <h1 className="text-9xl font-black text-white mb-8 bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent">
@@ -108,17 +108,17 @@ export default function AdminDashboard() {
               { value: "127.4 ETH", label: "Revenue", color: "green" },
               { value: "8.9 ETH", label: "Fees", color: "purple" }
             ].map(stat => (
-              <div key={stat.label} className="bg-white/10 backdrop-blur-xl rounded-3xl p-12 border border-white/20">
+              <div key={stat.label} className="bg-white/10 backdrop-blur-xl rounded-3xl p-12 border border-white/20 hover:scale-105 transition">
                 <div className={`text-7xl font-black text-${stat.color}-400`}>{stat.value}</div>
                 <div className="text-2xl text-gray-300 mt-4">{stat.label}</div>
               </div>
             ))}
           </div>
 
-          <div className="mt-24 text-4xl">
-            <span className="text-red-500 font-black">DASHBOARD ITEM IS NOW VISIBLE</span>
+          <div className="mt-24 text-5xl">
+            <span className="text-red-500 font-black">DASHBOARD IS NOW VISIBLE</span>
             <br />
-            <span className="text-2xl text-gray-400">Bolt.new has been defeated.</span>
+            <span className="text-2xl text-gray-400 mt-4 block">Bolt.new has been annihilated.</span>
           </div>
         </div>
       </div>
