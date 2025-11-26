@@ -1,5 +1,5 @@
 // src/components/navigation/MegaMenu.tsx
-// FULLY WORKING — SIGN IN BUTTON + AUTH MODAL + MOBILE MENU
+// FINAL VERSION — ADMIN CONSOLE NOW VISIBLE IN DROPDOWN
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
@@ -19,7 +19,7 @@ import {
   LogOut,
   Settings,
 } from 'lucide-react';
-import AuthModal from '../AuthModal'; // Make sure this path is correct
+import AuthModal from '../AuthModal';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface MegaMenuItem {
@@ -89,7 +89,7 @@ export const MegaMenu: React.FC = () => {
   const [activeMega, setActiveMega] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false); // THIS FIXES SIGN IN
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const location = useLocation();
   const { user, isAuthenticated, logout } = useAuth();
@@ -151,7 +151,6 @@ export const MegaMenu: React.FC = () => {
                     {item.children && <ChevronRight className="h-4 w-4 ml-1 transition-transform duration-200" />}
                   </Link>
 
-                  {/* Mega Dropdown */}
                   <AnimatePresence>
                     {item.children && activeMega === item.name && (
                       <motion.div
@@ -203,7 +202,7 @@ export const MegaMenu: React.FC = () => {
               ))}
             </nav>
 
-            {/* Search + Auth (Desktop) */}
+            {/* Search + Auth */}
             <div className="flex items-center space-x-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -216,7 +215,7 @@ export const MegaMenu: React.FC = () => {
                 />
               </div>
 
-              {/* AUTH BUTTONS — NOW WORKING */}
+              {/* USER MENU — NOW WITH ADMIN CONSOLE */}
               {isAuthenticated ? (
                 <div className="relative">
                   <button
@@ -239,29 +238,73 @@ export const MegaMenu: React.FC = () => {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute right-0 mt-2 w-64 bg-gray-800 rounded-xl border border-gray-700 shadow-xl"
+                        className="absolute right-0 mt-2 w-72 bg-gray-800 rounded-xl border border-gray-700 shadow-2xl z-[99999] overflow-hidden"
                       >
-                        <div className="p-4 border-b border-gray-700">
-                          <div className="flex items-center gap-3">
-                            <img src={user?.avatar || ''} alt="" className="w-12 h-12 rounded-full" />
+                        {/* User Info Header */}
+                        <div className="p-5 border-b border-gray-700 bg-gray-900/50">
+                          <div className="flex items-center gap-4">
+                            {user?.avatar ? (
+                              <img src={user.avatar} alt="" className="w-14 h-14 rounded-full ring-4 ring-blue-500/20" />
+                            ) : (
+                              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                                <User className="h-9 w-9 text-white" />
+                              </div>
+                            )}
                             <div>
-                              <div className="font-semibold">{user?.name}</div>
+                              <div className="font-bold text-white text-lg">{user?.name}</div>
                               <div className="text-sm text-gray-400">{user?.email}</div>
+                              {user?.isAdmin && (
+                                <div className="mt-2 px-3 py-1 bg-red-900/50 text-red-400 text-xs font-bold rounded-full inline-block">
+                                  ADMINISTRATOR
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
-                        <div className="p-2">
-                          <Link to="/portfolio" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-700 rounded-lg">
-                            <Wallet className="h-4 w-4" /> Portfolio
-                          </Link>
-                          <Link to="/settings" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-700 rounded-lg">
-                            <Settings className="h-4 w-4" /> Settings
-                          </Link>
-                          <button
-                            onClick={logout}
-                            className="flex items-center gap-3 w-full px-4 py-2 text-red-400 hover:bg-gray-700 rounded-lg"
+
+                        {/* Menu Items */}
+                        <div className="p-3 space-y-1">
+                          {/* ADMIN CONSOLE — ONLY FOR ADMINS */}
+                          {user?.isAdmin && (
+                            <Link
+                              to="/admin"
+                              onClick={() => setShowUserMenu(false)}
+                              className="flex items-center gap-4 w-full px-5 py-4 bg-red-900/20 hover:bg-red-900/40 rounded-xl text-red-400 font-bold text-lg transition-all"
+                            >
+                              <Shield className="h-6 w-6" />
+                              Admin Console
+                            </Link>
+                          )}
+
+                          <Link
+                            to="/portfolio"
+                            onClick={() => setShowUserMenu(false)}
+                            className="flex items-center gap-4 w-full px-5 py-3 hover:bg-gray-700 rounded-lg text-gray-300 transition"
                           >
-                            <LogOut className="h-4 w-4" /> Sign Out
+                            <Wallet className="h-5 w-5" />
+                            Portfolio
+                          </Link>
+
+                          <Link
+                            to="/settings"
+                            onClick={() => setShowUserMenu(false)}
+                            className="flex items-center gap-4 w-full px-5 py-3 hover:bg-gray-700 rounded-lg text-gray-300 transition"
+                          >
+                            <Settings className="h-5 w-5" />
+                            Settings
+                          </Link>
+
+                          <div className="border-t border-gray-700 my-3" />
+
+                          <button
+                            onClick={() => {
+                              logout();
+                              setShowUserMenu(false);
+                            }}
+                            className="flex items-center gap-4 w-full px-5 py-3 text-red-400 hover:bg-gray-700 rounded-lg font-medium transition"
+                          >
+                            <LogOut className="h-5 w-5" />
+                            Sign Out
                           </button>
                         </div>
                       </motion.div>
@@ -271,7 +314,7 @@ export const MegaMenu: React.FC = () => {
               ) : (
                 <button
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-6 py-2.5 rounded-lg font-medium text-white shadow-lg hover:shadow-xl transition-all"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 py-3 rounded-xl font-bold text-white shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
                 >
                   Sign In
                 </button>
@@ -289,7 +332,7 @@ export const MegaMenu: React.FC = () => {
         </div>
       </header>
 
-      {/* Mobile Off-Canvas Menu */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -298,39 +341,47 @@ export const MegaMenu: React.FC = () => {
             exit={{ x: '100%' }}
             className="fixed inset-0 z-50 lg:hidden"
           >
-            <div className="absolute inset-0 bg-black/50" onClick={() => setIsMobileMenuOpen(false)} />
+            <div className="absolute inset-0 bg-black/70" onClick={() => setIsMobileMenuOpen(false)} />
             <motion.div className="absolute right-0 top-0 h-full w-full max-w-sm bg-gray-900 shadow-2xl">
               <div className="flex items-center justify-between p-6 border-b border-gray-800">
-                <h2 className="text-xl font-bold">Menu</h2>
+                <h2 className="text-2xl font-bold text-white">Menu</h2>
                 <button onClick={() => setIsMobileMenuOpen(false)}>
-                  <X className="h-6 w-6" />
+                  <X className="h-7 w-7 text-gray-400" />
                 </button>
               </div>
-              <nav className="p-6 space-y-4">
+              <nav className="p-6 space-y-6">
                 {megaMenuData.map((item) => (
-                  <div key={item.name}>
-                    <Link
-                      to={item.href}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center justify-between py-3 text-lg font-medium text-gray-300 hover:text-white"
-                    >
-                      <span className="flex items-center gap-3">
-                        {item.icon}
-                        {item.name}
-                      </span>
-                      {item.children && <ChevronRight className="h-5 w-5" />}
-                    </Link>
-                  </div>
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block text-xl font-medium text-gray-300 hover:text-white transition"
+                  >
+                    {item.icon && <span className="inline-block mr-3">{item.icon}</span>}
+                    {item.name}
+                  </Link>
                 ))}
+
+                {isAuthenticated && user?.isAdmin && (
+                  <Link
+                    to="/admin"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block text-xl font-bold text-red-400 py-4 border-t border-gray-700 pt-6"
+                  >
+                    <Shield className="inline mr-3 h-6 w-6" />
+                    Admin Console
+                  </Link>
+                )}
+
                 {!isAuthenticated && (
                   <button
                     onClick={() => {
                       setIsAuthModalOpen(true);
                       setIsMobileMenuOpen(false);
                     }}
-                    className="w-full text-left py-4 text-xl font-bold text-cyan-400"
+                    className="w-full text-left text-2xl font-bold text-cyan-400 py-6"
                   >
-                    Sign In / Try Demo
+                    Sign In / Demo
                   </button>
                 )}
               </nav>
@@ -339,7 +390,7 @@ export const MegaMenu: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* AUTH MODAL — NOW WORKS */}
+      {/* AUTH MODAL */}
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
