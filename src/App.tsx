@@ -1,4 +1,4 @@
-// src/App.tsx — FINAL & COMPLETE — NOVEMBER 2025
+// src/App.tsx — FINAL & UNBREAKABLE — MEGAMENU ALWAYS ON TOP — NOVEMBER 2025
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
@@ -26,7 +26,7 @@ const Team = lazy(() => import('/src/pages/Team'));
 const Careers = lazy(() => import('/src/pages/Careers'));
 const Blog = lazy(() => import('/src/pages/Blog'));
 
-// ADMIN PAGES — NO PUBLIC LAYOUT
+// ADMIN PAGES
 const AdminDashboard = lazy(() => import('/src/pages/admin/AdminDashboard'));
 const AdminAnalytics = lazy(() => import('/src/pages/admin/AdminAnalytics'));
 const AdminCollectibles = lazy(() => import('/src/pages/admin/AdminCollectibles'));
@@ -47,7 +47,7 @@ const PhysicalStorageSecurity = lazy(() => import('/src/pages/PhysicalStorageSec
 const InsuranceCoverage = lazy(() => import('/src/pages/InsuranceCoverage'));
 
 const LoadingSpinner = () => (
-  <div className="flex items-center justify-center min-h-screen bg-gray-950">
+  <div className="fixed inset-0 flex items-center justify-center bg-gray-950 z-50">
     <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-500"></div>
   </div>
 );
@@ -56,71 +56,75 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <Suspense fallback={<LoadingSpinner />}>
-          <Routes>
+        <div className="min-h-screen bg-gray-950 text-white">
+          {/* MEGAMENU — ALWAYS VISIBLE — FIXED ON TOP */}
+          <MegaMenu />
 
-            {/* ADMIN ROUTES — CLEAN, DARK, NO MEGAMENU, NO FOOTER */}
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/analytics" element={<AdminAnalytics />} />
-            <Route path="/admin/collectibles" element={<AdminCollectibles />} />
-            <Route path="/admin/collectibles/:id" element={<AdminCollectibleDetail />} />
-            <Route path="/admin/users" element={<AdminUsers />} />
-            <Route path="/admin/reports" element={<AdminReports />} />
-            <Route path="/admin/settings" element={<AdminSettings />} />
-            <Route path="/admin/team" element={<AdminTeam />} />
+          <Suspense fallback={<LoadingSpinner />}>
+            <Routes>
 
-            {/* PUBLIC LAYOUT — ALL NON-ADMIN ROUTES */}
-            <Route
-              path="/*"
-              element={
-                <div className="min-h-screen bg-gray-900 text-white flex flex-col">
-                  <MegaMenu />
-                  <main className="flex-1 pt-16">
-                    <Routes>
-                      <Route path="/" element={<HomePage />} />
-                      <Route path="/marketplace" element={<Marketplace />} />
-                      <Route path="/marketplace/art" element={<ArtMarketplace />} />
-                      <Route path="/marketplace/music" element={<MusicMarketplace />} />
-                      <Route path="/marketplace/collectibles" element={<CollectiblesMarketplace />} />
-                      <Route path="/collectible/:id" element={<CollectibleDetail />} />
-                      <Route path="/mint" element={<MintNFT />} />
-                      <Route path="/portfolio" element={<Portfolio />} />
-                      <Route path="/analytics" element={<Analytics />} />
-                      <Route path="/help" element={<HelpCenter />} />
-                      <Route path="/api-docs" element={<APIDocumentation />} />
-                      <Route path="/terms" element={<TermsOfService />} />
-                      <Route path="/privacy" element={<PrivacyPolicy />} />
-                      <Route path="/settings" element={<Settings />} />
-                      <Route path="/demo" element={<Demo />} />
-                      <Route path="/storage-security" element={<StorageSecurity />} />
-                      <Route path="/security/blockchain" element={<BlockchainDetails />} />
-                      <Route path="/security/physical-storage" element={<PhysicalStorageSecurity />} />
-                      <Route path="/security/insurance" element={<InsuranceCoverage />} />
-                      <Route path="/collectible/:id/provenance/:eventId" element={<ProvenanceDetail />} />
-                      <Route path="/collectible/:id/activity/:activityId" element={<ActivityDetail />} />
-                      <Route path="/about" element={<About />} />
-                      <Route path="/team" element={<Team />} />
-                      <Route path="/careers" element={<Careers />} />
-                      <Route path="/blog" element={<Blog />} />
-                      <Route path="/blog/:id" element={<Blog />} />
+              {/* ADMIN ROUTES — MEGAMENU + DARK SIDEBAR + CONTENT (NO FOOTER) */}
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/analytics" element={<AdminAnalytics />} />
+              <Route path="/admin/collectibles" element={<AdminCollectibles />} />
+              <Route path="/admin/collectibles/:id" element={<AdminCollectibleDetail />} />
+              <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/reports" element={<AdminReports />} />
+              <Route path="/admin/settings" element={<AdminSettings />} />
+              <Route path="/admin/team" element={<AdminTeam />} />
 
-                      {/* 404 */}
-                      <Route path="*" element={
-                        <div className="flex flex-col items-center justify-center min-h-screen text-center">
-                          <h1 className="text-9xl font-black text-gray-800">404</h1>
-                          <p className="text-4xl mt-8 text-gray-500">Page Not Found</p>
-                          <a href="/" className="mt-8 text-purple-400 text-xl hover:underline">← Return Home</a>
-                        </div>
-                      } />
-                    </Routes>
+              {/* ALL OTHER ROUTES — MEGAMENU + CONTENT + FOOTER */}
+              <Route
+                path="/*"
+                element={
+                  <main className="pt-16 min-h-screen flex flex-col">
+                    <div className="flex-1">
+                      <Routes>
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/marketplace" element={<Marketplace />} />
+                        <Route path="/marketplace/art" element={<ArtMarketplace />} />
+                        <Route path="/marketplace/music" element={<MusicMarketplace />} />
+                        <Route path="/marketplace/collectibles" element={<CollectiblesMarketplace />} />
+                        <Route path="/collectible/:id" element={<CollectibleDetail />} />
+                        <Route path="/mint" element={<MintNFT />} />
+                        <Route path="/portfolio" element={<Portfolio />} />
+                        <Route path="/analytics" element={<Analytics />} />
+                        <Route path="/help" element={<HelpCenter />} />
+                        <Route path="/api-docs" element={<APIDocumentation />} />
+                        <Route path="/terms" element={<TermsOfService />} />
+                        <Route path="/privacy" element={<PrivacyPolicy />} />
+                        <Route path="/settings" element={<Settings />} />
+                        <Route path="/demo" element={<Demo />} />
+                        <Route path="/storage-security" element={<StorageSecurity />} />
+                        <Route path="/security/blockchain" element={<BlockchainDetails />} />
+                        <Route path="/security/physical-storage" element={<PhysicalStorageSecurity />} />
+                        <Route path="/security/insurance" element={<InsuranceCoverage />} />
+                        <Route path="/collectible/:id/provenance/:eventId" element={<ProvenanceDetail />} />
+                        <Route path="/collectible/:id/activity/:activityId" element={<ActivityDetail />} />
+                        <Route path="/about" element={<About />} />
+                        <Route path="/team" element={<Team />} />
+                        <Route path="/careers" element={<Careers />} />
+                        <Route path="/blog" element={<Blog />} />
+                        <Route path="/blog/:id" element={<Blog />} />
+
+                        {/* 404 */}
+                        <Route path="*" element={
+                          <div className="flex flex-col items-center justify-center min-h-screen text-center">
+                            <h1 className="text-9xl font-black text-gray-800">404</h1>
+                            <p className="text-4xl mt-8 text-gray-500">Page Not Found</p>
+                            <a href="/" className="mt-8 text-purple-400 text-xl hover:underline">← Return Home</a>
+                          </div>
+                        } />
+                      </Routes>
+                    </div>
+                    <Footer />
                   </main>
-                  <Footer />
-                </div>
-              }
-            />
+                }
+              />
 
-          </Routes>
-        </Suspense>
+            </Routes>
+          </Suspense>
+        </div>
       </Router>
     </AuthProvider>
   );
