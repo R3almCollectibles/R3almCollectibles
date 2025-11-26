@@ -1,8 +1,9 @@
 // src/pages/Blog.tsx
+// APPLE-INSPIRED, MINIMAL, PROFESSIONAL BLOG — 2025 EDITION
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Calendar, Clock, ArrowRight, Search, Tag } from 'lucide-react';
+import { Calendar, Clock, ArrowRight, Search } from 'lucide-react';
 
 interface BlogPost {
   id: string;
@@ -94,85 +95,84 @@ const Blog = () => {
 
   return (
     <>
-      {/* Hero */}
-      <section className="relative pt-24 pb-32 overflow-hidden bg-gradient-to-b from-gray-900 via-purple-900/20 to-gray-900">
-        <div className="absolute inset-0 bg-grid-purple-500/10"></div>
-        <div className="relative max-w-7xl mx-auto px-6 text-center">
+      {/* Hero Section */}
+      <section className="pt-32 pb-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-6 text-center">
           <motion.h1
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-8"
+            className="text-6xl md:text-7xl font-bold text-gray-900 mb-6"
           >
             R3alm Journal
           </motion.h1>
           <motion.p
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto"
+            transition={{ delay: 0.1 }}
+            className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed"
           >
-            Stories from the frontier of collectibles, blockchain, and cultural preservation.
+            Deep insights into collectibles, blockchain provenance, and the future of ownership.
           </motion.p>
         </div>
       </section>
 
       {/* Featured Post */}
       {featuredPost && (
-        <section className="py-16 bg-gray-800/30">
+        <section className="py-20 bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              className="grid lg:grid-cols-2 gap-12 items-center"
-            >
-              <div className="order-2 lg:order-1">
-                <div className="flex items-center gap-4 text-sm text-gray-400 mb-4">
-                  <span className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full font-medium">
-                    Featured
+            <article className="grid lg:grid-cols-2 gap-16 items-center">
+              <div>
+                <div className="text-sm font-medium text-gray-500 mb-4">
+                  <span className="inline-block px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">
+                    Featured Story
                   </span>
-                  <span>{featuredPost.category}</span>
-                  <span>•</span>
-                  <span>{featuredPost.readTime}</span>
                 </div>
-                <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                <h2 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
                   {featuredPost.title}
                 </h2>
-                <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+                <p className="text-xl text-gray-600 mb-8 leading-relaxed">
                   {featuredPost.excerpt}
                 </p>
-                <div className="flex items-center gap-6 mb-8">
+                <div className="flex items-center gap-8 text-sm text-gray-500 mb-10">
                   <div className="flex items-center gap-4">
                     <img src={featuredPost.authorAvatar} alt={featuredPost.author} className="w-12 h-12 rounded-full" />
                     <div>
-                      <div className="text-white font-medium">{featuredPost.author}</div>
-                      <div className="text-sm text-gray-400">{featuredPost.authorRole}</div>
+                      <div className="font-medium text-gray-900">{featuredPost.author}</div>
+                      <div className="text-sm text-gray-500">{featuredPost.authorRole}</div>
                     </div>
                   </div>
-                  <div className="text-gray-400 text-sm">
-                    <Calendar className="inline h-4 w-4 mr-1" />
-                    {featuredPost.date}
+                  <div className="flex items-center gap-4">
+                    <Calendar className="h-4 w-4" />
+                    <span>{featuredPost.date}</span>
+                    <span>•</span>
+                    <Clock className="h-4 w-4" />
+                    <span>{featuredPost.readTime}</span>
                   </div>
                 </div>
                 <Link
                   to={`/blog/${featuredPost.id}`}
-                  className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl font-bold text-lg transition-all transform hover:scale-105"
+                  className="inline-flex items-center gap-3 text-lg font-medium text-purple-600 hover:text-purple-700 transition"
                 >
-                  Read Full Story
+                  Read the full article
                   <ArrowRight className="h-5 w-5" />
                 </Link>
               </div>
-              <div className="order-1 lg:order-2">
-                <div className="rounded-2xl overflow-hidden shadow-2xl">
-                  <img src={featuredPost.image} alt={featuredPost.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+              <div>
+                <div className="rounded-2xl overflow-hidden shadow-xl">
+                  <img
+                    src={featuredPost.image}
+                    alt={featuredPost.title}
+                    className="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-700"
+                  />
                 </div>
               </div>
-            </motion.div>
+            </article>
           </div>
         </section>
       )}
 
       {/* Filters & Search */}
-      <section className="py-12 bg-gray-900 border-y border-gray-800 sticky top-16 z-40">
+      <section className="py-12 bg-gray-50 border-b border-gray-200 sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col lg:flex-row gap-8 items-center justify-between">
             <div className="flex flex-wrap gap-3">
@@ -180,24 +180,24 @@ const Blog = () => {
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-6 py-3 rounded-xl font-medium transition-all ${
+                  className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
                     selectedCategory === cat
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
-                      : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
                   }`}
                 >
                   {cat}
                 </button>
               ))}
             </div>
-            <div className="relative w-full lg:w-96">
+            <div className="relative w-full max-w-md">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search articles..."
-                className="w-full bg-gray-800 border border-gray-700 rounded-xl pl-12 pr-4 py-4 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
+                className="w-full pl-12 pr-6 py-4 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-gray-400 transition"
               />
             </div>
           </div>
@@ -205,48 +205,47 @@ const Blog = () => {
       </section>
 
       {/* Blog Grid */}
-      <section className="py-20">
+      <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
             {filteredPosts.map((post, i) => (
               <motion.article
                 key={post.id}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-gray-800/50 border border-gray-700 rounded-2xl overflow-hidden hover:border-purple-500 transition-all group"
+                className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-xl hover:border-gray-300 transition-all group"
               >
-                <div className="aspect-video overflow-hidden">
+                <div className="aspect-video overflow-hidden bg-gray-100">
                   <img
                     src={post.image}
                     alt={post.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
                 <div className="p-8">
-                  <div className="flex items-center gap-3 text-sm text-gray-400 mb-4">
-                    <span className="text-purple-400 font-medium">{post.category}</span>
+                  <div className="flex items-center gap-3 text-sm text-gray-500 mb-4">
+                    <span className="font-medium text-purple-600">{post.category}</span>
                     <span>•</span>
-                    <Clock className="h-4 w-4" />
                     <span>{post.readTime}</span>
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-purple-400 transition-colors">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition">
                     <Link to={`/blog/${post.id}`}>
                       {post.title}
                     </Link>
                   </h3>
-                  <p className="text-gray-400 mb-6 line-clamp-3">
+                  <p className="text-gray-600 mb-6 line-clamp-3 leading-relaxed">
                     {post.excerpt}
                   </p>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <img src={post.authorAvatar} alt={post.author} className="w-10 h-10 rounded-full" />
                       <div>
-                        <div className="text-sm font-medium text-white">{post.author}</div>
+                        <div className="text-sm font-medium text-gray-900">{post.author}</div>
                         <div className="text-xs text-gray-500">{post.date}</div>
                       </div>
                     </div>
-                    <ArrowRight className="h-6 w-6 text-gray-500 group-hover:text-purple-400 transition-colors" />
+                    <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-purple-600 transition" />
                   </div>
                 </div>
               </motion.article>
@@ -254,8 +253,8 @@ const Blog = () => {
           </div>
 
           {filteredPosts.length === 0 && (
-            <div className="text-center py-20">
-              <p className="text-2xl text-gray-400">No articles found matching your criteria.</p>
+            <div className="text-center py-32">
+              <p className="text-2xl text-gray-500">No articles found matching your criteria.</p>
             </div>
           )}
         </div>
