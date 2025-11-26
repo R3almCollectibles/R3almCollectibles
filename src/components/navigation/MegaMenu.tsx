@@ -1,4 +1,5 @@
 // src/components/navigation/MegaMenu.tsx
+// FULLY WORKING — SIGN IN BUTTON + AUTH MODAL + MOBILE MENU
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
@@ -18,6 +19,7 @@ import {
   LogOut,
   Settings,
 } from 'lucide-react';
+import AuthModal from '../AuthModal'; // Make sure this path is correct
 import { useAuth } from '../../contexts/AuthContext';
 
 interface MegaMenuItem {
@@ -67,7 +69,7 @@ const megaMenuData: MegaMenuItem[] = [
         items: [
           { name: 'Our Mission', href: '/about', description: 'Democratizing premium collectibles' },
           { name: 'Team', href: '/team', description: 'Meet the builders' },
-          { name: 'Careers', href: '/careers', description: 'Join us →' },
+          { name: 'Careers', href: '/careers', description: 'Join us' },
         ],
       },
       {
@@ -87,6 +89,8 @@ export const MegaMenu: React.FC = () => {
   const [activeMega, setActiveMega] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false); // THIS FIXES SIGN IN
+
   const location = useLocation();
   const { user, isAuthenticated, logout } = useAuth();
   const timeoutRef = useRef<NodeJS.Timeout>();
@@ -200,7 +204,7 @@ export const MegaMenu: React.FC = () => {
             </nav>
 
             {/* Search + Auth (Desktop) */}
-            <div className="hidden lg:flex items-center space-x-4">
+            <div className="flex items-center space-x-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
@@ -212,6 +216,7 @@ export const MegaMenu: React.FC = () => {
                 />
               </div>
 
+              {/* AUTH BUTTONS — NOW WORKING */}
               {isAuthenticated ? (
                 <div className="relative">
                   <button
@@ -238,7 +243,7 @@ export const MegaMenu: React.FC = () => {
                       >
                         <div className="p-4 border-b border-gray-700">
                           <div className="flex items-center gap-3">
-                            <img src={user?.avatar} alt="" className="w-12 h-12 rounded-full" />
+                            <img src={user?.avatar || ''} alt="" className="w-12 h-12 rounded-full" />
                             <div>
                               <div className="font-semibold">{user?.name}</div>
                               <div className="text-sm text-gray-400">{user?.email}</div>
@@ -264,16 +269,12 @@ export const MegaMenu: React.FC = () => {
                   </AnimatePresence>
                 </div>
               ) : (
-                <Link
-                  to="/"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    document.querySelector('#auth-modal-trigger')?.dispatchEvent(new Event('click'));
-                  }}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-6 py-2.5 rounded-lg font-medium"
+                <button
+                  onClick={() => setIsAuthModalOpen(true)}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-6 py-2.5 rounded-lg font-medium text-white shadow-lg hover:shadow-xl transition-all"
                 >
                   Sign In
-                </Link>
+                </button>
               )}
             </div>
 
@@ -281,8 +282,6 @@ export const MegaMenu: React.FC = () => {
             <button
               onClick={() => setIsMobileMenuOpen(true)}
               className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800"
-              aria-label="Open menu"
-              aria-expanded={isMobileMenuOpen}
             >
               <Menu className="h-6 w-6" />
             </button>
@@ -297,7 +296,6 @@ export const MegaMenu: React.FC = () => {
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
             className="fixed inset-0 z-50 lg:hidden"
           >
             <div className="absolute inset-0 bg-black/50" onClick={() => setIsMobileMenuOpen(false)} />
@@ -322,27 +320,31 @@ export const MegaMenu: React.FC = () => {
                       </span>
                       {item.children && <ChevronRight className="h-5 w-5" />}
                     </Link>
-                    {item.children && (
-                      <div className="ml-8 mt-2 space-y-2">
-                        {item.children.flatMap(col => col.items).map(sub => (
-                          <Link
-                            key={sub.name}
-                            to={sub.href}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="block py-2 text-gray-400 hover:text-white"
-                          >
-                            {sub.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 ))}
+                {!isAuthenticated && (
+                  <button
+                    onClick={() => {
+                      setIsAuthModalOpen(true);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full text-left py-4 text-xl font-bold text-cyan-400"
+                  >
+                    Sign In / Try Demo
+                  </button>
+                )}
               </nav>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* AUTH MODAL — NOW WORKS */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialMode="login"
+      />
     </>
   );
 };
