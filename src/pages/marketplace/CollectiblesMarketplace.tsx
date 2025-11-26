@@ -2,7 +2,18 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Package, Watch, Car, Guitar, Gem, Shield, TrendingUp, Sparkles, Calendar, MapPin } from 'lucide-react';
+import {
+  Package,
+  Watch,
+  Car,
+  Guitar,
+  Gem,
+  Shield,
+  TrendingUp,
+  Sparkles,
+  MapPin,
+  Search
+} from 'lucide-react';
 
 interface CollectibleItem {
   id: string;
@@ -117,9 +128,11 @@ const CollectiblesMarketplace = () => {
 
   const filteredCollectibles = useMemo(() => {
     let filtered = collectibles.filter(item => {
-      const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           item.brand.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = selectedCategory.length === 0 || selectedCategory.includes(item.category);
+      const matchesSearch =
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.brand.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory =
+        selectedCategory.length === 0 || selectedCategory.includes(item.category);
       return matchesSearch && matchesCategory;
     });
 
@@ -144,20 +157,29 @@ const CollectiblesMarketplace = () => {
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case 'Guitar': return <Guitar className="h-6 w-6" />;
-      case 'Watch': return <Watch className="h-6 w-6" />;
-      case 'Car': return <Car className="h-6 w-6" />;
-      case 'Jewelry': return <Gem className="h-6 w-6" />;
-      default: return <Package className="h-6 w-6" />;
+      case 'Guitar':
+        return <Guitar className="h-6 w-6" />;
+      case 'Watch':
+        return <Watch className="h-6 w-6" />;
+      case 'Car':
+        return <Car className="h-6 w-6" />;
+      case 'Jewelry':
+        return <Gem className="h-6 w-6" />;
+      default:
+        return <Package className="h-6 w-6" />;
     }
   };
 
   const getConditionColor = (condition: string) => {
     switch (condition) {
-      case 'Mint': return 'from-green-500 to-emerald-500';
-      case 'Near Mint': return 'from-blue-500 to-cyan-500';
-      case 'Excellent': return 'from-purple-500 to-pink-500';
-      default: return 'from-gray-500 to-gray-400';
+      case 'Mint':
+        return 'from-green-500 to-emerald-500';
+      case 'Near Mint':
+        return 'from-blue-500 to-cyan-500';
+      case 'Excellent':
+        return 'from-purple-500 to-pink-500';
+      default:
+        return 'from-gray-500 to-gray-400';
     }
   };
 
@@ -167,12 +189,9 @@ const CollectiblesMarketplace = () => {
       <section className="relative pt-24 pb-20 bg-gradient-to-b from-gray-900 via-purple-900/40 to-gray-900 overflow-hidden">
         <div className="absolute inset-0 bg-grid-purple-500/10"></div>
         <div className="relative max-w-7xl mx-auto px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
             <div className="inline-flex items-center gap-4 text-purple-400 mb-6">
-              <Package className="h-10 w-10" />
+              <Sparkles className="h-10 w-10" />
               <span className="text-2xl font-bold">Physical Collectibles</span>
               <Sparkles className="h-10 w-10" />
             </div>
@@ -180,7 +199,7 @@ const CollectiblesMarketplace = () => {
               Own the Legends
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 max-w-5xl mx-auto leading-relaxed">
-              Tokenized vintage guitars, luxury watches, classic cars, and iconic memorabilia — 
+              Tokenized vintage guitars, luxury watches, classic cars, and iconic memorabilia —
               all stored in institutional vaults with full provenance and fractional ownership.
             </p>
           </motion.div>
@@ -204,12 +223,14 @@ const CollectiblesMarketplace = () => {
               </select>
 
               <div className="flex gap-3">
-                {['Guitar', 'Watch', 'Car', 'Memorabilia', 'Jewelry'].map(cat => (
+                {['Guitar', 'Watch', 'Car', 'Memorabilia', 'Jewelry'].map((cat) => (
                   <button
                     key={cat}
-                    onClick={() => setSelectedCategory(prev =>
-                      prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
-                    )}
+                    onClick={() =>
+                      setSelectedCategory((prev) =>
+                        prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+                      )
+                    }
                     className={`px-5 py-3 rounded-xl text-sm font-medium flex items-center gap-2 transition ${
                       selectedCategory.includes(cat)
                         ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white'
@@ -268,7 +289,11 @@ const CollectiblesMarketplace = () => {
                           <Shield className="h-5 w-5" />
                         </div>
                       )}
-                      <div className={`absolute bottom-4 left-4 bg-gradient-to-r ${getConditionColor(item.condition)} text-white px-5 py-2 rounded-full text-sm font-bold`}>
+                      <div
+                        className={`absolute bottom-4 left-4 bg-gradient-to-r ${getConditionColor(
+                          item.condition
+                        )} text-white px-5 py-2 rounded-full text-sm font-bold`}
+                      >
                         {item.condition}
                       </div>
                     </div>
@@ -277,7 +302,9 @@ const CollectiblesMarketplace = () => {
                       <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-purple-400 transition">
                         {item.name}
                       </h3>
-                      <p className="text-xl text-gray-300 mb-4">{item.brand} • {item.year}</p>
+                      <p className="text-xl text-gray-300 mb-4">
+                        {item.brand} • {item.year}
+                      </p>
 
                       <div className="flex items-center gap-4 text-sm text-gray-400 mb-6">
                         <div className="flex items-center gap-2">
@@ -293,11 +320,17 @@ const CollectiblesMarketplace = () => {
 
                       <div className="flex items-end justify-between">
                         <div>
-                          <div className="text-3xl font-bold text-white">{formatPrice(item.price)}</div>
-                          <div className="text-sm text-gray-400">{item.fractions.toLocaleString()} fractions</div>
+                          <div className="text-3xl font-bold text-white">
+                            {formatPrice(item.price)}
+                          </div>
+                          <div className="text-sm text-gray-400">
+                            {item.fractions.toLocaleString()} fractions
+                          </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-green-400 font-bold text-xl">{formatPrice(item.totalValue)}</div>
+                          <div className="text-green-400 font-bold text-xl">
+                            {formatPrice(item.totalValue)}
+                          </div>
                           <div className="text-xs text-gray-500">Total Value</div>
                         </div>
                       </div>
