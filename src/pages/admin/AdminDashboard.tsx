@@ -1,4 +1,4 @@
-// src/pages/admin/AdminDashboard.tsx – FINAL ADMIN DASHBOARD (LIVE + REAL DATA)
+// src/pages/admin/AdminDashboard.tsx
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -9,72 +9,37 @@ import {
   Clock, CheckCircle2, Activity, ArrowRight, BarChart3, FileText
 } from 'lucide-react';
 
-interface Stats {
-  totalCollectibles: number;
-  pendingReview: number;
-  flaggedUsers: number;
-  totalRevenue: string;
-  activeUsers: number;
-  newUsersToday: number;
-  platformFees: string;
-  verifiedItems: number;
-}
-
 const AdminDashboard: React.FC = () => {
-  const [stats, setStats] = useState<Stats>({
+  const [stats, setStats] = useState({
     totalCollectibles: 0,
-    pendingReview: 0,
-    flaggedUsers: 0,
-    totalRevenue: '0 ETH',
-    activeUsers: 0,
-    newUsersToday: 0,
-    platformFees: '0 ETH',
+    pendingReview: 18,
+    flaggedUsers: 5,
+    totalRevenue: '127.4 ETH',
+    activeUsers: 892,
+    newUsersToday: 23,
+    platformFees: '8.9 ETH',
     verifiedItems: 0,
   });
 
-  const [recentActivity, setRecentActivity] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [recentActivity] = useState([
+    { id: 1, action: 'New collectible submitted', item: 'Rolex Daytona 1968', user: '0x742d...3C4', time: '2 min ago', type: 'pending' },
+    { id: 2, action: 'User flagged for spam', user: '0x9998...0999', time: '15 min ago', type: 'flagged' },
+    { id: 3, action: 'Collectible verified', item: 'Gibson Les Paul 1959', user: 'admin@realm.io', time: '1 hour ago', type: 'verified' },
+    { id: 4, action: 'Bulk shares purchased', item: 'Jordan Rookie Card', value: '12.5 ETH', time: '2 hours ago', type: 'sale' },
+  ]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch collectibles
-        const { data: collectibles, count } = await supabase
-          .from('collectibles')
-          .select('*', { count: 'exact', head: true });
-
-        const verifiedCount = (await supabase
-          .from('collectibles')
-          .select('id', { count: 'exact' })
-          .eq('verified', true)).count || 0;
-
-        // Mock activity for now (we'll make it real later)
-        const mockActivity = [
-          { id: 1, action: 'New collectible listed', item: '1963 Ferrari 250 GTO', user: '0x742d...3C4', time: 'Just now', type: 'pending' },
-          { id: 2, action: 'Fractional sale completed', item: 'Beeple – EVERDAYS', value: '4.2 ETH', time: '5 min ago', type: 'sale' },
-          { id: 3, action: 'Item verified', item: 'Gibson Les Paul 1959', user: 'admin@realm.io', time: '1 hour ago', type: 'verified' },
-        ];
-
-        setStats({
-          totalCollectibles: count || 0,
-          pendingReview: 3,
-          flaggedUsers: 2,
-          totalRevenue: '127.4 ETH',
-          activeUsers: 892,
-          newUsersToday: 23,
-          platformFees: '8.9 ETH',
-          verifiedItems: verifiedCount,
-        });
-
-        setRecentActivity(mockActivity);
-        setLoading(false);
-      } catch (err) {
-        console.error('Admin fetch error:', err);
-        setLoading(false);
-      }
+    const fetchStats = async () => {
+      const { count } = await supabase.from('collectibles').select('*', { count: 'exact', head: true });
+      const { count: verified } = await supabase.from('collectibles').select('*', { count: 'exact', head: true }).eq('verified', true);
+      
+      setStats(prev => ({
+        ...prev,
+        totalCollectibles: count || 0,
+        verifiedItems: verified || 0,
+      }));
     };
-
-    fetchData();
+    fetchStats();
   }, []);
 
   const quickLinks = [
@@ -83,14 +48,6 @@ const AdminDashboard: React.FC = () => {
     { title: 'Reports', icon: FileText, href: '/admin/reports', color: 'from-green-500 to-emerald-500', count: 0 },
     { title: 'Analytics', icon: BarChart3, href: '/admin/analytics', color: 'from-orange-500 to-red-500', count: 0 },
   ];
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
-        <div className="text-3xl text-white">Loading Admin Panel...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex min-h-screen bg-gray-900">
@@ -146,103 +103,98 @@ const AdminDashboard: React.FC = () => {
               ))}
             </div>
 
-            {/* Quick Actions */}
-            <div className="mb-10">
-              <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                <Activity className="h-8 w-8 text-blue-400" />
-                Quick Actions
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {quickLinks.map((link, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }}>
-                    <Link to={link.href} className="block relative overflow-hidden rounded-2xl bg-gray-800 border border-gray-700 p-6 hover:border-gray-600 transition-all group">
-                      <div className={`absolute inset-0 bg-gradient-to-br ${link.color} opacity-0 group-hover:opacity-20 transition`} />
-                      <div className="relative flex items-center justify-between">
-                        <div>
-                          <link.icon className="h-12 w-12 text-gray-400 group-hover:text-white transition" />
-                          <h3 className="text-xl font-bold text-white mt-4">{link.title}</h3>
-                          {link.count > 0 && <p className="text-3xl font-bold text-white mt-2">{link.count}</p>}
-                        </div>
-                        <ArrowRight className="h-8 w-8 text-gray-500 group-hover:text-white group-hover:translate-x-2 transition" />
-                      </div>
-                      {link.count > 0 && (
-                        <div className="absolute top-4 right-4">
-                          <div className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full animate-pulse">
-                            {link.count} pending
-                          </div>
-                        </div>
-                      )}
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-
-            {/* Recent Activity + Summary */}
+            {/* Quick Actions + Activity */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2">
-                <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
-                  <div className="bg-gray-800 rounded-2xl border border-gray-700">
-                    <div className="p-6 border-b border-gray-700">
-                      <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-                        <Activity className="h-8 w-8 text-green-400" />
-                        Recent Activity
-                      </h2>
-                    </div>
-                    <div className="divide-y divide-gray-700">
-                      {recentActivity.map((activity) => (
-                        <div key={activity.id} className="p-6 hover:bg-gray-700/50 transition">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <p className="text-white font-medium">{activity.action}</p>
-                              {activity.item && <p className="text-gray-400 text-sm mt-1">{activity.item}</p>}
-                              {activity.user && <p className="text-gray-500 text-sm">by <span className="font-mono">{activity.user}</span></p>}
-                              {activity.value && <p className="text-green-400 font-bold mt-1">{activity.value}</p>}
+                <div className="mb-10">
+                  <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                    <Activity className="h-8 w-8 text-blue-400" />
+                    Quick Actions
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {quickLinks.map((link, i) => (
+                      <motion.div key={i} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }}>
+                        <Link to={link.href} className="block relative overflow-hidden rounded-2xl bg-gray-800 border border-gray-700 p-6 hover:border-gray-600 transition-all group">
+                          <div className={`absolute inset-0 bg-gradient-to-br ${link.color} opacity-0 group-hover:opacity-20 transition`} />
+                          <div className="relative flex items-center justify-between">
+                            <div>
+                              <link.icon className="h-12 w-12 text-gray-400 group-hover:text-white transition" />
+                              <h3 className="text-xl font-bold text-white mt-4">{link.title}</h3>
+                              {link.count > 0 && <p className="text-3xl font-bold text-white mt-2">{link.count}</p>}
                             </div>
-                            <div className="text-right ml-4">
-                              <p className="text-gray-500 text-xs">{activity.time}</p>
-                              {activity.type === 'pending' && <Clock className="h-5 w-5 text-yellow-400 mt-2" />}
-                              {activity.type === 'verified' && <CheckCircle2 className="h-5 w-5 text-green-400 mt-2" />}
+                            <ArrowRight className="h-8 w-8 text-gray-500 group-hover:text-white group-hover:translate-x-2 transition" />
+                          </div>
+                          {link.count > 0 && (
+                            <div className="absolute top-4 right-4">
+                              <div className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full animate-pulse">
+                                {link.count} pending
+                              </div>
                             </div>
+                          )}
+                        </Link>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-gray-800 rounded-2xl border border-gray-700">
+                  <div className="p-6 border-b border-gray-700">
+                    <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                      <Activity className="h-8 w-8 text-green-400" />
+                      Recent Activity
+                    </h2>
+                  </div>
+                  <div className="divide-y divide-gray-700">
+                    {recentActivity.map((activity) => (
+                      <div key={activity.id} className="p-6 hover:bg-gray-700/50 transition">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <p className="text-white font-medium">{activity.action}</p>
+                            {activity.item && <p className="text-gray-400 text-sm mt-1">{activity.item}</p>}
+                            {activity.user && <p className="text-gray-500 text-sm">by <span className="font-mono">{activity.user}</span></p>}
+                            {activity.value && <p className="text-green-400 font-bold mt-1">{activity.value}</p>}
+                          </div>
+                          <div className="text-right ml-4">
+                            <p className="text-gray-500 text-xs">{activity.time}</p>
+                            {activity.type === 'pending' && <Clock className="h-5 w-5 text-yellow-400 mt-2" />}
+                            {activity.type === 'verified' && <CheckCircle2 className="h-5 w-5 text-green-400 mt-2" />}
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
-                </motion.div>
+                </div>
               </div>
 
               <div>
-                <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
-                  <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 rounded-2xl p-8 text-white">
-                    <div className="flex items-center justify-between mb-6">
-                      <TrendingUp className="h-12 w-12" />
-                      <div className="text-right">
-                        <div className="text-4xl font-bold">{stats.platformFees}</div>
-                        <div className="text-sm opacity-90">Platform Earnings</div>
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      <div className="bg-white/10 backdrop-blur rounded-xl p-4">
-                        <div className="flex justify-between">
-                          <span>New Users Today</span>
-                          <span className="font-bold">+{stats.newUsersToday}</span>
-                        </div>
-                      </div>
-                      <div className="bg-white/10 backdrop-blur rounded-xl p-4">
-                        <div className="flex justify-between">
-                          <span>Verified Items</span>
-                          <span className="font-bold">{stats.verifiedItems}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-6 pt-6 border-t border-white/20">
-                      <Link to="/admin/analytics" className="inline-flex items-center gap-2 text-white hover:underline font-medium">
-                        View Full Analytics <ArrowRight className="h-5 w-5" />
-                      </Link>
+                <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 rounded-2xl p-8 text-white">
+                  <div className="flex items-center justify-between mb-6">
+                    <TrendingUp className="h-12 w-12" />
+                    <div className="text-right">
+                      <div className="text-4xl font-bold">{stats.platformFees}</div>
+                      <div className="text-sm opacity-90">Platform Earnings</div>
                     </div>
                   </div>
-                </motion.div>
+                  <div className="space-y-4">
+                    <div className="bg-white/10 backdrop-blur rounded-xl p-4">
+                      <div className="flex justify-between">
+                        <span>New Users Today</span>
+                        <span className="font-bold">+{stats.newUsersToday}</span>
+                      </div>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur rounded-xl p-4">
+                      <div className="flex justify-between">
+                        <span>Verified Items</span>
+                        <span className="font-bold">{stats.verifiedItems}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-6 pt-6 border-t border-white/20">
+                    <Link to="/admin/analytics" className="inline-flex items-center gap-2 text-white hover:underline font-medium">
+                      View Full Analytics <ArrowRight className="h-5 w-5" />
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
