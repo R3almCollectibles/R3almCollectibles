@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Calendar, Clock, ArrowRight, Search } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '/src/lib/supabase.ts'; // ← BOLT.NEW SAFE PATH
 
 interface BlogPost {
   id: string;
@@ -22,7 +22,7 @@ interface BlogPost {
 
 const categories = ['All', 'Technology', 'Provenance', 'Security', 'Culture', 'Announcements'];
 
-const Blog = () => {
+export default function Blog() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -40,7 +40,8 @@ const Blog = () => {
       .order('date', { ascending: false });
 
     if (error) {
-      console.error('Supabase fetch error:', error);
+      console.error('Supabase error:', error);
+      setPosts([]);
     } else {
       setPosts(data || []);
     }
@@ -62,7 +63,7 @@ const Blog = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-2xl text-gray-400 animate-pulse">Loading R3alm Journal...</div>
+        <div className="text-2xl text-purple-400 animate-pulse">Loading R3alm Journal...</div>
       </div>
     );
   }
@@ -76,7 +77,7 @@ const Blog = () => {
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clipciip-text text-transparent mb-6"
+            className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-6"
           >
             R3alm Journal
           </motion.h1>
@@ -206,9 +207,7 @@ const Blog = () => {
                     <span>{post.read_time}</span>
                   </div>
                   <h3 className="text-xl font-bold text-white mb-3 group-hover:text-purple-400 transition-colors line-clamp-2">
-                    <Link to={`/blog/${post.id}`}>
-                      {post.title}
-                    </Link>
+                    <Link to={`/blog/${post.id}`}>{post.title}</Link>
                   </h3>
                   <p className="text-sm text-gray-400 mb-6 line-clamp-3 leading-relaxed">
                     {post.excerpt}
@@ -232,13 +231,11 @@ const Blog = () => {
 
           {filteredPosts.length === 0 && !loading && (
             <div className="text-center py-20">
-              <p className="text-xl text-gray-400">No articles found matching your criteria.</p>
+              <p className="text-xl text-gray-400">No articles found.</p>
             </div>
           )}
         </div>
       </section>
     </>
   );
-};
-
-export default Blog;
+}
