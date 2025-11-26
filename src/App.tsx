@@ -1,4 +1,4 @@
-// src/App.tsx – FINAL & FULLY UPDATED (November 2025)
+// src/App.tsx – FINAL & FULLY UPDATED (November 2025) – ALL MARKETPLACE PAGES LIVE
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
@@ -24,16 +24,21 @@ const ProvenanceDetail = lazy(() => import('./pages/ProvenanceDetail'));
 const ActivityDetail = lazy(() => import('./pages/ActivityDetail'));
 const Demo = lazy(() => import('./pages/Demo'));
 
-// NEW: About Company Pages
+// About Company Pages
 const About = lazy(() => import('./pages/About'));
 const Team = lazy(() => import('./pages/Team'));
 const Careers = lazy(() => import('./pages/Careers'));
-const Blog = lazy(() => import('./pages/Blog')); // optional – create later
+const Blog = lazy(() => import('./pages/Blog'));
 
-// Dedicated Security Pages
+// Security Pages
 const BlockchainDetails = lazy(() => import('./pages/BlockchainDetails'));
 const PhysicalStorageSecurity = lazy(() => import('./pages/PhysicalStorageSecurity'));
 const InsuranceCoverage = lazy(() => import('./pages/InsuranceCoverage'));
+
+// NEW: Dedicated Marketplace Category Pages
+const ArtMarketplace = lazy(() => import('./pages/marketplace/ArtMarketplace'));
+const MusicMarketplace = lazy(() => import('./pages/marketplace/MusicMarketplace'));
+const CollectiblesMarketplace = lazy(() => import('./pages/marketplace/CollectiblesMarketplace'));
 
 // Admin Pages
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
@@ -92,16 +97,18 @@ function App() {
                       <Route path="/collectible/:id/provenance/:eventId" element={<ProvenanceDetail />} />
                       <Route path="/collectible/:id/activity/:activityId" element={<ActivityDetail />} />
 
-                      {/* About Company Pages */}
+                      {/* About Company */}
                       <Route path="/about" element={<About />} />
                       <Route path="/team" element={<Team />} />
                       <Route path="/careers" element={<Careers />} />
                       <Route path="/blog" element={<Blog />} />
 
-                      {/* Marketplace Sub-Routes (MegaMenu) */}
-                      <Route path="/marketplace/art" element={<Marketplace />} />
-                      <Route path="/marketplace/collectibles" element={<Marketplace />} />
-                      <Route path="/marketplace/music" element={<Marketplace />} />
+                      {/* MARKETPLACE CATEGORY PAGES – NOW LIVE */}
+                      <Route path="/marketplace/art" element={<ArtMarketplace />} />
+                      <Route path="/marketplace/music" element={<MusicMarketplace />} />
+                      <Route path="/marketplace/collectibles" element={<CollectiblesMarketplace />} />
+
+                      {/* Placeholder Routes (for future expansion) */}
                       <Route path="/marketplace/fractions" element={<Marketplace />} />
                       <Route path="/marketplace/provenance" element={<Marketplace />} />
                       <Route path="/marketplace/auctions" element={<Marketplace />} />
