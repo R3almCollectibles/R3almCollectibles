@@ -1,3 +1,4 @@
+// src/contexts/AuthContext.tsx — FIXED FOR BOLT.NEW (SessionStorage Fallback + Error Handling)
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface User {
@@ -18,6 +19,8 @@ interface AuthContextType {
   signup: (email: string, password: string, name: string) => Promise<boolean>;
   logout: () => void;
   loginWithDemo: (demoType: 'collector' | 'creator' | 'investor' | 'admin') => void;
+  error: string | null;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -57,70 +60,111 @@ const demoAccounts = {
   admin: {
     id: 'demo-admin',
     email: 'admin@demo.com',
-    name: 'Platform Admin',
-    avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
-    walletAddress: '0x111222333444555666777888999000111',
+    name: 'Admin Manager',
+    avatar: 'https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=100',
+    walletAddress: '0x567c8d9e0f1g2h3i4j5k6l7m8n9o0p1q',
     joinDate: '2023-01-01',
     isDemo: true,
-    isAdmin: true  // This enables access
+    isAdmin: true
   }
 };
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
+  // Check for stored user session (try localStorage first, fallback to sessionStorage for Bolt.new)
   useEffect(() => {
-    // Check for stored user session
-    const storedUser = localStorage.getItem('r3alm_user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    const getStoredUser = () => {
+      try {
+        const localUser = localStorage.getItem('r3alm_user');
+        if (localUser) return JSON.parse(localUser);
+        const sessionUser = sessionStorage.getItem('r3alm_user');
+        if (sessionUser) return JSON.parse(sessionUser);
+      } catch (e) {
+        console.warn('Storage read error (Bolt.new sandbox?)', e);
+      }
+      return null;
+    };
+
+    const storedUser = getStoredUser();
+    if (storedUser) setUser(storedUser);
   }, []);
 
+  const storeUser = (userData: User) => {
+    try {
+      localStorage.setItem('r3alm_user', JSON.stringify(userData));
+    } catch (e) {
+      // Fallback for Bolt.new sandbox restrictions
+      sessionStorage.setItem('r3alm_user', JSON.stringify(userData));
+    }
+  };
+
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // For demo purposes, accept any email/password combination
-    const newUser: User = {
-      id: `user-${Date.now()}`,
-      email,
-      name: email.split('@')[0],
-      joinDate: new Date().toISOString().split('T')[0],
-      isDemo: false
-    };
-    
-    setUser(newUser);
-    localStorage.setItem('r3alm_user', JSON.stringify(newUser));
-    return true;
+    setLoading(true);
+    setError(null);
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API
+
+      // For demo, accept any (production: real Supabase auth)
+      const newUser: User = {
+        id: `user-${Date.now()}`,
+        email,
+        name: email.split('@')[0],
+        joinDate: new Date().toISOString().split('T')[0],
+        isDemo: false
+      };
+
+      setUser(newUser);
+      storeUser(newUser);
+      return true;
+    } catch (err) {
+      setError('Login failed. Try demo account.');
+      return false;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const signup = async (email: string, password: string, name: string): Promise<boolean> => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const newUser: User = {
-      id: `user-${Date.now()}`,
-      email,
-      name,
-      joinDate: new Date().toISOString().split('T')[0],
-      isDemo: false
-    };
-    
-    setUser(newUser);
-    localStorage.setItem('r3alm_user', JSON.stringify(newUser));
-    return true;
+    setLoading(true);
+    setError(null);
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API
+
+      const newUser: User = {
+        id: `user-${Date.now()}`,
+        email,
+        name,
+        joinDate: new Date().toISOString().split('T')[0],
+        isDemo: false
+      };
+
+      setUser(newUser);
+      storeUser(newUser);
+      return true;
+    } catch (err) {
+      setError('Signup failed. Please try again.');
+      return false;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('r3alm_user');
+    sessionStorage.removeItem('r3alm_user');
   };
 
   const loginWithDemo = (demoType: 'collector' | 'creator' | 'investor' | 'admin') => {
     const demoUser = demoAccounts[demoType];
     setUser(demoUser);
-    localStorage.setItem('r3alm_user', JSON.stringify(demoUser));
+    storeUser(demoUser);
+    setError(null);
   };
 
   return (
@@ -130,7 +174,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       login,
       signup,
       logout,
-      loginWithDemo
+      loginWithDemo,
+      error,
+      loading
     }}>
       {children}
     </AuthContext.Provider>
